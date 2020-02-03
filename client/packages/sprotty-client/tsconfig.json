@@ -4,7 +4,12 @@
     "rootDir": "src",
     "outDir": "lib",
     "baseUrl": ".",
-    "reactNamespace": "JSX"
+    "reactNamespace": "JSX",
+    "lib": [
+      "es6",
+      "dom",
+      "ES2017"
+    ]
   },
   "include": [
     "src"

@@ -28,11 +28,11 @@
   ],
   "dependencies": {
     "@glsp/sprotty-client": "0.1.0",
-    "@theia/core": "^0.11.0",
-    "@theia/editor": "^0.11.0",
-    "@theia/filesystem": "^0.11.0",
-    "@theia/languages": "^0.11.0",
-    "@theia/monaco": "^0.11.0",
+    "@theia/core": "next",
+    "@theia/editor": "next",
+    "@theia/filesystem": "next",
+    "@theia/languages": "next",
+    "@theia/monaco": "next",
     "@types/node": "^8.0.14",
     "sprotty-theia": "0.7.0-next.1c6b386"
   },

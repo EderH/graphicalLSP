@@ -1,0 +1,83 @@
+{
+  "name": "theia-mock-debug",
+  "keywords": [
+    "theia-extension"
+  ],
+  "version": "0.0.0",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "vscode-debugadapter": "^1.32.0",
+    "await-notify": "^1.0.1",
+    "@types/vscode": "^1.34.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.1",
+    "tslint": "^5.5.0",
+    "typescript": "3.4.3"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib",
+    "build": "tsc && yarn run lint",
+    "lint": "tslint -c ../../configs/tslint.json --project ./tsconfig.json",
+    "watch": "tsc -w"
+  },
+  "activationEvents": [
+    "onDebug"
+  ],
+  "main": "./lib/extension.js",
+  "contributes": {
+    "debuggers": [
+      {
+        "type": "mock-debug",
+        "label": "Theia Mock Debug",
+        "program": "./out/vscode-debugAdapter.js",
+        "runtime": "node",
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Absolute path to a text file.",
+                "default": "${file}"
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "description": "Automatically stop after launch.",
+                "default": true
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "mock-debug",
+            "request": "launch",
+            "name": "Debugging a text file",
+            "program": "${file}",
+            "stopOnEntry": true
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "Theia Mock Debug: Launch",
+            "description": "A new configuration for launching a Theia mock debug program",
+            "body": {
+              "type": "mock-debug",
+              "request": "launch",
+              "name": "Debugging a text file",
+              "stopOnEntry": true,
+              "program": "^\"\\${file}\""
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
