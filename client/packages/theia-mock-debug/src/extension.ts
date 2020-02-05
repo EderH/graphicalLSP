@@ -28,7 +28,6 @@ export function deactivate() {
     // nothing to do
 }
 
-
 class MockConfigurationProvider implements vscode.DebugConfigurationProvider {
 
     /**

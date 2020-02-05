@@ -1,0 +1,32 @@
+{
+  "name": "glsp-dap",
+  "keywords": [
+    "theia-extension"
+  ],
+  "version": "0.0.0",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "@theia/debug": "next"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.1",
+    "tslint": "^5.5.0",
+    "typescript": "3.4.3"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib",
+    "build": "tsc && yarn run lint",
+    "lint": "tslint -c ../../../configs/tslint.json --project ./tsconfig.json",
+    "watch": "tsc -w"
+  },
+  "theiaExtensions": [
+    {
+      "backend": "lib/node/glsp-da-backend-module",
+      "frontend": "lib/browser/glsp-da-frontend-module"
+    }
+  ]
+}
