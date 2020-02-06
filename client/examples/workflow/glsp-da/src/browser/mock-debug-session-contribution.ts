@@ -29,7 +29,7 @@ import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-servi
 import { inject, injectable } from "inversify";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
-import { MockEditorManager } from "./mock-opener-handler";
+import { MockEditorManager } from "./mock-editor-manager";
 
 @injectable()
 export class MockDebugSessionContribution implements DebugSessionContribution {

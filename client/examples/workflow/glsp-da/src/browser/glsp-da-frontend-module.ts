@@ -18,7 +18,8 @@ import { DebugSessionContribution, DebugSessionFactory } from "@theia/debug/lib/
 import { ContainerModule } from "inversify";
 
 import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
-import { MockEditorManager } from "./mock-opener-handler";
+import { MockEditorManager } from "./mock-editor-manager";
+
 
 
 export default new ContainerModule(bind => {
