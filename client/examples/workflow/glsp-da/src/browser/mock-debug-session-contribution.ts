@@ -34,7 +34,7 @@ import { MockEditorManager } from "./mock-opener-handler";
 @injectable()
 export class MockDebugSessionContribution implements DebugSessionContribution {
 
-    readonly debugType: 'theia-mock-debug';
+    readonly debugType: 'mock-debug';
 
     debugSessionFactory(): DebugSessionFactory {
         return new MockDebugSessionFactory();
