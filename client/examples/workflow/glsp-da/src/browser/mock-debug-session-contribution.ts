@@ -16,92 +16,40 @@
 import { LabelProvider } from "@theia/core/lib/browser";
 import { WebSocketConnectionProvider } from "@theia/core/lib/browser/messaging/ws-connection-provider";
 import { MessageClient } from "@theia/core/lib/common";
-import { ContributionProvider } from "@theia/core/lib/common/contribution-provider";
 import { BreakpointManager } from "@theia/debug/lib/browser/breakpoint/breakpoint-manager";
 import { DebugPreferences } from "@theia/debug/lib/browser/debug-preferences";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-connection";
+import { DebugSessionContribution, DebugSessionFactory } from "@theia/debug/lib/browser/debug-session-contribution";
 import { DebugSessionOptions } from "@theia/debug/lib/browser/debug-session-options";
 import { DebugAdapterPath } from "@theia/debug/lib/common/debug-service";
-import { EditorManager } from "@theia/editor/lib/browser";
 import { FileSystem } from "@theia/filesystem/lib/common";
 import { OutputChannel, OutputChannelManager } from "@theia/output/lib/common/output-channel";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
-import { inject, injectable, named, postConstruct } from "inversify";
+import { inject, injectable } from "inversify";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
-
-/**
- * DebugSessionContribution symbol for DI.
- */
-export const DebugSessionContribution = Symbol('DebugSessionContribution');
-/**
- * The [debug session](#DebugSession) contribution.
- * Can be used to instantiate a specific debug sessions.
- */
-export interface DebugSessionContribution {
-    /**
-     * The debug type.
-     */
-    debugType: string;
-
-    /**
-     * The [debug session](#DebugSession) factory.
-     */
-    debugSessionFactory(): DebugSessionFactory;
-}
-
-/**
- * DebugSessionContributionRegistry symbol for DI.
- */
-export const DebugSessionContributionRegistry = Symbol('DebugSessionContributionRegistry');
-/**
- * Debug session contribution registry.
- */
-export interface DebugSessionContributionRegistry {
-    get(debugType: string): DebugSessionContribution | undefined;
-}
+import { MockEditorManager } from "./mock-opener-handler";
 
 @injectable()
-export class DebugSessionContributionRegistryImpl implements DebugSessionContributionRegistry {
-    protected readonly contribs = new Map<string, DebugSessionContribution>();
+export class MockDebugSessionContribution implements DebugSessionContribution {
 
-    @inject(ContributionProvider) @named(DebugSessionContribution)
-    protected readonly contributions: ContributionProvider<DebugSessionContribution>;
+    readonly debugType: 'theia-mock-debug';
 
-    @postConstruct()
-    protected init(): void {
-        for (const contrib of this.contributions.getContributions()) {
-            this.contribs.set(contrib.debugType, contrib);
-        }
-    }
-
-    get(debugType: string): DebugSessionContribution | undefined {
-        return this.contribs.get(debugType);
+    debugSessionFactory(): DebugSessionFactory {
+        return new MockDebugSessionFactory();
     }
 }
 
-/**
- * DebugSessionFactory symbol for DI.
- */
-export const DebugSessionFactory = Symbol('DebugSessionFactory');
-
-/**
- * The [debug session](#DebugSession) factory.
- */
-export interface DebugSessionFactory {
-    get(sessionId: string, options: DebugSessionOptions): DebugSession;
-}
-
 @injectable()
-export class DefaultDebugSessionFactory implements DebugSessionFactory {
+export class MockDebugSessionFactory implements DebugSessionFactory {
 
     @inject(WebSocketConnectionProvider)
     protected readonly connectionProvider: WebSocketConnectionProvider;
     @inject(TerminalService)
     protected readonly terminalService: TerminalService;
-    @inject(EditorManager)
-    protected readonly editorManager: EditorManager;
+    @inject(MockEditorManager)
+    protected readonly editorManager: MockEditorManager;
     @inject(BreakpointManager)
     protected readonly breakpoints: BreakpointManager;
     @inject(LabelProvider)

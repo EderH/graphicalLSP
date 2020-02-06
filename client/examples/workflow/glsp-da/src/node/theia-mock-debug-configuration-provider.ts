@@ -24,7 +24,7 @@ export const THEIA_MOCK_DEBUG = 'theia-mock-debug';
 export class TheiaMockDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
     constructor() {
         super(
-            'mock-debug',
+            'theia-mock-debug',
             path.join(__dirname, '../../../../../packages/theia-mock-debug/')
         );
     }

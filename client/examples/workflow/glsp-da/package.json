@@ -9,7 +9,13 @@
     "src"
   ],
   "dependencies": {
-    "@theia/debug": "next"
+    "@theia/core": "next",
+    "@theia/filesystem": "next",
+    "@theia/debug": "next",
+    "@theia/editor": "next",
+    "@theia/output": "next",
+    "@theia/terminal": "next",
+    "@glsp-examples/workflow-theia": "0.1.0"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
