@@ -14,10 +14,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { OpenHandler } from "@theia/core/lib/browser";
-import { DebugSessionContribution, DebugSessionFactory } from "@theia/debug/lib/browser/debug-session-contribution";
+import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule } from "inversify";
 
-import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
+import { MockDebugSessionContribution } from "./mock-debug-session-contribution";
 import { MockEditorManager } from "./mock-editor-manager";
 
 
@@ -25,7 +25,7 @@ import { MockEditorManager } from "./mock-editor-manager";
 export default new ContainerModule(bind => {
     // add your contribution bindings here
 
-    bind(DebugSessionContribution).toService(MockDebugSessionContribution);
-    bind(DebugSessionFactory).to(MockDebugSessionFactory).inSingletonScope();
+    bind(DebugSessionContribution).to(MockDebugSessionContribution);
+    bind(MockEditorManager).toSelf().inSingletonScope();
     bind(OpenHandler).toService(MockEditorManager);
 });

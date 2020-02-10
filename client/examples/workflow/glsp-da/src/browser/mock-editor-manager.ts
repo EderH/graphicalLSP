@@ -16,10 +16,13 @@
 import { WorkflowDiagramManager } from "@glsp-examples/workflow-theia/lib/browser/diagram/workflow-diagram-manager";
 import { OpenerOptions } from "@theia/core/lib/browser";
 import URI from "@theia/core/lib/common/uri";
-import { EditorManager } from "@theia/editor/lib/browser";
-import { EditorWidget } from "@theia/editor/lib/browser/editor-widget";
+import { EditorManager, EditorWidget } from "@theia/editor/lib/browser";
 import { inject, injectable } from "inversify";
 
+
+// import { OpenerOptions, BaseWidget } from "@theia/core/lib/browser";
+// import URI from "@theia/core/lib/common/uri";
+// import { EditorWidget } from "@theia/editor/lib/browser/editor-widget";
 @injectable()
 export class MockEditorManager extends EditorManager {
 
@@ -27,7 +30,7 @@ export class MockEditorManager extends EditorManager {
     protected readonly workflowDiagramManager: WorkflowDiagramManager;
 
     async open(uri: URI, options?: OpenerOptions): Promise<EditorWidget> {
-        const editor = this.workflowDiagramManager.open(uri, options);
+        const editor = await super.open(uri, options);
         this.revealSelection(editor, options);
         return editor;
     }

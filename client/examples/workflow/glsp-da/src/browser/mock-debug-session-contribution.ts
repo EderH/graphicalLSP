@@ -34,8 +34,7 @@ import { MockEditorManager } from "./mock-editor-manager";
 @injectable()
 export class MockDebugSessionContribution implements DebugSessionContribution {
 
-    readonly debugType: 'mock-debug';
-
+    debugType = "mock-debug";
     debugSessionFactory(): DebugSessionFactory {
         return new MockDebugSessionFactory();
     }
