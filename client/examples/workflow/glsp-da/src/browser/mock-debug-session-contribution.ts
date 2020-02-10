@@ -13,18 +13,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { LabelProvider } from "@theia/core/lib/browser";
-import { WebSocketConnectionProvider } from "@theia/core/lib/browser/messaging/ws-connection-provider";
-import { MessageClient } from "@theia/core/lib/common";
+import { MessageClient } from "@theia/core";
+import { LabelProvider, WebSocketConnectionProvider } from "@theia/core/lib/browser";
 import { BreakpointManager } from "@theia/debug/lib/browser/breakpoint/breakpoint-manager";
 import { DebugPreferences } from "@theia/debug/lib/browser/debug-preferences";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-connection";
-import { DebugSessionContribution, DebugSessionFactory } from "@theia/debug/lib/browser/debug-session-contribution";
+import {
+    DebugSessionContribution,
+    DebugSessionFactory,
+    DefaultDebugSessionFactory
+} from "@theia/debug/lib/browser/debug-session-contribution";
 import { DebugSessionOptions } from "@theia/debug/lib/browser/debug-session-options";
 import { DebugAdapterPath } from "@theia/debug/lib/common/debug-service";
 import { FileSystem } from "@theia/filesystem/lib/common";
-import { OutputChannel, OutputChannelManager } from "@theia/output/lib/common/output-channel";
+import { OutputChannelManager } from "@theia/output/lib/common/output-channel";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { inject, injectable } from "inversify";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
@@ -34,21 +37,12 @@ import { MockEditorManager } from "./mock-editor-manager";
 @injectable()
 export class MockDebugSessionContribution implements DebugSessionContribution {
 
-    debugType = "mock-debug";
-    debugSessionFactory(): DebugSessionFactory {
-        return new MockDebugSessionFactory();
-    }
-}
-
-@injectable()
-export class MockDebugSessionFactory implements DebugSessionFactory {
-
-    @inject(WebSocketConnectionProvider)
-    protected readonly connectionProvider: WebSocketConnectionProvider;
-    @inject(TerminalService)
-    protected readonly terminalService: TerminalService;
     @inject(MockEditorManager)
     protected readonly editorManager: MockEditorManager;
+    @inject(TerminalService)
+    protected readonly terminalService: TerminalService;
+    @inject(WebSocketConnectionProvider)
+    protected readonly connectionProvider: WebSocketConnectionProvider;
     @inject(BreakpointManager)
     protected readonly breakpoints: BreakpointManager;
     @inject(LabelProvider)
@@ -61,6 +55,30 @@ export class MockDebugSessionFactory implements DebugSessionFactory {
     protected readonly debugPreferences: DebugPreferences;
     @inject(FileSystem)
     protected readonly fileSystem: FileSystem;
+
+    debugType = "mock-debug";
+    debugSessionFactory(): DebugSessionFactory {
+        return new MockDebugSessionFactory(this.terminalService, this.editorManager, this.breakpoints, this.labelProvider,
+            this.messages, this.outputChannelManager, this.connectionProvider, this.debugPreferences, this.fileSystem);
+    }
+}
+
+@injectable()
+export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
+
+    constructor(
+        protected readonly terminalService: TerminalService,
+        protected readonly editorManager: MockEditorManager,
+        protected readonly breakpoints: BreakpointManager,
+        protected readonly labelProvider: LabelProvider,
+        protected readonly messages: MessageClient,
+        protected readonly outputChannelManager: OutputChannelManager,
+        protected readonly connectionProvider: WebSocketConnectionProvider,
+        protected readonly debugPreferences: DebugPreferences,
+        protected readonly fileSystem: FileSystem,
+    ) {
+        super();
+    }
 
     get(sessionId: string, options: DebugSessionOptions): DebugSession {
         const connection = new DebugSessionConnection(
@@ -82,12 +100,5 @@ export class MockDebugSessionFactory implements DebugSessionFactory {
             this.labelProvider,
             this.messages,
             this.fileSystem);
-    }
-
-    protected getTraceOutputChannel(): OutputChannel | undefined {
-        if (this.debugPreferences['debug.trace']) {
-            return this.outputChannelManager.getChannel('Debug adapters');
-        }
-        return undefined;
     }
 }

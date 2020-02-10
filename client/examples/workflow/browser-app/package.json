@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "dependencies": {
     "@glsp-examples/workflow-theia": "0.1.0",
+    "glsp-dap": "0.0.0",
     "@theia/core": "next",
     "@theia/editor": "next",
     "@theia/filesystem": "next",
@@ -17,8 +18,7 @@
     "@theia/terminal": "next",
     "@theia/typescript": "next",
     "@theia/workspace": "next",
-    "@theia/debug": "next",
-    "glsp-dap": "0.0.0"
+    "@theia/debug": "next"
   },
   "devDependencies": {
     "@theia/cli": "next"
