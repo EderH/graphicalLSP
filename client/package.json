@@ -20,8 +20,8 @@
     "publish:next": "lerna publish --exact --canary=next --npm-tag=next --yes"
   },
   "resolutions": {
-    "**/sprotty": "0.8.0-next.1d772ad",
-    "**/sprotty-theia": "0.7.0-next.1c6b386"
+    "**/sprotty": "0.7.0",
+    "**/sprotty-theia": "0.7.0"
   },
   "devDependencies": {
     "lerna": "^2.2.0",

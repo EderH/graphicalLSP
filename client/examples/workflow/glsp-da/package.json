@@ -10,12 +10,12 @@
   ],
   "dependencies": {
     "@glsp-examples/workflow-theia": "0.1.0",
-    "@theia/core": "next",
-    "@theia/filesystem": "next",
-    "@theia/debug": "next",
-    "@theia/editor": "next",
-    "@theia/output": "next",
-    "@theia/terminal": "next"
+    "@theia/core": "0.11.0",
+    "@theia/filesystem": "0.11.0",
+    "@theia/debug": "0.11.0",
+    "@theia/editor": "0.11.0",
+    "@theia/output": "0.11.0",
+    "@theia/terminal": "0.11.0"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
