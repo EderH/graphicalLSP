@@ -10,6 +10,8 @@
   ],
   "dependencies": {
     "@glsp-examples/workflow-theia": "0.1.0",
+    "@glsp/sprotty-client": "0.1.0",
+    "sprotty-theia": "0.7.0",
     "@theia/core": "0.11.0",
     "@theia/filesystem": "0.11.0",
     "@theia/debug": "0.11.0",

@@ -13,21 +13,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { WorkflowDiagramManager } from "@glsp-examples/workflow-theia/lib/browser/diagram/workflow-diagram-manager";
-import URI from "@theia/core/lib/common/uri";
-import { EditorManager, EditorOpenerOptions } from "@theia/editor/lib/browser";
-import { inject, injectable } from "inversify";
+import { SModelElement, SModelExtension } from "sprotty/lib";
 
+export const setStackFrameFeature = Symbol('setStackFrameFeature');
 
-@injectable()
-export class MockEditorManager extends EditorManager {
+export interface HighlightableElement extends SModelExtension {
+}
 
-    @inject(WorkflowDiagramManager)
-    protected readonly workflowDiagramManager: WorkflowDiagramManager;
-
-    async open(uri: URI, options?: EditorOpenerOptions): Promise<any> {
-        const widget = await this.workflowDiagramManager.open(uri, options);
-        return widget;
-    }
-
+export function isHighlightable(element: SModelElement): element is SModelElement & HighlightableElement {
+    return element.hasFeature(setStackFrameFeature);
 }

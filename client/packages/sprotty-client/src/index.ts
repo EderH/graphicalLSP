@@ -20,6 +20,7 @@ import glspEditLabelValidationModule from "./features/edit-label-validation/di.c
 import executeModule from "./features/execute/di.config";
 import modelHintsModule from "./features/hints/di.config";
 import layoutCommandsModule from "./features/layout/di.config";
+import glspMockDebugModule from "./features/mock-debug/di.config";
 import glspMouseToolModule from "./features/mouse-tool/di.config";
 import requestResponseModule from "./features/request-response/di.config";
 import saveModule from "./features/save/di.config";
@@ -81,9 +82,13 @@ export * from './utils/smodel-util';
 export * from './utils/viewpoint-util';
 export * from './model-source/websocket-diagram-server';
 export * from "./model-source/glsp-server-status";
+
+export * from "./features/mock-debug/model";
+export * from "./features/mock-debug/set-stack-frame";
+
 export {
     validationModule, saveModule, executeModule, paletteModule, toolFeedbackModule, defaultGLSPModule, modelHintsModule, glspCommandPaletteModule, requestResponseModule, //
-    glspContextMenuModule, glspSelectModule, glspMouseToolModule, layoutCommandsModule, glspEditLabelValidationModule
+    glspContextMenuModule, glspSelectModule, glspMouseToolModule, layoutCommandsModule, glspEditLabelValidationModule, glspMockDebugModule
 };
 
 

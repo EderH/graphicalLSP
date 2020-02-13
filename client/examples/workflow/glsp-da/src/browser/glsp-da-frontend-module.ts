@@ -17,6 +17,7 @@ import { OpenHandler } from "@theia/core/lib/browser";
 import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule, interfaces } from "inversify";
 
+import { MockDebugDiagramModifier } from "./mock-debug-diagram-modifier";
 import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
 import { MockEditorManager } from "./mock-editor-manager";
 
@@ -28,5 +29,6 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(MockEditorManager).toSelf().inSingletonScope();
     bind(MockDebugSessionFactory).toSelf().inSingletonScope();
     bind(OpenHandler).toService(MockEditorManager);
+    bind(MockDebugDiagramModifier).toSelf().inSingletonScope();
 
 });

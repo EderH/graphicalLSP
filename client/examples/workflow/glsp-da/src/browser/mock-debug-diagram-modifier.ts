@@ -13,21 +13,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { WorkflowDiagramManager } from "@glsp-examples/workflow-theia/lib/browser/diagram/workflow-diagram-manager";
-import URI from "@theia/core/lib/common/uri";
-import { EditorManager, EditorOpenerOptions } from "@theia/editor/lib/browser";
+import { SetStackFrameAction } from "@glsp/sprotty-client/lib/features/mock-debug/set-stack-frame";
 import { inject, injectable } from "inversify";
+import { IActionDispatcher } from "sprotty";
+import { DiagramWidget } from "sprotty-theia/lib";
+
+import { MockEditorManager } from "./mock-editor-manager";
 
 
 @injectable()
-export class MockEditorManager extends EditorManager {
+export class MockDebugDiagramModifier {
 
-    @inject(WorkflowDiagramManager)
-    protected readonly workflowDiagramManager: WorkflowDiagramManager;
+    protected actionDispatcher: IActionDispatcher;
 
-    async open(uri: URI, options?: EditorOpenerOptions): Promise<any> {
-        const widget = await this.workflowDiagramManager.open(uri, options);
-        return widget;
+    @inject(MockEditorManager)
+    protected readonly editorManager: MockEditorManager;
+
+    setCurentStackFrameElement(elementId: string) {
+        const currentEditor = this.editorManager.currentEditor;
+        if (currentEditor instanceof DiagramWidget) {
+            this.actionDispatcher = currentEditor.actionDispatcher;
+            this.actionDispatcher.dispatch(new SetStackFrameAction(elementId));
+        }
     }
-
 }
