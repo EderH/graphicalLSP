@@ -19,15 +19,19 @@ import { EventEmitter } from "events";
 import { readFileSync } from "fs";
 
 
-
-
-
 const Net = require("net");
 
 export interface MockBreakpoint {
     id: number;
     line: number;
     verified: boolean;
+}
+
+export interface StackEntry {
+    id: number;
+    line: number;
+    name: string;
+    file: string;
 }
 
 /**
@@ -39,6 +43,9 @@ export class MockRuntime extends EventEmitter {
     private debugger = new Net.Socket();
     private host = '127.0.0.1';
     private port = 5056;
+
+    private _connected = false;
+    private _isValid = true;
 
     // the initial (and one and only) file we are 'debugging'
     private _sourceFile!: string;
@@ -52,6 +59,10 @@ export class MockRuntime extends EventEmitter {
 
     // This is the next line that will be 'executed'
     // private _currentLine = 0;
+
+    private _stackTrace = new Array<StackEntry>();
+
+    private _queuedCommands = new Array<string>();
 
     // maps from sourceFile to array of Mock breakpoints
     private _breakPoints = new Map<string, MockBreakpoint[]>();
@@ -78,24 +89,31 @@ export class MockRuntime extends EventEmitter {
 
         this.connectToDebugger();
 
-        /*if (stopOnEntry) {
+        if (stopOnEntry) {
             // we step once
+            console.log("StopOnEntry");
             this.step('stopOnEntry');
         } else {
             // we just start to run until we hit a breakpoint or an exception
             this.continue();
-        } */
+        }
     }
 
     public connectToDebugger() {
+        if (this._connected) {
+            return;
+        }
         const serverFilename = "example1.wf";
         this.debugger.connect(this.port, this.host, () => {
+            this._connected = true;
             this.debugger.setEncoding('utf8');
             console.log("Connected to " + this.host + ":" + this.port);
             this.sendEvent('onStatusChange', 'CSCS: Connected to ' + this.host + ":" + this.port);
             this.sendToServer('file', serverFilename);
-            this.sendEvent('stopOnEntry');
-
+            for (let i = 0; i < this._queuedCommands.length; i++) {
+                this.sendToServer(this._queuedCommands[i]);
+            }
+            this._queuedCommands.length = 0;
         });
 
         this.debugger.on('data', (data: string) => {
@@ -103,24 +121,55 @@ export class MockRuntime extends EventEmitter {
             console.log('Received: ' + data.replace(/\s/g, ""));
         });
 
-        this.debugger.on('close', function () {
+        this.debugger.on('close', () => {
+            this._connected = false;
             console.log('Connection closed');
         });
     }
 
     public processFromDebugger(data: string) {
+        if (!this.isValid()) {
+            return;
+        }
         // this.sendEvent('output', data.toString().trim(), "", -1, '\n');
-        if (data === 'end') {
+        const index = data.indexOf('|');
+        let cmd: string = '';
+        let element: string = '';
+        if (index >= 0) {
+            element = (index < data.length - 1 ? data.substring(index + 1) : '').trim();
+
+            cmd = data.substring(0, index).trim();
+        }
+        console.log("cmd: " + cmd + "   element: " + element);
+
+        if (cmd === 'end') {
             this.sendEvent('end');
         }
+        if (cmd === 'stack' || cmd === 'next') {
+            let id = 0;
+            const entry = <StackEntry>{ id: ++id, line: 0, name: element, file: this._sourceFile };
+            this._stackTrace.push(entry);
+        }
         this.sendEvent('onDebuggerMessage', data);
-        console.log('Test2');
+        console.log(this._stackTrace.length);
+    }
+
+    public makeInvalid() {
+        this._isValid = false;
+    }
+    public isValid(): boolean {
+        return this._isValid;
     }
 
     disconnectFromDebugger() {
+        if (!this.isValid()) {
+            return;
+        }
         this.sendToServer('bye');
         this.debugger.end();
+        this._connected = false;
         this.sendEvent('end');
+        this.makeInvalid();
     }
 
     public sendToServer(cmd: string, data = "") {
@@ -129,6 +178,10 @@ export class MockRuntime extends EventEmitter {
             message += ' | ' + data;
         }
         console.log(message);
+        if (!this._connected) {
+            this._queuedCommands.push(message);
+            return;
+        }
         this.debugger.write(message + "\n");
     }
 
@@ -165,15 +218,24 @@ export class MockRuntime extends EventEmitter {
                 line: this._currentLine
             });
         } */
-        frames.push({
+        for (let i = 0; i < this._stackTrace.length; i++) {
+            const entry = this._stackTrace[i];
+            frames.push({
+                index: entry.id,
+                name: entry.name,
+                file: entry.file,
+                line: entry.line
+            });
+        }
+        /* frames.push({
             index: 0,
             name: 'test',
             file: this._sourceFile,
             line: 1
-        });
+        }); */
         return {
             frames: frames,
-            count: 1
+            count: this._stackTrace.length
         };
     }
 

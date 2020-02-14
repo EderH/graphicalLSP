@@ -283,6 +283,11 @@ export class MockDebugSession extends LoggingDebugSession {
         this.sendResponse(response);
     }
 
+    protected disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments): void {
+        this._runtime.disconnectFromDebugger();
+        this.sendResponse(response);
+    }
+
     protected evaluateRequest(response: DebugProtocol.EvaluateResponse, args: DebugProtocol.EvaluateArguments): void {
 
         let reply: string | undefined = undefined;
