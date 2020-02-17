@@ -37,17 +37,17 @@ export class MockDebugDiagramModifier {
     @postConstruct()
     protected init(): void {
         this.viewModel.onDidChange(() => {
-            if (this.viewModel.currentFrame) {
-                this.setCurentStackFrameElement(this.viewModel.currentFrame.raw.name);
+            const currentEditor = this.editorManager.currentEditor;
+            if (currentEditor && (currentEditor instanceof DiagramWidget)) {
+                this.actionDispatcher = currentEditor.actionDispatcher;
+                if (this.actionDispatcher && this.viewModel.currentFrame) {
+                    this.setCurentStackFrameElement(this.viewModel.currentFrame.raw.name);
+                }
             }
         });
     }
 
     setCurentStackFrameElement(elementId: string) {
-        const currentEditor = this.editorManager.currentEditor;
-        if (currentEditor instanceof DiagramWidget) {
-            this.actionDispatcher = currentEditor.actionDispatcher;
-            this.actionDispatcher.dispatch(new SetStackFrameAction(elementId));
-        }
+        this.actionDispatcher.dispatch(new SetStackFrameAction(elementId));
     }
 }
