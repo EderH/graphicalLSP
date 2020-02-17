@@ -9,6 +9,7 @@
       "request": "launch",
       "name": "Start Browser Backend",
       "program": "${workspaceRoot}/examples/workflow/browser-app/src-gen/backend/main.js",
+      "localRoot": "${workspaceFolder}",
       "args": [
         "--loglevel=debug",
         "--port=3000",

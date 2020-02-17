@@ -28,7 +28,6 @@ export class SetStackFrameAction implements Action {
 
 export class ResolvedSetStackFrame {
     element: HighlightableElement;
-    isCurrent: boolean;
 }
 
 @injectable()
@@ -46,16 +45,17 @@ export class SetStackFrameCommand extends Command {
         const index = context.root.index;
         const element = index.getById(this.action.elementId);
         if (element && isHighlightable(element)) {
-            this.resolvedSetStackFrame.element = { element };
-            this.resolvedSetStackFrame.isCurrent = true;
-
+            this.resolvedSetStackFrame = { element };
+            element.current = !element.current;
+            // TODO set CSSClass
         }
         return context.root;
     }
 
     undo(context: CommandExecutionContext): SModelRoot {
         if (this.resolvedSetStackFrame) {
-            this.resolvedSetStackFrame.isCurrent = false;
+            this.resolvedSetStackFrame.element.current = !this.resolvedSetStackFrame.element.current;
+            // TODO unset CSSClass
         }
         return context.root;
     }

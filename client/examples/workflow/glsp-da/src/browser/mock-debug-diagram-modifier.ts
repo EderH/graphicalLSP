@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { SetStackFrameAction } from "@glsp/sprotty-client/lib/features/mock-debug/set-stack-frame";
+import { SetStackFrameAction } from "@glsp/sprotty-client/lib/";
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { inject, injectable, postConstruct } from "inversify";
 import { IActionDispatcher } from "sprotty";

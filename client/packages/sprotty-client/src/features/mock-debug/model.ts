@@ -18,8 +18,9 @@ import { SModelElement, SModelExtension } from "sprotty/lib";
 export const setStackFrameFeature = Symbol('setStackFrameFeature');
 
 export interface HighlightableElement extends SModelExtension {
+    current: boolean;
 }
 
-export function isHighlightable(element: SModelElement): element is SModelElement & HighlightableElement {
+export function isHighlightable<T extends SModelElement>(element: T): element is T & HighlightableElement {
     return element.hasFeature(setStackFrameFeature);
 }
