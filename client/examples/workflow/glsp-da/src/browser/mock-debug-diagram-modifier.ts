@@ -34,10 +34,10 @@ export class MockDebugDiagramModifier {
 
     @postConstruct()
     protected init(): void {
-        this.viewModel.onDidChange(() => this.setCurentStackFrameElement());
+        this.viewModel.onDidChange(() => this.setCurrentStackFrameElement());
     }
 
-    protected setCurentStackFrameElement() {
+    protected setCurrentStackFrameElement() {
         const currentEditor = this.editorManager.currentEditor;
         if (currentEditor && (currentEditor instanceof DiagramWidget)) {
             this.actionDispatcher = currentEditor.actionDispatcher;
