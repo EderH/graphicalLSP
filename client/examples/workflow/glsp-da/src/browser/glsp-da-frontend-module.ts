@@ -26,9 +26,8 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here
 
     bind(DebugSessionContribution).to(MockDebugSessionContribution);
+    bind(MockDebugDiagramModifier).toSelf().inSingletonScope();
     bind(MockEditorManager).toSelf().inSingletonScope();
     bind(MockDebugSessionFactory).toSelf().inSingletonScope();
     bind(OpenHandler).toService(MockEditorManager);
-    bind(MockDebugDiagramModifier).toSelf().inSingletonScope();
-
 });

@@ -21,10 +21,8 @@ import { DiagramWidget } from "sprotty-theia/lib";
 
 import { MockEditorManager } from "./mock-editor-manager";
 
-
 @injectable()
 export class MockDebugDiagramModifier {
-
 
     protected actionDispatcher: IActionDispatcher;
 
@@ -36,18 +34,17 @@ export class MockDebugDiagramModifier {
 
     @postConstruct()
     protected init(): void {
-        this.viewModel.onDidChange(() => {
-            const currentEditor = this.editorManager.currentEditor;
-            if (currentEditor && (currentEditor instanceof DiagramWidget)) {
-                this.actionDispatcher = currentEditor.actionDispatcher;
-                if (this.actionDispatcher && this.viewModel.currentFrame) {
-                    this.setCurentStackFrameElement(this.viewModel.currentFrame.raw.name);
-                }
-            }
-        });
+        this.viewModel.onDidChange(() => this.setCurentStackFrameElement());
     }
 
-    setCurentStackFrameElement(elementId: string) {
-        this.actionDispatcher.dispatch(new SetStackFrameAction(elementId));
+    protected setCurentStackFrameElement() {
+        const currentEditor = this.editorManager.currentEditor;
+        if (currentEditor && (currentEditor instanceof DiagramWidget)) {
+            this.actionDispatcher = currentEditor.actionDispatcher;
+            if (this.actionDispatcher && this.viewModel.currentFrame) {
+                const elementId = this.viewModel.currentFrame.raw.name;
+                this.actionDispatcher.dispatch(new SetStackFrameAction(elementId));
+            }
+        }
     }
 }
