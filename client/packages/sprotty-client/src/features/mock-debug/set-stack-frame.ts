@@ -14,7 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable } from "inversify";
-import { Action, Command, CommandExecutionContext, SModelRoot, TYPES } from "sprotty/lib";
+import { VNode } from "snabbdom/vnode";
+import {
+    Action,
+    Command,
+    CommandExecutionContext,
+    CommandReturn,
+    IVNodePostprocessor,
+    mergeStyle,
+    SModelElement,
+    TYPES
+} from "sprotty/lib";
 
 import { HighlightableElement, isHighlightable } from "./model";
 
@@ -35,32 +45,47 @@ export class SetStackFrameCommand extends Command {
 
     static readonly KIND = SetStackFrameAction.KIND;
 
-    constructor(@inject(TYPES.Action) public action: SetStackFrameAction) {
+    constructor(
+        @inject(TYPES.Action) public action: SetStackFrameAction
+    ) {
         super();
     }
 
     resolvedSetStackFrame: ResolvedSetStackFrame;
 
-    execute(context: CommandExecutionContext): SModelRoot {
+    execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         const element = index.getById(this.action.elementId);
         if (element && isHighlightable(element)) {
             this.resolvedSetStackFrame = { element };
             element.current = !element.current;
-            // TODO set CSSClass
         }
         return context.root;
     }
 
-    undo(context: CommandExecutionContext): SModelRoot {
+    undo(context: CommandExecutionContext): CommandReturn {
         if (this.resolvedSetStackFrame) {
             this.resolvedSetStackFrame.element.current = !this.resolvedSetStackFrame.element.current;
-            // TODO unset CSSClass
         }
         return context.root;
     }
 
-    redo(context: CommandExecutionContext): SModelRoot {
+    redo(context: CommandExecutionContext): CommandReturn {
         return this.execute(context);
+    }
+
+}
+
+@injectable()
+export class ElementHighlighter implements IVNodePostprocessor {
+
+    decorate(vnode: VNode, element: SModelElement): VNode {
+        if (isHighlightable(element)) {
+            mergeStyle(vnode, { border: '1px solid #bada55' });
+        }
+        return vnode;
+    }
+
+    postUpdate(): void {
     }
 }

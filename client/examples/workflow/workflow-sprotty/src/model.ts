@@ -22,6 +22,7 @@ import {
     DiamondNode,
     executeCommandFeature,
     fadeFeature,
+    highlightElementFeature,
     hoverFeedbackFeature,
     isEditableLabel,
     layoutableChildFeature,
@@ -34,7 +35,6 @@ import {
     RectangularNode,
     SEdge,
     selectFeature,
-    setStackFrameFeature,
     SShapeElement,
     WithEditableLabel,
     withEditLabelFeature
@@ -45,7 +45,7 @@ import { ActivityNodeSchema } from "./model-schema";
 export class TaskNode extends RectangularNode implements Nameable, WithEditableLabel {
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, nameFeature, withEditLabelFeature,
-        setStackFrameFeature];
+        highlightElementFeature];
     name: string = "";
     duration?: number;
     taskType?: string;

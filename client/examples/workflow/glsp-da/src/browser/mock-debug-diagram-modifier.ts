@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { SetStackFrameAction } from "@glsp/sprotty-client/lib/";
+import { SetStackFrameAction } from "@glsp/sprotty-client/lib/features/mock-debug/set-stack-frame";
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { inject, injectable, postConstruct } from "inversify";
 import { IActionDispatcher } from "sprotty";
@@ -24,13 +24,19 @@ import { MockEditorManager } from "./mock-editor-manager";
 @injectable()
 export class MockDebugDiagramModifier {
 
+
     protected actionDispatcher: IActionDispatcher;
+    protected viewModel: DebugViewModel;
+    protected editorManager: MockEditorManager;
 
-    @inject(MockEditorManager)
-    protected readonly editorManager: MockEditorManager;
 
-    @inject(DebugViewModel)
-    protected readonly viewModel: DebugViewModel;
+    constructor(
+        @inject(MockEditorManager) editorManager: MockEditorManager,
+        @inject(DebugViewModel) viewModel: DebugViewModel
+    ) {
+        this.viewModel = viewModel;
+        this.editorManager = editorManager;
+    }
 
     @postConstruct()
     protected init(): void {

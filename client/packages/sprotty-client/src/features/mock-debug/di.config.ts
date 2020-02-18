@@ -16,13 +16,14 @@
 import "../../../css/command-palette.css";
 
 import { ContainerModule } from "inversify";
-import { configureCommand } from "sprotty/lib";
+import { configureCommand, TYPES } from "sprotty/lib";
 
-import { SetStackFrameCommand } from "./set-stack-frame";
+import { ElementHighlighter, SetStackFrameCommand } from "./set-stack-frame";
 
 
 const glspMockDebugModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, SetStackFrameCommand);
+    bind(TYPES.IVNodePostprocessor).to(ElementHighlighter).inSingletonScope();
 });
 
 export default glspMockDebugModule;
