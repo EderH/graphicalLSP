@@ -37,47 +37,59 @@ import { MockEditorManager } from "./mock-editor-manager";
 @injectable()
 export class MockDebugSessionContribution implements DebugSessionContribution {
 
-    @inject(MockEditorManager)
-    protected readonly editorManager: MockEditorManager;
-    @inject(TerminalService)
-    protected readonly terminalService: TerminalService;
-    @inject(WebSocketConnectionProvider)
-    protected readonly connectionProvider: WebSocketConnectionProvider;
-    @inject(BreakpointManager)
-    protected readonly breakpoints: BreakpointManager;
-    @inject(LabelProvider)
-    protected readonly labelProvider: LabelProvider;
-    @inject(MessageClient)
-    protected readonly messages: MessageClient;
-    @inject(OutputChannelManager)
-    protected readonly outputChannelManager: OutputChannelManager;
-    @inject(DebugPreferences)
-    protected readonly debugPreferences: DebugPreferences;
-    @inject(FileSystem)
-    protected readonly fileSystem: FileSystem;
+    private _mockDebugSessionFactory: MockDebugSessionFactory;
+
+    constructor(
+        @inject(MockEditorManager) editorManager: MockEditorManager,
+        @inject(TerminalService) terminalService: TerminalService,
+        @inject(WebSocketConnectionProvider) connectionProvider: WebSocketConnectionProvider,
+        @inject(BreakpointManager) breakpoints: BreakpointManager,
+        @inject(LabelProvider) labelProvider: LabelProvider,
+        @inject(MessageClient) messages: MessageClient,
+        @inject(OutputChannelManager) outputChannelManager: OutputChannelManager,
+        @inject(DebugPreferences) debugPreferences: DebugPreferences,
+        @inject(FileSystem) fileSystem: FileSystem,
+    ) {
+        this._mockDebugSessionFactory = new MockDebugSessionFactory({
+            terminalService, editorManager, breakpoints, labelProvider,
+            messages, outputChannelManager, connectionProvider, debugPreferences, fileSystem
+        });
+    }
 
     debugType = "mock-debug";
     debugSessionFactory(): DebugSessionFactory {
-        return new MockDebugSessionFactory(this.terminalService, this.editorManager, this.breakpoints, this.labelProvider,
-            this.messages, this.outputChannelManager, this.connectionProvider, this.debugPreferences, this.fileSystem);
+        return this._mockDebugSessionFactory;
     }
+}
+
+export interface MockDebugSessionFactoryServices {
+    readonly terminalService: TerminalService,
+    readonly editorManager: MockEditorManager,
+    readonly breakpoints: BreakpointManager,
+    readonly labelProvider: LabelProvider,
+    readonly messages: MessageClient,
+    readonly outputChannelManager: OutputChannelManager,
+    readonly connectionProvider: WebSocketConnectionProvider,
+    readonly debugPreferences: DebugPreferences,
+    readonly fileSystem: FileSystem
 }
 
 @injectable()
 export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
 
-    constructor(
-        protected readonly terminalService: TerminalService,
-        protected readonly editorManager: MockEditorManager,
-        protected readonly breakpoints: BreakpointManager,
-        protected readonly labelProvider: LabelProvider,
-        protected readonly messages: MessageClient,
-        protected readonly outputChannelManager: OutputChannelManager,
-        protected readonly connectionProvider: WebSocketConnectionProvider,
-        protected readonly debugPreferences: DebugPreferences,
-        protected readonly fileSystem: FileSystem,
-    ) {
+    readonly terminalService: TerminalService;
+    readonly editorManager: MockEditorManager;
+    readonly breakpoints: BreakpointManager;
+    readonly labelProvider: LabelProvider;
+    readonly messages: MessageClient;
+    readonly outputChannelManager: OutputChannelManager;
+    readonly connectionProvider: WebSocketConnectionProvider;
+    readonly debugPreferences: DebugPreferences;
+    readonly fileSystem: FileSystem;
+
+    constructor(services: MockDebugSessionFactoryServices) {
         super();
+        Object.assign(this, services);
     }
 
     get(sessionId: string, options: DebugSessionOptions): DebugSession {

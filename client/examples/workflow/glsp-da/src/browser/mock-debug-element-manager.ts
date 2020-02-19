@@ -15,24 +15,22 @@
  ********************************************************************************/
 import { SetStackFrameAction } from "@glsp/sprotty-client/lib/features/mock-debug/set-stack-frame";
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
-import { inject, injectable, postConstruct } from "inversify";
+import { postConstruct } from "inversify";
 import { IActionDispatcher } from "sprotty";
 import { DiagramWidget } from "sprotty-theia/lib";
 
 import { MockEditorManager } from "./mock-editor-manager";
 
-@injectable()
-export class MockDebugDiagramModifier {
 
+export class MockDebugElementManager {
 
-    protected actionDispatcher: IActionDispatcher;
-    protected viewModel: DebugViewModel;
-    protected editorManager: MockEditorManager;
-
+    private actionDispatcher: IActionDispatcher;
+    readonly viewModel: DebugViewModel;
+    readonly editorManager: MockEditorManager;
 
     constructor(
-        @inject(MockEditorManager) editorManager: MockEditorManager,
-        @inject(DebugViewModel) viewModel: DebugViewModel
+        viewModel: DebugViewModel,
+        editorManager: MockEditorManager
     ) {
         this.viewModel = viewModel;
         this.editorManager = editorManager;

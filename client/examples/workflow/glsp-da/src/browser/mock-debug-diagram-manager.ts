@@ -13,23 +13,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { OpenHandler } from "@theia/core/lib/browser";
-import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
-import { ContainerModule, interfaces } from "inversify";
+import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
+import { inject, injectable } from "inversify";
 
-import { MockDebugDiagramManager } from "./mock-debug-diagram-manager";
 import { MockDebugElementManager } from "./mock-debug-element-manager";
-import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
 import { MockEditorManager } from "./mock-editor-manager";
 
 
-export default new ContainerModule((bind: interfaces.Bind) => {
-    // add your contribution bindings here
+@injectable()
+export class MockDebugDiagramManager {
 
-    bind(DebugSessionContribution).to(MockDebugSessionContribution);
-    bind(MockEditorManager).toSelf().inSingletonScope();
-    bind(MockDebugSessionFactory).toSelf().inSingletonScope();
-    bind(OpenHandler).toService(MockEditorManager);
-    bind(MockDebugDiagramManager).toSelf().inSingletonScope();
-    bind(MockDebugElementManager).toSelf().inSingletonScope();
-});
+    private _mockDebugElementManager: MockDebugElementManager;
+
+    constructor(
+        @inject(MockEditorManager) editorManager: MockEditorManager,
+        @inject(DebugViewModel) viewModel: DebugViewModel
+    ) {
+        this._mockDebugElementManager = new MockDebugElementManager(viewModel, editorManager);
+    }
+
+    get mockDebugElementManager() {
+        return this._mockDebugElementManager;
+    }
+
+}
