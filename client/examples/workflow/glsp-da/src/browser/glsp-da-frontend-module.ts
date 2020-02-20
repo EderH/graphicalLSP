@@ -18,18 +18,19 @@ import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session
 import { ContainerModule, interfaces } from "inversify";
 
 import { MockDebugDiagramManager } from "./mock-debug-diagram-manager";
-import { MockDebugElementManager } from "./mock-debug-element-manager";
 import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
 import { MockEditorManager } from "./mock-editor-manager";
+
 
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here
 
     bind(DebugSessionContribution).to(MockDebugSessionContribution);
+    bind(MockDebugDiagramManager).toSelf().inSingletonScope();
     bind(MockEditorManager).toSelf().inSingletonScope();
     bind(MockDebugSessionFactory).toSelf().inSingletonScope();
     bind(OpenHandler).toService(MockEditorManager);
-    bind(MockDebugDiagramManager).toSelf().inSingletonScope();
-    bind(MockDebugElementManager).toSelf().inSingletonScope();
+
+
 });

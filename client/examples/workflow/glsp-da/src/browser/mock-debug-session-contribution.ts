@@ -32,6 +32,7 @@ import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-servi
 import { inject, injectable } from "inversify";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
+import { MockDebugDiagramManager } from "./mock-debug-diagram-manager";
 import { MockEditorManager } from "./mock-editor-manager";
 
 @injectable()
@@ -49,6 +50,7 @@ export class MockDebugSessionContribution implements DebugSessionContribution {
         @inject(OutputChannelManager) outputChannelManager: OutputChannelManager,
         @inject(DebugPreferences) debugPreferences: DebugPreferences,
         @inject(FileSystem) fileSystem: FileSystem,
+        @inject(MockDebugDiagramManager) _mockDebugDiagramManager: MockDebugDiagramManager
     ) {
         this._mockDebugSessionFactory = new MockDebugSessionFactory({
             terminalService, editorManager, breakpoints, labelProvider,
@@ -87,7 +89,9 @@ export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
     readonly debugPreferences: DebugPreferences;
     readonly fileSystem: FileSystem;
 
-    constructor(services: MockDebugSessionFactoryServices) {
+    constructor(
+        services: MockDebugSessionFactoryServices
+    ) {
         super();
         Object.assign(this, services);
     }

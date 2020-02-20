@@ -13,27 +13,36 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { IActionDispatcher, SetStackFrameAction } from "@glsp/sprotty-client/lib";
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
-import { inject, injectable } from "inversify";
+import { inject, injectable, postConstruct } from "inversify";
+import { DiagramWidget } from "sprotty-theia";
 
-import { MockDebugElementManager } from "./mock-debug-element-manager";
 import { MockEditorManager } from "./mock-editor-manager";
 
 
 @injectable()
 export class MockDebugDiagramManager {
 
-    private _mockDebugElementManager: MockDebugElementManager;
+    private actionDispatcher: IActionDispatcher;
 
-    constructor(
-        @inject(MockEditorManager) editorManager: MockEditorManager,
-        @inject(DebugViewModel) viewModel: DebugViewModel
-    ) {
-        this._mockDebugElementManager = new MockDebugElementManager(viewModel, editorManager);
+    @inject(MockEditorManager) protected readonly editorManager: MockEditorManager;
+    @inject(DebugViewModel) protected readonly viewModel: DebugViewModel;
+
+    @postConstruct()
+    protected init(): void {
+        this.viewModel.onDidChange(() => this.setCurrentStackFrameElement());
     }
 
-    get mockDebugElementManager() {
-        return this._mockDebugElementManager;
+    protected setCurrentStackFrameElement() {
+        const currentEditor = this.editorManager.currentEditor;
+        if (currentEditor && (currentEditor instanceof DiagramWidget)) {
+            this.actionDispatcher = currentEditor.actionDispatcher;
+            if (this.actionDispatcher && this.viewModel.currentFrame) {
+                const elementId = this.viewModel.currentFrame.raw.name;
+                this.actionDispatcher.dispatch(new SetStackFrameAction(elementId));
+            }
+        }
     }
 
 }

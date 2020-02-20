@@ -17,8 +17,7 @@
     "@theia/process": "0.11.0",
     "@theia/terminal": "0.11.0",
     "@theia/typescript": "0.11.0",
-    "@theia/workspace": "0.11.0",
-    "@theia/debug": "0.11.0"
+    "@theia/workspace": "0.11.0"
   },
   "devDependencies": {
     "@theia/cli": "0.11.0"
