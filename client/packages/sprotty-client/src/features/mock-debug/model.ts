@@ -22,5 +22,5 @@ export interface HighlightableElement extends SModelExtension {
 }
 
 export function isHighlightable<T extends SModelElement>(element: T): element is T & HighlightableElement {
-    return element.hasFeature(highlightElementFeature) && 'current' in element;
+    return element.hasFeature(highlightElementFeature);
 }

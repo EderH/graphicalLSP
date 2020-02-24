@@ -21,7 +21,7 @@ import {
     CommandExecutionContext,
     CommandReturn,
     IVNodePostprocessor,
-    mergeStyle,
+    setClass,
     SModelElement,
     TYPES
 } from "sprotty/lib";
@@ -81,7 +81,11 @@ export class ElementHighlighter implements IVNodePostprocessor {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
         if (isHighlightable(element)) {
-            mergeStyle(vnode, { border: '1px solid #bada55' });
+            if (element.current) {
+                setClass(vnode, 'current', true);
+            } else {
+                setClass(vnode, 'current', false);
+            }
         }
         return vnode;
     }
