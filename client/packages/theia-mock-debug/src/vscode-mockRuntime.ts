@@ -21,6 +21,12 @@ import { readFileSync } from "fs";
 
 const Net = require("net");
 
+export interface MockFunctionBreakpoint {
+    id: number;
+    name: string;
+    verified: boolean;
+}
+
 export interface MockBreakpoint {
     id: number;
     line: number;
@@ -66,6 +72,7 @@ export class MockRuntime extends EventEmitter {
 
     // maps from sourceFile to array of Mock breakpoints
     private _breakPoints = new Map<string, MockBreakpoint[]>();
+    private _functionBreakpoints = new Map<number, MockFunctionBreakpoint>();
 
     // since we want to send breakpoint events, we will assign an id to every event
     // so that the frontend can match events with breakpoints.
@@ -151,7 +158,6 @@ export class MockRuntime extends EventEmitter {
             this._stackTrace.push(entry);
         }
         this.sendEvent('onDebuggerMessage', data);
-        console.log(this._stackTrace.length);
     }
 
     public makeInvalid() {
@@ -196,7 +202,9 @@ export class MockRuntime extends EventEmitter {
      * Step to the next/previous non empty line.
      */
     public step(event = 'stopOnStep') {
-        this.sendToServer('step');
+        if (event != 'stopOnEntry') {
+            this.sendToServer('step');
+        }
         this.sendEvent(event);
     }
 
@@ -239,9 +247,23 @@ export class MockRuntime extends EventEmitter {
         };
     }
 
+    public sendBreakpointsToServer() {
+        if (!this._connected) {
+            return;
+        }
+
+        let data = '';
+        this._functionBreakpoints.forEach(bp => {
+            data += bp + "|";
+        });
+
+
+        this.sendToServer('setbp', data);
+    }
+
     /*
-     * Set breakpoint in file with given line.
-     */
+	 * Set breakpoint in file with given line.
+	 */
     public setBreakPoint(path: string, line: number): MockBreakpoint {
 
         const bp = <MockBreakpoint>{ verified: false, line, id: this._breakpointId++ };
@@ -258,10 +280,24 @@ export class MockRuntime extends EventEmitter {
     }
 
     /*
-     * Clear breakpoint in file with given line.
+     * Set breakpoint in file with given line.
      */
+    public setFunctionBreakPoint(breakpoint: string): MockFunctionBreakpoint {
+
+        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint, verified: false }
+
+        this._functionBreakpoints.set(bp.id, bp);
+
+        // this.verifyBreakpoints(path);
+
+        return bp;
+    }
+
+    /*
+	 * Clear breakpoint in file with given line.
+	 */
     public clearBreakPoint(path: string, line: number): MockBreakpoint | undefined {
-        const bps = this._breakPoints.get(path);
+        let bps = this._breakPoints.get(path);
         if (bps) {
             const index = bps.findIndex(bp => bp.line === line);
             if (index >= 0) {
@@ -276,8 +312,8 @@ export class MockRuntime extends EventEmitter {
     /*
      * Clear all breakpoints for file.
      */
-    public clearBreakpoints(path: string): void {
-        this._breakPoints.delete(path);
+    public clearBreakpoints(): void {
+        this._functionBreakpoints.clear();
     }
 
     // private methods

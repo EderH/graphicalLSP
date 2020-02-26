@@ -33,7 +33,7 @@ import {
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { MockBreakpoint, MockRuntime } from "./vscode-mockRuntime";
+import { MockFunctionBreakpoint, MockRuntime } from "./vscode-mockRuntime";
 
 
 
@@ -67,6 +67,8 @@ export class MockDebugSession extends LoggingDebugSession {
 
     private _configurationDone = new Subject();
 
+    private _functionBreakpoints: number[];
+
     /**
      * Creates a new debug adapter that is used for one debug session.
      * We configure the default implementation of a debug adapter here.
@@ -93,7 +95,7 @@ export class MockDebugSession extends LoggingDebugSession {
         this._runtime.on('stopOnException', () => {
             this.sendEvent(new StoppedEvent('exception', MockDebugSession.THREAD_ID));
         });
-        this._runtime.on('breakpointValidated', (bp: MockBreakpoint) => {
+        this._runtime.on('breakpointValidated', (bp: MockFunctionBreakpoint) => {
             this.sendEvent(new BreakpointEvent('changed', <DebugProtocol.Breakpoint>{ verified: bp.verified, id: bp.id }));
         });
         this._runtime.on('output', (text, filePath, line, column) => {
@@ -104,7 +106,6 @@ export class MockDebugSession extends LoggingDebugSession {
             this.sendEvent(e);
         });
         this._runtime.on('onDebuggerMessage', () => {
-            console.log('FIRED');
             this.sendEvent(new Event('onDebuggerMessage'));
         });
         this._runtime.on('end', () => {
@@ -123,6 +124,9 @@ export class MockDebugSession extends LoggingDebugSession {
 
         // the adapter implements the configurationDoneRequest.
         response.body.supportsConfigurationDoneRequest = true;
+
+        // This debug adapter supports function breakpoints.
+        response.body.supportsFunctionBreakpoints = true;
 
         // make VS Code to use 'evaluate' when hovering over source
         // response.body.supportsEvaluateForHovers = true;
@@ -169,7 +173,7 @@ export class MockDebugSession extends LoggingDebugSession {
         const clientLines = args.lines || [];
 
         // clear all breakpoints for this file
-        this._runtime.clearBreakpoints(path);
+        this._runtime.clearBreakpoints();
 
         // set and verify breakpoint locations
         const actualBreakpoints = clientLines.map(l => {
@@ -184,6 +188,28 @@ export class MockDebugSession extends LoggingDebugSession {
             breakpoints: actualBreakpoints
         };
         this.sendResponse(response);
+    }
+
+    protected setFunctionBreakPointsRequest(response: DebugProtocol.SetFunctionBreakpointsResponse, args: DebugProtocol.SetFunctionBreakpointsArguments): void {
+
+        // clear all existing function breakpoints
+        this._runtime.clearBreakpoints();
+
+        this._functionBreakpoints.length = 0;   // clear array
+
+        // set new function breakpoints
+        const actualBreakpoints = args.breakpoints.map(functionBreakpoint => {
+            const { id, verified } = this._runtime.setFunctionBreakPoint(functionBreakpoint.name);
+            const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
+            bp.id = id;
+            return bp;
+        });
+
+        response.body = {
+            breakpoints: actualBreakpoints
+        };
+        this.sendResponse(response);
+
     }
 
     protected threadsRequest(response: DebugProtocol.ThreadsResponse): void {
