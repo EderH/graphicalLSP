@@ -18,11 +18,12 @@ import "../../../css/command-palette.css";
 import { ContainerModule } from "inversify";
 import { configureCommand, TYPES } from "sprotty/lib";
 
-import { ElementHighlighter, SetStackFrameCommand } from "./set-stack-frame";
+import { AnnotateStackCommand, ClearStackAnnotationCommand, ElementHighlighter } from "./set-stack-frame";
 
 
 const glspMockDebugModule = new ContainerModule((bind, _unbind, isBound) => {
-    configureCommand({ bind, isBound }, SetStackFrameCommand);
+    configureCommand({ bind, isBound }, AnnotateStackCommand);
+    configureCommand({ bind, isBound }, ClearStackAnnotationCommand);
     bind(TYPES.IVNodePostprocessor).to(ElementHighlighter).inSingletonScope();
 });
 

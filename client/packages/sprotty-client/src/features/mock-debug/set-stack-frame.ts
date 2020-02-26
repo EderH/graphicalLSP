@@ -17,48 +17,90 @@ import { inject, injectable } from "inversify";
 import { VNode } from "snabbdom/vnode";
 import {
     Action,
-    Command,
     CommandExecutionContext,
     CommandReturn,
     IVNodePostprocessor,
     setClass,
     SModelElement,
+    SystemCommand,
     TYPES
 } from "sprotty/lib";
 
 import { HighlightableElement, isHighlightable } from "./model";
 
 
-export class SetStackFrameAction implements Action {
-    static readonly KIND = 'setStackFrame';
-    kind = SetStackFrameAction.KIND;
-    constructor(readonly elementId: string) {
-    }
+export class AnnotateStackAction implements Action {
+    static readonly KIND = 'annotateStack';
+    kind = AnnotateStackAction.KIND;
+    constructor(readonly elementID: string) { }
 }
 
-export class ResolvedSetStackFrame {
+export class ClearStackAnnotationAction implements Action {
+    static readonly KIND = 'clearStackAnnotation';
+    kind = ClearStackAnnotationAction.KIND;
+    constructor(readonly elementID: string) { }
+}
+
+export class ResolvedAnnotateStack {
     element: HighlightableElement;
 }
 
 @injectable()
-export class SetStackFrameCommand extends Command {
+export class AnnotateStackCommand extends SystemCommand {
 
-    static readonly KIND = SetStackFrameAction.KIND;
+    static readonly KIND = AnnotateStackAction.KIND;
 
     constructor(
-        @inject(TYPES.Action) public action: SetStackFrameAction
+        @inject(TYPES.Action) public action: AnnotateStackAction
     ) {
         super();
     }
 
-    resolvedSetStackFrame: ResolvedSetStackFrame;
+    resolvedAnnotateStack: ResolvedAnnotateStack;
 
     execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
-        const element = index.getById(this.action.elementId);
+        const element = index.getById(this.action.elementID);
+        if (element && isHighlightable(element)) {
+            this.resolvedAnnotateStack = { element };
+            element.current = !element.current;
+        }
+        return context.root;
+    }
+
+    undo(context: CommandExecutionContext): CommandReturn {
+        if (this.resolvedAnnotateStack) {
+            this.resolvedAnnotateStack.element.current = !this.resolvedAnnotateStack.element.current;
+        }
+        return context.root;
+    }
+
+    redo(context: CommandExecutionContext): CommandReturn {
+        return this.execute(context);
+    }
+
+}
+
+@injectable()
+export class ClearStackAnnotationCommand extends SystemCommand {
+
+    static readonly KIND = ClearStackAnnotationAction.KIND;
+
+    constructor(
+        @inject(TYPES.Action) public action: ClearStackAnnotationAction
+    ) {
+        super();
+    }
+
+    resolvedSetStackFrame: ResolvedAnnotateStack;
+
+    execute(context: CommandExecutionContext): CommandReturn {
+        const index = context.root.index;
+        const element = index.getById(this.action.elementID);
         if (element && isHighlightable(element)) {
             this.resolvedSetStackFrame = { element };
             element.current = !element.current;
+
         }
         return context.root;
     }
@@ -80,12 +122,8 @@ export class SetStackFrameCommand extends Command {
 export class ElementHighlighter implements IVNodePostprocessor {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
-        if (isHighlightable(element)) {
-            if (element.current) {
-                setClass(vnode, 'current', true);
-            } else {
-                setClass(vnode, 'current', false);
-            }
+        if (isHighlightable(element) && element.current) {
+            setClass(vnode, 'current', true);
         }
         return vnode;
     }

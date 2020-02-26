@@ -78,8 +78,8 @@
       ],
       "type": "task:manual",
       "position": {
-        "x": 345.5989120807019,
-        "y": 248.32814879841925
+        "x": 483.8491129306867,
+        "y": 182.93954028829143
       },
       "size": {
         "width": 101.90625,
@@ -250,8 +250,8 @@
       ],
       "type": "task:manual",
       "position": {
-        "x": 678.0138549804688,
-        "y": 320.00694274902344
+        "x": 1164.280745148876,
+        "y": 178.85269419415312
       },
       "size": {
         "width": 115.21875,
@@ -336,8 +336,8 @@
       ],
       "type": "task:manual",
       "position": {
-        "x": 919.0138549804688,
-        "y": 448.00694274902344
+        "x": 1453.3321988060854,
+        "y": 253.70936317607226
       },
       "size": {
         "width": 129.15625,
@@ -422,8 +422,8 @@
       ],
       "type": "task:manual",
       "position": {
-        "x": 1278.0138549804688,
-        "y": 256.00694274902344
+        "x": 1731.9976226364993,
+        "y": 177.54061253687007
       },
       "size": {
         "width": 103.15625,
@@ -508,8 +508,8 @@
       ],
       "type": "task:manual",
       "position": {
-        "x": 921.0138549804688,
-        "y": 325.00694274902344
+        "x": 1446.4281225934396,
+        "y": 98.5181180245676
       },
       "size": {
         "width": 126.34375,
@@ -723,8 +723,8 @@
       "id": "activityNode2",
       "type": "activityNode:decision",
       "position": {
-        "x": 833.0138549804688,
-        "y": 335.00694274902344
+        "x": 1360.9545346157513,
+        "y": 185.1162022792886
       },
       "size": {
         "width": 32.0,
@@ -746,8 +746,8 @@
       "id": "activityNode4",
       "type": "activityNode:merge",
       "position": {
-        "x": 1099.0138549804688,
-        "y": 336.00694274902344
+        "x": 1623.9909690189227,
+        "y": 186.54726615444565
       },
       "size": {
         "width": 32.0,
@@ -796,54 +796,10 @@
       "targetId": "task9"
     },
     {
-      "nodeType": "forkNode",
-      "id": "bb2709f5-0ff0-4438-8853-b7e934b506d7",
-      "type": "activityNode:fork",
-      "position": {
-        "x": 542.9201049804688,
-        "y": 251.0
-      },
-      "size": {
-        "width": 10.0,
-        "height": 50.0
-      }
-    },
-    {
-      "id": "d34c37e0-e45e-4cfe-a76f-0e9274ed8e60",
-      "type": "edge",
-      "sourceId": "task0",
-      "targetId": "bb2709f5-0ff0-4438-8853-b7e934b506d7"
-    },
-    {
-      "id": "ce77c929-f358-4a13-97c4-62c6792a644c",
-      "type": "edge",
-      "sourceId": "bb2709f5-0ff0-4438-8853-b7e934b506d7",
-      "targetId": "task8"
-    },
-    {
       "id": "e346b1f6-dec9-40a5-a838-22dae399b8e9",
       "type": "edge",
       "sourceId": "task8",
       "targetId": "b00fc494-0fa4-4448-8bf9-162c2c0865e4"
-    },
-    {
-      "id": "5eeaa218-ad56-4052-8b28-bbc08d82ed34",
-      "type": "edge",
-      "sourceId": "bb2709f5-0ff0-4438-8853-b7e934b506d7",
-      "targetId": "task2"
-    },
-    {
-      "nodeType": "joinNode",
-      "id": "bd94e44e-19f9-446e-89d4-97ca1a63c17b",
-      "type": "activityNode:join",
-      "position": {
-        "x": 1219.0,
-        "y": 256.0
-      },
-      "size": {
-        "width": 10.0,
-        "height": 50.0
-      }
     },
     {
       "id": "2f57af4e-2960-496e-992d-03c8b021d81a",
@@ -858,22 +814,22 @@
       "targetId": "task3"
     },
     {
-      "id": "7296b4a8-55c6-4c61-bddb-deacae77efa6",
+      "id": "c8d5a7ad-fea3-4b5a-b2f1-2c646ef91ad6",
       "type": "edge",
       "sourceId": "activityNode1",
-      "targetId": "bd94e44e-19f9-446e-89d4-97ca1a63c17b"
+      "targetId": "task2"
     },
     {
-      "id": "0471cae4-c754-4e89-8337-96ed1546dd02",
+      "id": "f17e82f0-5d3b-4e4d-891e-454831018d04",
       "type": "edge",
       "sourceId": "activityNode4",
-      "targetId": "bd94e44e-19f9-446e-89d4-97ca1a63c17b"
+      "targetId": "task4"
     },
     {
-      "id": "2c3ec34b-291c-43ef-bdf9-035afc4764e6",
+      "id": "7e9818ee-e24b-4941-8a9c-4c52f2296b26",
       "type": "edge",
-      "sourceId": "bd94e44e-19f9-446e-89d4-97ca1a63c17b",
-      "targetId": "task4"
+      "sourceId": "task0",
+      "targetId": "task8"
     }
   ],
   "type": "graph"

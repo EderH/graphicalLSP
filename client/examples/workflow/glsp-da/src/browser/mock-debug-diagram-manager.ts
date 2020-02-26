@@ -13,12 +13,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { IActionDispatcher, SetStackFrameAction } from "@glsp/sprotty-client/lib";
+import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatcher } from "@glsp/sprotty-client/lib";
 import { DebugFrontendApplicationContribution } from "@theia/debug/lib/browser/debug-frontend-application-contribution";
 import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-manager";
 import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
 import { inject, injectable, postConstruct } from "inversify";
-import { DiagramWidget } from "sprotty-theia";
 
 import { MockEditorManager } from "./mock-editor-manager";
 
@@ -32,31 +31,30 @@ export class MockDebugDiagramManager {
     @inject(MockEditorManager) protected readonly editorManager: MockEditorManager;
     @inject(DebugFrontendApplicationContribution) protected readonly debugFrontend: DebugFrontendApplicationContribution;
     @inject(DebugSessionManager) protected readonly debugManager: DebugSessionManager;
-    // @inject(DebugViewModel) protected readonly viewModel: DebugViewModel;
-    protected currentFrame: DebugStackFrame;
+    private currentFrame: DebugStackFrame;
 
     @postConstruct()
     protected init(): void {
-        console.log("Selected Frame: " + this.debugFrontend.selectedFrame);
-        // this.debugManager.onDidChangeActiveDebugSession(() => console.log("CHANGE"));
         this.debugManager.onDidStartDebugSession(
             current => current.onDidChange(() => {
                 if (current.currentFrame && (this.currentFrame !== current.currentFrame)) {
+                    if (this.currentFrame) {
+                        this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
+                    }
                     this.currentFrame = current.currentFrame;
-                    this.setCurrentStackFrameElement();
+                    this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
                 }
             }));
+        this.debugManager.onDidDestroyDebugSession(() => this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name)));
     }
 
-    protected setCurrentStackFrameElement() {
+    protected sendAction(action: Action) {
         const currentEditor = this.editorManager.currentDiagramEditor;
-        if (currentEditor && (currentEditor instanceof DiagramWidget)) {
+        if (currentEditor) {
             this.actionDispatcher = currentEditor.actionDispatcher;
             if (this.actionDispatcher) {
-                const elementId = this.currentFrame.raw.name;
-                this.actionDispatcher.dispatch(new SetStackFrameAction(elementId));
+                this.actionDispatcher.dispatch(action);
             }
         }
     }
-
 }

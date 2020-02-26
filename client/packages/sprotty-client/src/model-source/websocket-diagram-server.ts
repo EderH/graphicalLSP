@@ -31,7 +31,6 @@ import { SaveModelAction } from "../features/save/save";
 import { GlspRedoAction, GlspUndoAction } from "../features/undo-redo/model";
 import { RequestMarkersAction } from "../features/validation/validate";
 import { ValidateLabelEditAction } from "../features/edit-label-validation/edit-label-validator";
-import { SetStackFrameAction } from "../features/mock-debug/set-stack-frame";
 
 @injectable()
 export class GLSPWebsocketDiagramServer extends DiagramServer {
@@ -104,7 +103,6 @@ export function registerDefaultGLSPServerActions(registry: ActionHandlerRegistry
     registry.register(RequestMarkersAction.KIND, diagramServer);
     registry.register(LayoutAction.KIND, diagramServer);
     registry.register(ApplyLabelEditAction.KIND, diagramServer);
-    registry.register(SetStackFrameAction.KIND, diagramServer);
 
     // Register an empty handler for SwitchEditMode, to avoid runtime exceptions.
     // We don't want to support SwitchEditMode, but sprotty still sends some corresponding
