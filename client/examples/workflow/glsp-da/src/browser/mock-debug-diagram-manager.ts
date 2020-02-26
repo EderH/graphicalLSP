@@ -13,12 +13,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatcher } from "@glsp/sprotty-client/lib";
 import { DebugFrontendApplicationContribution } from "@theia/debug/lib/browser/debug-frontend-application-contribution";
 import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-manager";
-import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
 import { inject, injectable, postConstruct } from "inversify";
 
+import { AnnotateStack } from "./annotate-stack";
 import { MockEditorManager } from "./mock-editor-manager";
 
 
@@ -26,35 +25,26 @@ import { MockEditorManager } from "./mock-editor-manager";
 @injectable()
 export class MockDebugDiagramManager {
 
-    private actionDispatcher: IActionDispatcher;
 
-    @inject(MockEditorManager) protected readonly editorManager: MockEditorManager;
     @inject(DebugFrontendApplicationContribution) protected readonly debugFrontend: DebugFrontendApplicationContribution;
     @inject(DebugSessionManager) protected readonly debugManager: DebugSessionManager;
-    private currentFrame: DebugStackFrame;
+    @inject(MockEditorManager) protected readonly editorManager: MockEditorManager;
+
+    private sessions = new Map<string, AnnotateStack>();
 
     @postConstruct()
     protected init(): void {
         this.debugManager.onDidStartDebugSession(
-            current => current.onDidChange(() => {
-                if (current.currentFrame && (this.currentFrame !== current.currentFrame)) {
-                    if (this.currentFrame) {
-                        this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
-                    }
-                    this.currentFrame = current.currentFrame;
-                    this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
-                }
-            }));
-        this.debugManager.onDidDestroyDebugSession(() => this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name)));
-    }
+            session => {
+                this.sessions.set(session.id, new AnnotateStack(session, this.editorManager));
+            });
 
-    protected sendAction(action: Action) {
-        const currentEditor = this.editorManager.currentDiagramEditor;
-        if (currentEditor) {
-            this.actionDispatcher = currentEditor.actionDispatcher;
-            if (this.actionDispatcher) {
-                this.actionDispatcher.dispatch(action);
+        this.debugManager.onDidDestroyDebugSession(session => {
+            const annotateStack = this.sessions.get(session.id);
+            if (annotateStack) {
+                annotateStack.clearAnnotationSet();
             }
-        }
+            this.sessions.delete(session.id);
+        });
     }
 }

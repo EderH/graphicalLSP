@@ -62,8 +62,8 @@ export class AnnotateStackCommand extends SystemCommand {
         const index = context.root.index;
         const element = index.getById(this.action.elementID);
         if (element && isHighlightable(element)) {
+            element.current = true;
             this.resolvedAnnotateStack = { element };
-            element.current = !element.current;
         }
         return context.root;
     }
@@ -98,9 +98,8 @@ export class ClearStackAnnotationCommand extends SystemCommand {
         const index = context.root.index;
         const element = index.getById(this.action.elementID);
         if (element && isHighlightable(element)) {
+            element.current = false;
             this.resolvedSetStackFrame = { element };
-            element.current = !element.current;
-
         }
         return context.root;
     }
