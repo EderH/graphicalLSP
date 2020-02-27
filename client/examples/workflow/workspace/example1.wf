@@ -830,6 +830,98 @@
       "type": "edge",
       "sourceId": "task0",
       "targetId": "task8"
+    },
+    {
+      "name": "ManualTask10",
+      "taskType": "manual",
+      "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5",
+      "children": [
+        {
+          "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_header",
+          "children": [
+            {
+              "commandId": "simulate-command",
+              "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_icon",
+              "children": [
+                {
+                  "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_ticon",
+                  "type": "label:icon",
+                  "position": {
+                    "x": 7.65625,
+                    "y": 4.796875
+                  },
+                  "size": {
+                    "width": 16.6875,
+                    "height": 22.40625
+                  },
+                  "text": "M",
+                  "alignment": {
+                    "x": 8.34375,
+                    "y": 18.40625
+                  }
+                }
+              ],
+              "type": "icon",
+              "position": {
+                "x": 5.0,
+                "y": 5.0
+              },
+              "size": {
+                "width": 32.0,
+                "height": 32.0
+              },
+              "layout": "stack",
+              "layoutOptions": {
+                "resizeContainer": false,
+                "hAlign": "center"
+              }
+            },
+            {
+              "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_classname",
+              "type": "label:heading",
+              "position": {
+                "x": 38.0,
+                "y": 9.796875
+              },
+              "size": {
+                "width": 135.328125,
+                "height": 22.40625
+              },
+              "text": "ManualTask10",
+              "alignment": {
+                "x": 67.625,
+                "y": 18.40625
+              }
+            }
+          ],
+          "type": "comp:header",
+          "position": {
+            "x": 5.0,
+            "y": 5.0
+          },
+          "size": {
+            "width": 178.328125,
+            "height": 42.0
+          },
+          "layout": "hbox"
+        }
+      ],
+      "type": "task:manual",
+      "position": {
+        "x": 1923.806806423696,
+        "y": 178.84558082985166
+      },
+      "size": {
+        "width": 188.328125,
+        "height": 52.0
+      },
+      "layout": "vbox"
+    },
+    {
+      "id": "178ae762-92d3-44f9-b6ea-670595834529",
+      "type": "edge",
+      "sourceId": "task4",
+      "targetId": "2be6b41e-a57f-423e-bea6-74f1c984d0e5"
     }
   ],
   "type": "graph"

@@ -47,14 +47,17 @@ export class MockRuntime extends EventEmitter {
 
 
     private debugger = new Net.Socket();
-    private host = '127.0.0.1';
-    private port = 5056;
+    private _host = '127.0.0.1';
+    private _port = 5056;
+    private _connectType = 'sockets';
+    private _serverBase = '';
 
     private _connected = false;
     private _isValid = true;
-
+    private _isException = false;
     // the initial (and one and only) file we are 'debugging'
     private _sourceFile!: string;
+
 
     public get sourceFile() {
         return this._sourceFile;
@@ -87,7 +90,17 @@ export class MockRuntime extends EventEmitter {
     /**
      * Start executing the given program.
      */
-    public start(program: string, stopOnEntry: boolean) {
+    public start(program: string, stopOnEntry: boolean, connectType: string,
+        host: string, port: number, serverBase = "") {
+
+        this._connectType = connectType;
+        this._host = host;
+        this._port = port;
+        this._serverBase = serverBase;
+
+        if (host === "127.0.0.1") {
+            this._serverBase = "";
+        }
 
         // this.loadSource(program);
         // this._currentLine = -1;
@@ -110,28 +123,36 @@ export class MockRuntime extends EventEmitter {
         if (this._connected) {
             return;
         }
-        const serverFilename = "example1.wf";
-        this.debugger.connect(this.port, this.host, () => {
-            this._connected = true;
-            this.debugger.setEncoding('utf8');
-            console.log("Connected to " + this.host + ":" + this.port);
-            this.sendEvent('onStatusChange', 'CSCS: Connected to ' + this.host + ":" + this.port);
-            this.sendToServer('file', serverFilename);
-            for (let i = 0; i < this._queuedCommands.length; i++) {
-                this.sendToServer(this._queuedCommands[i]);
-            }
-            this._queuedCommands.length = 0;
-        });
 
-        this.debugger.on('data', (data: string) => {
-            this.processFromDebugger(data);
-            console.log('Received: ' + data.replace(/\s/g, ""));
-        });
+        if (this._connectType === "sockets") {
+            //const serverFilename = "example1.wf";
+            this.debugger.connect(this._port, this._host, () => {
+                this._connected = true;
+                this.debugger.setEncoding('utf8');
+                console.log("Connected to " + this._host + ":" + this._port);
 
-        this.debugger.on('close', () => {
-            this._connected = false;
-            console.log('Connection closed');
-        });
+                if (this._sourceFile !== '') {
+                    let serverFilename = this.getServerPath(this._sourceFile);
+                    if (serverFilename !== undefined && serverFilename !== '') {
+                        this.sendToServer('file', serverFilename);
+                    }
+                }
+                for (let i = 0; i < this._queuedCommands.length; i++) {
+                    this.sendToServer(this._queuedCommands[i]);
+                }
+                this._queuedCommands.length = 0;
+            });
+
+            this.debugger.on('data', (data: string) => {
+                this.processFromDebugger(data);
+                console.log('Received: ' + data.replace(/\s/g, ""));
+            });
+
+            this.debugger.on('close', () => {
+                this._connected = false;
+                console.log('Connection closed');
+            });
+        }
     }
 
     public processFromDebugger(data: string) {
@@ -140,24 +161,34 @@ export class MockRuntime extends EventEmitter {
         }
         // this.sendEvent('output', data.toString().trim(), "", -1, '\n');
         const index = data.indexOf('|');
-        let cmd: string = '';
-        let element: string = '';
+        let command: string = '';
+        let response: string = '';
         if (index >= 0) {
-            element = (index < data.length - 1 ? data.substring(index + 1) : '').trim();
-
-            cmd = data.substring(0, index).trim();
+            response = (index < data.length - 1 ? data.substring(index + 1) : '').trim();
+            command = data.substring(0, index).trim();
         }
-        console.log("cmd: " + cmd + "   element: " + element);
+        console.log("command: " + command + "   response: " + response);
 
-        if (cmd === 'end') {
-            this.sendEvent('end');
+        if (command === 'end') {
+            this.disconnectFromDebugger();
+            return;
         }
-        if (cmd === 'stack' || cmd === 'next') {
+
+        if (command === 'next') {
+            //this.sendEvent('onDebuggerMessage', data);
+            this.sendEvent('stopOnStep');
+        }
+
+        if (command === 'vars' || command === 'next') {
+
+        }
+
+        if (command === 'stack' || command === 'next') {
             let id = 0;
-            const entry = <StackEntry>{ id: ++id, line: 0, name: element, file: this._sourceFile };
+            const entry = <StackEntry>{ id: ++id, line: 0, name: response, file: this._sourceFile };
             this._stackTrace.push(entry);
         }
-        this.sendEvent('onDebuggerMessage', data);
+
     }
 
     public makeInvalid() {
@@ -178,9 +209,9 @@ export class MockRuntime extends EventEmitter {
         this.makeInvalid();
     }
 
-    public sendToServer(cmd: string, data = "") {
-        let message = cmd;
-        if (data !== '' || cmd.indexOf('|') < 0) {
+    public sendToServer(command: string, data = "") {
+        let message = command;
+        if (data !== '' || command.indexOf('|') < 0) {
             message += ' | ' + data;
         }
         console.log(message);
@@ -195,6 +226,9 @@ export class MockRuntime extends EventEmitter {
      * Continue execution to the end/beginning.
      */
     public continue() {
+        if (!this.verifyDebug(this._sourceFile)) {
+            return;
+        }
         this.sendToServer('continue');
     }
 
@@ -202,10 +236,28 @@ export class MockRuntime extends EventEmitter {
      * Step to the next/previous non empty line.
      */
     public step(event = 'stopOnStep') {
-        if (event != 'stopOnEntry') {
+        if (!this.verifyDebug(this._sourceFile)) {
+            return;
+        }
+        if (event == 'stopOnEntry') {
+            this.sendEvent(event);
+        } else {
             this.sendToServer('step');
         }
-        this.sendEvent(event);
+    }
+
+    private verifyException(): boolean {
+        if (this._isException) {
+            this.disconnectFromDebugger();
+            return false;
+        }
+        return true;
+    }
+
+    public verifyDebug(file: string): boolean {
+        return this.verifyException() && file !== null &&
+            typeof file !== 'undefined' &&
+            (file.endsWith('wf'));
     }
 
     /**
@@ -322,6 +374,13 @@ export class MockRuntime extends EventEmitter {
         if (this._sourceFile !== file) {
             this._sourceFile = file;
             this._sourceLines = readFileSync(this._sourceFile).toString().split('\n');
+        }
+    }
+
+    getServerPath(pathname: string) {
+        // TODO serverbase
+        if (this._serverBase === "") {
+            return pathname;
         }
     }
 

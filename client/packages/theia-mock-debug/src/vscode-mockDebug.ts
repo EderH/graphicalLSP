@@ -51,6 +51,10 @@ interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
     program: string;
     /** Automatically stop target after launch. If not specified, target does not stop. */
     stopOnEntry?: boolean;
+    connectType?: string;
+    serverPort?: number;
+    serverHost?: string;
+    serverBase?: string;
     /** enable logging the Debug Adapter Protocol */
     trace?: boolean;
 }
@@ -161,8 +165,13 @@ export class MockDebugSession extends LoggingDebugSession {
         // wait until configuration has finished (and configurationDoneRequest has been called)
         await this._configurationDone.wait(1000);
 
+        let connectType = args.connectType ? args.connectType : "sockets";
+        let host = args.serverHost ? args.serverHost : "127.0.0.1";
+        let port = args.serverPort ? args.serverPort : 5056;
+        let base = args.serverBase ? args.serverBase : "";
+
         // start the program in the runtime
-        this._runtime.start(args.program, !!args.stopOnEntry);
+        this._runtime.start(args.program, !!args.stopOnEntry, connectType, host, port, base);
 
         this.sendResponse(response);
     }

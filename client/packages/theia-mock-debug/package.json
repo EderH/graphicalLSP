@@ -51,6 +51,31 @@
                 "type": "boolean",
                 "description": "Automatically stop after launch.",
                 "default": true
+              },
+              "connectType": {
+                "type": "string",
+                "description": "Type of connection to the Debugger",
+                "default": "sockets"
+              },
+              "serverPort": {
+                "type": "number",
+                "description": "Number of the server port to connect to.",
+                "default": 5056
+              },
+              "serverHost": {
+                "type": "string",
+                "description": "Name of the server host to connect to.",
+                "default": "127.0.0.1"
+              },
+              "serverBase": {
+                "type": "string",
+                "description": "Server base path.",
+                "default": ""
+              },
+              "trace": {
+                "type": "boolean",
+                "description": "Enable logging of the Debug Adapter Protocol.",
+                "default": true
               }
             }
           }
