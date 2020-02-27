@@ -38,11 +38,16 @@ export class MockDebugDiagramManager {
             session => {
                 this.sessions.set(session.id, new AnnotateStack(session, this.editorManager));
             });
-
+        /*this.debugManager.onDidStopDebugSession(session => {
+            const annotateStack = this.sessions.get(session.id);
+            if (annotateStack) {
+                annotateStack.annotateStack();
+            }
+        });*/
         this.debugManager.onDidDestroyDebugSession(session => {
             const annotateStack = this.sessions.get(session.id);
             if (annotateStack) {
-                annotateStack.clearAnnotationSet();
+                annotateStack.clearStackAnnotation();
             }
             this.sessions.delete(session.id);
         });

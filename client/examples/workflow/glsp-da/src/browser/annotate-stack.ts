@@ -31,15 +31,7 @@ export class AnnotateStack {
     constructor(session: DebugSession, editorManager: MockEditorManager) {
         this.session = session;
         this.editorManager = editorManager;
-        this.session.onDidChange(() => {
-            if (this.session.currentFrame && (this.currentFrame !== this.session.currentFrame)) {
-                if (this.currentFrame) {
-                    this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
-                }
-                this.currentFrame = this.session.currentFrame;
-                this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
-            }
-        });
+        this.session.onDidChange(() => this.annotateStack());
     }
 
 
@@ -53,7 +45,17 @@ export class AnnotateStack {
         }
     }
 
-    public clearAnnotationSet() {
+    public annotateStack() {
+        if (this.session.currentFrame && (this.currentFrame !== this.session.currentFrame)) {
+            if (this.currentFrame) {
+                this.clearStackAnnotation();
+            }
+            this.currentFrame = this.session.currentFrame;
+            this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
+        }
+    }
+
+    public clearStackAnnotation() {
         this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
     }
 }
