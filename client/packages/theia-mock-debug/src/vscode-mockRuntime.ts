@@ -17,6 +17,7 @@ import "reflect-metadata";
 
 import { EventEmitter } from "events";
 import { readFileSync } from "fs";
+import { DebugProtocol } from "vscode-debugprotocol";
 
 
 const Net = require("net");
@@ -51,6 +52,16 @@ export class MockRuntime extends EventEmitter {
     private _port = 5056;
     private _connectType = 'sockets';
     private _serverBase = '';
+
+    private _localVariables = new Array<DebugProtocol.Variable>();
+    public get localVariables() {
+        return this._localVariables;
+    }
+
+    private _globalVariables = new Array<DebugProtocol.Variable>();
+    public get globalVariables() {
+        return this._globalVariables;
+    }
 
     private _connected = false;
     private _isValid = true;
@@ -160,35 +171,101 @@ export class MockRuntime extends EventEmitter {
             return;
         }
         // this.sendEvent('output', data.toString().trim(), "", -1, '\n');
-        const index = data.indexOf('|');
-        let command: string = '';
-        let response: string = '';
-        if (index >= 0) {
+        //const index = data.indexOf('|');
+        let lines = data.split('\n');
+        let command = lines[0];
+        let startVarsData = 1;
+        let startStackData = 1;
+
+        /*if (index >= 0) {
             response = (index < data.length - 1 ? data.substring(index + 1) : '').trim();
             command = data.substring(0, index).trim();
-        }
-        console.log("command: " + command + "   response: " + response);
+        }*/
+        console.log("command: " + command + "   response: " + lines.toString());
+
 
         if (command === 'end') {
             this.disconnectFromDebugger();
             return;
         }
 
+        if (command === 'vars' || command === 'next' || command === 'exc') {
+            this._localVariables.length = 0;
+            this._globalVariables.length = 0;
+        }
+
+        if (command === 'exc') {
+            this.sendEvent('stopOnException');
+            this._isException = true;
+
+            let msg = lines.length < 2 ? '' : lines[1];
+            let headerMsg = 'Exception thrown. ' + msg + ' ';
+            if (this._stackTrace.length < 1) {
+                console.log(headerMsg);
+            } else {
+                let entry = this._stackTrace[0];
+                console.log(headerMsg, entry.file, entry.name);
+            }
+            return;
+        }
+
         if (command === 'next') {
-            //this.sendEvent('onDebuggerMessage', data);
+            startVarsData++;
             this.sendEvent('stopOnStep');
         }
 
         if (command === 'vars' || command === 'next') {
-
+            let nbVarsLines = Number(lines[startVarsData]);
+            this.fillVars(lines, startVarsData, nbVarsLines);
+            startStackData = startVarsData + nbVarsLines + 1;
         }
 
         if (command === 'stack' || command === 'next') {
-            let id = 0;
-            const entry = <StackEntry>{ id: ++id, line: 0, name: response, file: this._sourceFile };
-            this._stackTrace.push(entry);
+            this.fillStackTrace(lines, startStackData);
         }
 
+    }
+
+    fillVars(lines: string[], startVarsData: number, nbVarsLines: number) {
+        let counter = 0;
+        for (let i = startVarsData + 1; i < lines.length && counter < nbVarsLines; i++) {
+            counter++;
+            let line = lines[i];
+            let tokens = line.split(':');
+            if (tokens.length < 4) {
+                continue;
+            }
+            let name = tokens[0];
+            let globLoc = tokens[1];
+            let type = tokens[2];
+            let value = tokens.slice(3).join(':').trimRight();
+            if (type === 'string') {
+                value = '"' + value + '"';
+            }
+            let item = {
+                name: name,
+                type: type,
+                value: value,
+                variablesReference: 0
+            }
+            if (globLoc === '1') {
+                this._globalVariables.push(item);
+            } else {
+                this._localVariables.push(item);
+            }
+        }
+    }
+
+    fillStackTrace(lines: string[], start = 0): void {
+        let id = 0;
+        console.log("Lines:" + lines.length + " start: " + start);
+        this._stackTrace.length = 0;
+        for (let i = start; i < lines.length; i++) {
+            let line = lines[i].trim();
+            console.log("Line:" + line);
+            const entry = <StackEntry>{ id: ++id, line: 0, name: line, file: this._sourceFile };
+            this._stackTrace.push(entry);
+        }
     }
 
     public makeInvalid() {

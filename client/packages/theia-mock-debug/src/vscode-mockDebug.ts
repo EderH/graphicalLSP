@@ -71,7 +71,7 @@ export class MockDebugSession extends LoggingDebugSession {
 
     private _configurationDone = new Subject();
 
-    private _functionBreakpoints: number[];
+    private _localScope = 0;
 
     /**
      * Creates a new debug adapter that is used for one debug session.
@@ -204,8 +204,6 @@ export class MockDebugSession extends LoggingDebugSession {
         // clear all existing function breakpoints
         this._runtime.clearBreakpoints();
 
-        this._functionBreakpoints.length = 0;   // clear array
-
         // set new function breakpoints
         const actualBreakpoints = args.breakpoints.map(functionBreakpoint => {
             const { id, verified } = this._runtime.setFunctionBreakPoint(functionBreakpoint.name);
@@ -254,6 +252,8 @@ export class MockDebugSession extends LoggingDebugSession {
         scopes.push(new Scope("Local", this._variableHandles.create("local_" + frameReference), false));
         scopes.push(new Scope("Global", this._variableHandles.create("global_" + frameReference), true));
 
+        this._localScope = scopes[0].variablesReference;
+
         response.body = {
             scopes: scopes
         };
@@ -262,7 +262,8 @@ export class MockDebugSession extends LoggingDebugSession {
 
     protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
 
-        const variables = new Array<DebugProtocol.Variable>();
+        let variables = args.variablesReference === this._localScope ? this._runtime.localVariables : this._runtime.globalVariables
+        /*const variables = new Array<DebugProtocol.Variable>();
         const id = this._variableHandles.get(args.variablesReference);
         if (id !== null) {
             variables.push({
@@ -289,7 +290,7 @@ export class MockDebugSession extends LoggingDebugSession {
                 value: "Object",
                 variablesReference: this._variableHandles.create("object_")
             });
-        }
+        }*/
 
         response.body = {
             variables: variables
