@@ -136,14 +136,14 @@ export class MockRuntime extends EventEmitter {
         }
 
         if (this._connectType === "sockets") {
-            //const serverFilename = "example1.wf";
+            // const serverFilename = "example1.wf";
             this.debugger.connect(this._port, this._host, () => {
                 this._connected = true;
                 this.debugger.setEncoding('utf8');
                 console.log("Connected to " + this._host + ":" + this._port);
 
                 if (this._sourceFile !== '') {
-                    let serverFilename = this.getServerPath(this._sourceFile);
+                    const serverFilename = this.getServerPath(this._sourceFile);
                     if (serverFilename !== undefined && serverFilename !== '') {
                         this.sendToServer('file', serverFilename);
                     }
@@ -171,9 +171,9 @@ export class MockRuntime extends EventEmitter {
             return;
         }
         // this.sendEvent('output', data.toString().trim(), "", -1, '\n');
-        //const index = data.indexOf('|');
-        let lines = data.split('\n');
-        let command = lines[0];
+        // const index = data.indexOf('|');
+        const lines = data.split('\n');
+        const command = lines[0];
         let startVarsData = 1;
         let startStackData = 1;
 
@@ -198,12 +198,12 @@ export class MockRuntime extends EventEmitter {
             this.sendEvent('stopOnException');
             this._isException = true;
 
-            let msg = lines.length < 2 ? '' : lines[1];
-            let headerMsg = 'Exception thrown. ' + msg + ' ';
+            const msg = lines.length < 2 ? '' : lines[1];
+            const headerMsg = 'Exception thrown. ' + msg + ' ';
             if (this._stackTrace.length < 1) {
                 console.log(headerMsg);
             } else {
-                let entry = this._stackTrace[0];
+                const entry = this._stackTrace[0];
                 console.log(headerMsg, entry.file, entry.name);
             }
             return;
@@ -215,7 +215,7 @@ export class MockRuntime extends EventEmitter {
         }
 
         if (command === 'vars' || command === 'next') {
-            let nbVarsLines = Number(lines[startVarsData]);
+            const nbVarsLines = Number(lines[startVarsData]);
             this.fillVars(lines, startVarsData, nbVarsLines);
             startStackData = startVarsData + nbVarsLines + 1;
         }
@@ -230,24 +230,24 @@ export class MockRuntime extends EventEmitter {
         let counter = 0;
         for (let i = startVarsData + 1; i < lines.length && counter < nbVarsLines; i++) {
             counter++;
-            let line = lines[i];
-            let tokens = line.split(':');
+            const line = lines[i];
+            const tokens = line.split(':');
             if (tokens.length < 4) {
                 continue;
             }
-            let name = tokens[0];
-            let globLoc = tokens[1];
-            let type = tokens[2];
+            const name = tokens[0];
+            const globLoc = tokens[1];
+            const type = tokens[2];
             let value = tokens.slice(3).join(':').trimRight();
             if (type === 'string') {
                 value = '"' + value + '"';
             }
-            let item = {
+            const item = {
                 name: name,
                 type: type,
                 value: value,
                 variablesReference: 0
-            }
+            };
             if (globLoc === '1') {
                 this._globalVariables.push(item);
             } else {
@@ -261,7 +261,7 @@ export class MockRuntime extends EventEmitter {
         console.log("Lines:" + lines.length + " start: " + start);
         this._stackTrace.length = 0;
         for (let i = start; i < lines.length; i++) {
-            let line = lines[i].trim();
+            const line = lines[i].trim();
             console.log("Line:" + line);
             const entry = <StackEntry>{ id: ++id, line: 0, name: line, file: this._sourceFile };
             this._stackTrace.push(entry);
@@ -316,7 +316,7 @@ export class MockRuntime extends EventEmitter {
         if (!this.verifyDebug(this._sourceFile)) {
             return;
         }
-        if (event == 'stopOnEntry') {
+        if (event === 'stopOnEntry') {
             this.sendEvent(event);
         } else {
             this.sendToServer('step');
@@ -413,7 +413,7 @@ export class MockRuntime extends EventEmitter {
      */
     public setFunctionBreakPoint(breakpoint: string): MockFunctionBreakpoint {
 
-        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint, verified: false }
+        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint, verified: false };
 
         this._functionBreakpoints.set(bp.id, bp);
 
@@ -426,7 +426,7 @@ export class MockRuntime extends EventEmitter {
 	 * Clear breakpoint in file with given line.
 	 */
     public clearBreakPoint(path: string, line: number): MockBreakpoint | undefined {
-        let bps = this._breakPoints.get(path);
+        const bps = this._breakPoints.get(path);
         if (bps) {
             const index = bps.findIndex(bp => bp.line === line);
             if (index >= 0) {

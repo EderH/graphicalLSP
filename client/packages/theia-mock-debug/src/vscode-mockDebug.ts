@@ -165,10 +165,10 @@ export class MockDebugSession extends LoggingDebugSession {
         // wait until configuration has finished (and configurationDoneRequest has been called)
         await this._configurationDone.wait(1000);
 
-        let connectType = args.connectType ? args.connectType : "sockets";
-        let host = args.serverHost ? args.serverHost : "127.0.0.1";
-        let port = args.serverPort ? args.serverPort : 5056;
-        let base = args.serverBase ? args.serverBase : "";
+        const connectType = args.connectType ? args.connectType : "sockets";
+        const host = args.serverHost ? args.serverHost : "127.0.0.1";
+        const port = args.serverPort ? args.serverPort : 5056;
+        const base = args.serverBase ? args.serverBase : "";
 
         // start the program in the runtime
         this._runtime.start(args.program, !!args.stopOnEntry, connectType, host, port, base);
@@ -262,7 +262,7 @@ export class MockDebugSession extends LoggingDebugSession {
 
     protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
 
-        let variables = args.variablesReference === this._localScope ? this._runtime.localVariables : this._runtime.globalVariables
+        const variables = args.variablesReference === this._localScope ? this._runtime.localVariables : this._runtime.globalVariables;
         /*const variables = new Array<DebugProtocol.Variable>();
         const id = this._variableHandles.get(args.variablesReference);
         if (id !== null) {
