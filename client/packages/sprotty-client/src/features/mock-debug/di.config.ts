@@ -13,18 +13,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import "../../../css/command-palette.css";
+import "../../../css/glsp-sprotty.css";
 
 import { ContainerModule } from "inversify";
-import { configureCommand, TYPES } from "sprotty/lib";
+import { configureCommand, configureView, TYPES } from "sprotty/lib";
 
+import { AddBreakpointViewCommand, RemoveBreakpointViewCommand } from "./add-breakpoint-view";
+import { Breakpoint } from "./model";
+import { SetBreakpointCommand, SetBreakpointMouseListener } from "./set-breakpoint";
 import { AnnotateStackCommand, ClearStackAnnotationCommand, ElementHighlighter } from "./set-stack-frame";
+import { BreakpointView } from "./view";
 
 
 const glspMockDebugModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, AnnotateStackCommand);
     configureCommand({ bind, isBound }, ClearStackAnnotationCommand);
+    configureCommand({ bind, isBound }, SetBreakpointCommand);
+    configureCommand({ bind, isBound }, AddBreakpointViewCommand);
+    configureCommand({ bind, isBound }, RemoveBreakpointViewCommand);
+    bind(TYPES.MouseListener).to(SetBreakpointMouseListener);
     bind(TYPES.IVNodePostprocessor).to(ElementHighlighter).inSingletonScope();
+    configureView({ bind, isBound }, Breakpoint.TYPE, BreakpointView);
 });
 
 export default glspMockDebugModule;

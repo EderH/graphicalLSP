@@ -85,6 +85,8 @@ export * from "./model-source/glsp-server-status";
 
 export * from "./features/mock-debug/model";
 export * from "./features/mock-debug/set-stack-frame";
+export * from "./features/mock-debug/set-breakpoint";
+export * from "./features/mock-debug/add-breakpoint-view";
 
 export {
     validationModule, saveModule, executeModule, paletteModule, toolFeedbackModule, defaultGLSPModule, modelHintsModule, glspCommandPaletteModule, requestResponseModule, //

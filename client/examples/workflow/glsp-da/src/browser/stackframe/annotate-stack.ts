@@ -17,7 +17,8 @@ import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatc
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
 
-import { MockEditorManager } from "./mock-editor-manager";
+import { MockEditorManager } from "../mock-editor-manager";
+
 
 
 export class AnnotateStack {

@@ -88,3 +88,13 @@
 .edge-creation-select-target-mode, .edge-reconnect-select-target-mode {
     cursor: crosshair;
 }
+
+.sprotty-checkbox {
+    fill: white;
+    stroke: black;
+    stroke-width: 1px;
+}
+
+.sprotty-checkbox.checked {
+    fill: #f00;
+}

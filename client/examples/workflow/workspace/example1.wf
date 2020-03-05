@@ -422,8 +422,8 @@
       ],
       "type": "task:manual",
       "position": {
-        "x": 1731.9976226364993,
-        "y": 177.54061253687007
+        "x": 1723.9976226364993,
+        "y": 178.54061253687007
       },
       "size": {
         "width": 103.15625,
@@ -832,31 +832,31 @@
       "targetId": "task8"
     },
     {
-      "name": "ManualTask10",
-      "taskType": "manual",
-      "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5",
+      "name": "AutomatedTask10",
+      "taskType": "automated",
+      "id": "63009c1d-dc84-4935-930e-4a7f5601bd25",
       "children": [
         {
-          "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_header",
+          "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_header",
           "children": [
             {
               "commandId": "simulate-command",
-              "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_icon",
+              "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_icon",
               "children": [
                 {
-                  "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_ticon",
+                  "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_ticon",
                   "type": "label:icon",
                   "position": {
-                    "x": 7.65625,
+                    "x": 8.7890625,
                     "y": 4.796875
                   },
                   "size": {
-                    "width": 16.6875,
+                    "width": 14.421875,
                     "height": 22.40625
                   },
-                  "text": "M",
+                  "text": "A",
                   "alignment": {
-                    "x": 8.34375,
+                    "x": 7.484375,
                     "y": 18.40625
                   }
                 }
@@ -877,19 +877,19 @@
               }
             },
             {
-              "id": "2be6b41e-a57f-423e-bea6-74f1c984d0e5_classname",
+              "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_classname",
               "type": "label:heading",
               "position": {
                 "x": 38.0,
                 "y": 9.796875
               },
               "size": {
-                "width": 135.328125,
+                "width": 171.6875,
                 "height": 22.40625
               },
-              "text": "ManualTask10",
+              "text": "AutomatedTask10",
               "alignment": {
-                "x": 67.625,
+                "x": 86.203125,
                 "y": 18.40625
               }
             }
@@ -900,28 +900,28 @@
             "y": 5.0
           },
           "size": {
-            "width": 178.328125,
+            "width": 214.6875,
             "height": 42.0
           },
           "layout": "hbox"
         }
       ],
-      "type": "task:manual",
+      "type": "task:automated",
       "position": {
-        "x": 1923.806806423696,
-        "y": 178.84558082985166
+        "x": 1925.9041669641224,
+        "y": 181.83842916080408
       },
       "size": {
-        "width": 188.328125,
+        "width": 224.6875,
         "height": 52.0
       },
       "layout": "vbox"
     },
     {
-      "id": "178ae762-92d3-44f9-b6ea-670595834529",
+      "id": "8d7c26af-fbf5-4f0f-9f1e-805aaa9d65cf",
       "type": "edge",
       "sourceId": "task4",
-      "targetId": "2be6b41e-a57f-423e-bea6-74f1c984d0e5"
+      "targetId": "63009c1d-dc84-4935-930e-4a7f5601bd25"
     }
   ],
   "type": "graph"

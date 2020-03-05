@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { SModelElement, SModelExtension } from "sprotty/lib";
+import { SModelElement, SModelExtension, SParentElement, SShapeElement } from "sprotty/lib";
 
 export const highlightElementFeature = Symbol('highlightElementFeature');
 
@@ -23,4 +23,34 @@ export interface HighlightableElement extends SModelExtension {
 
 export function isHighlightable<T extends SModelElement>(element: T): element is T & HighlightableElement {
     return element.hasFeature(highlightElementFeature);
+}
+
+export const setBreakpointFeature = Symbol('setBreakpointFeature');
+
+export interface BreakpointElement extends SModelExtension {
+    checked: boolean;
+}
+
+export function hasBreakpoint(element: SModelElement): element is SParentElement & BreakpointElement {
+    return element instanceof SParentElement && element.hasFeature(setBreakpointFeature);
+}
+
+export class Breakpoint extends SShapeElement {
+    static readonly TYPE = 'breakpoint';
+    type: string = Breakpoint.TYPE;
+    checked: boolean = false;
+
+    size = {
+        width: 25,
+        height: 25
+    };
+}
+
+export function addBreakpointView(element: SParentElement) {
+    removeBreakpointView(element);
+    element.add(new Breakpoint());
+}
+
+export function removeBreakpointView(element: SParentElement) {
+    element.removeAll(child => child instanceof Breakpoint);
 }

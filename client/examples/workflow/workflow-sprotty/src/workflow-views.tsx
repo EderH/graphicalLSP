@@ -112,3 +112,5 @@ export class IconView implements IView {
         return 16;
     }
 }
+
+

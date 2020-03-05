@@ -15,7 +15,6 @@
  ********************************************************************************/
 import { MessageClient } from "@theia/core";
 import { LabelProvider, WebSocketConnectionProvider } from "@theia/core/lib/browser";
-import { BreakpointManager } from "@theia/debug/lib/browser/breakpoint/breakpoint-manager";
 import { DebugPreferences } from "@theia/debug/lib/browser/debug-preferences";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-connection";
@@ -32,6 +31,8 @@ import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-servi
 import { inject, injectable } from "inversify";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
+import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
+import { MockDebugSession } from "./mock-debug-session";
 import { MockEditorManager } from "./mock-editor-manager";
 
 @injectable()
@@ -43,7 +44,7 @@ export class MockDebugSessionContribution implements DebugSessionContribution {
         @inject(MockEditorManager) editorManager: MockEditorManager,
         @inject(TerminalService) terminalService: TerminalService,
         @inject(WebSocketConnectionProvider) connectionProvider: WebSocketConnectionProvider,
-        @inject(BreakpointManager) breakpoints: BreakpointManager,
+        @inject(MockBreakpointManager) breakpoints: MockBreakpointManager,
         @inject(LabelProvider) labelProvider: LabelProvider,
         @inject(MessageClient) messages: MessageClient,
         @inject(OutputChannelManager) outputChannelManager: OutputChannelManager,
@@ -65,7 +66,7 @@ export class MockDebugSessionContribution implements DebugSessionContribution {
 export interface MockDebugSessionFactoryServices {
     readonly terminalService: TerminalService,
     readonly editorManager: MockEditorManager,
-    readonly breakpoints: BreakpointManager,
+    readonly breakpoints: MockBreakpointManager,
     readonly labelProvider: LabelProvider,
     readonly messages: MessageClient,
     readonly outputChannelManager: OutputChannelManager,
@@ -79,7 +80,7 @@ export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
 
     readonly terminalService: TerminalService;
     readonly editorManager: MockEditorManager;
-    readonly breakpoints: BreakpointManager;
+    readonly breakpoints: MockBreakpointManager;
     readonly labelProvider: LabelProvider;
     readonly messages: MessageClient;
     readonly outputChannelManager: OutputChannelManager;
@@ -104,7 +105,7 @@ export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
             ),
             this.getTraceOutputChannel());
 
-        return new DebugSession(
+        return new MockDebugSession(
             sessionId,
             options,
             connection,

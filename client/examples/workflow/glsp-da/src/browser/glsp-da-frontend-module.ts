@@ -17,6 +17,7 @@ import { FrontendApplicationContribution, OpenHandler } from "@theia/core/lib/br
 import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule, interfaces } from "inversify";
 
+import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
 import { MockDebugDiagramManager } from "./mock-debug-diagram-manager";
 import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
 import { MockEditorManager } from "./mock-editor-manager";
@@ -31,6 +32,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(FrontendApplicationContribution).toService(MockDebugDiagramManager);
     bind(MockEditorManager).toSelf().inSingletonScope();
     bind(MockDebugSessionFactory).toSelf().inSingletonScope();
+    bind(MockBreakpointManager).toSelf().inSingletonScope();
     bind(OpenHandler).toService(MockEditorManager);
 
 

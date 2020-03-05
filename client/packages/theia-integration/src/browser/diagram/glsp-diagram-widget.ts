@@ -15,6 +15,8 @@
  ********************************************************************************/
 import {
     Action,
+    AddBreakpointViewAction,
+    Breakpoint,
     DiagramServer,
     IActionDispatcher,
     ModelSource,
@@ -36,6 +38,7 @@ import { GLSPTheiaDiagramServer, NotifyingModelSource } from "./glsp-theia-diagr
 export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
     saveable = new SaveableGLSPModelSource(this.actionDispatcher, this.diContainer.get<ModelSource>(TYPES.ModelSource));
+    glspBreakpointManager = new GLSPBreakpointManager(this.actionDispatcher, this.connector);
 
     constructor(options: DiagramWidgetOptions, readonly widgetId: string, readonly diContainer: Container,
         readonly editorPreferences: EditorPreferences, readonly connector?: TheiaSprottyConnector) {
@@ -71,6 +74,43 @@ export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
         this.actionDispatcher.dispatch(new RequestOperationsAction());
         this.actionDispatcher.dispatch(new RequestTypeHintsAction(this.options.diagramType));
     }
+}
+
+export interface DidChangeBreakpointEvent {
+    readonly breakpoints: Map<string, Breakpoint>;
+}
+
+export class GLSPBreakpointManager {
+
+    constructor(readonly actionDispatcher: IActionDispatcher, readonly connector?: TheiaSprottyConnector) {
+
+    }
+
+    addBreakpointsView() {
+        this.actionDispatcher.dispatch(new AddBreakpointViewAction());
+    }
+
+    protected readonly onDidChangeBreakpointEmitter = new Emitter<DidChangeBreakpointEvent>();
+    readonly onDidChangeBreakpoint: Event<DidChangeBreakpointEvent> = this.onDidChangeBreakpointEmitter.event;
+
+    breakpoints: Map<string, Breakpoint> = new Map<string, Breakpoint>();
+
+    public setBreakpoint(breakpoint: Breakpoint) {
+        this.breakpoints.set(breakpoint.id, breakpoint);
+        const breakpoints = this.breakpoints;
+        this.onDidChangeBreakpointEmitter.fire({ breakpoints });
+    }
+
+    public removeBreakpoint(breakpoint: Breakpoint) {
+        this.breakpoints.delete(breakpoint.id);
+        const breakpoints = this.breakpoints;
+        this.onDidChangeBreakpointEmitter.fire({ breakpoints });
+    }
+
+    public getBreakpoints() {
+        return this.breakpoints;
+    }
+
 }
 
 export class SaveableGLSPModelSource implements Saveable, Disposable {
