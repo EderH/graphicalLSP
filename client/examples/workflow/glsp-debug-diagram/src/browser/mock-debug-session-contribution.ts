@@ -29,9 +29,9 @@ import { FileSystem } from "@theia/filesystem/lib/common";
 import { OutputChannelManager } from "@theia/output/lib/common/output-channel";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { inject, injectable } from "inversify";
+import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
-import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
 import { MockDebugSession } from "./mock-debug-session";
 import { MockEditorManager } from "./mock-editor-manager";
 

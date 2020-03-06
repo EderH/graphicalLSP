@@ -21,12 +21,11 @@ import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-c
 import { DebugSessionOptions } from "@theia/debug/lib/browser/debug-session-options";
 import { FileSystem } from "@theia/filesystem/lib/common";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
+import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
+import { DebugBreakpoint, DebugBreakpointOptions } from "mock-breakpoint/lib/browser/model/debug-breakpoint";
+import { DebugFunctionBreakpoint } from "mock-breakpoint/lib/browser/model/debug-function-breakpoint";
 
-import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
 import { MockEditorManager } from "./mock-editor-manager";
-import { DebugBreakpoint, DebugBreakpointOptions } from "./model/debug-breakpoint";
-import { DebugFunctionBreakpoint } from "./model/debug-function-breakpoint";
-
 
 export class MockDebugSession extends DebugSession {
 

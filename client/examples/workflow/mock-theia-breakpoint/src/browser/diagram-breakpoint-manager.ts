@@ -13,19 +13,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { AbstractVSCodeDebugAdapterContribution } from "@theia/debug/lib/node/vscode/vscode-debug-adapter-contribution";
-import { injectable } from "inversify";
-import * as path from "path";
+import { inject, injectable } from "inversify";
 
+import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
 
-export const THEIA_MOCK_DEBUG = 'theia-mock-debug';
 
 @injectable()
-export class TheiaMockDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
-    constructor() {
-        super(
-            'mock-debug',
-            path.join(__dirname, '../../../../../packages/theia-mock-debug/')
-        );
+export class DiagramBreakpointManager {
+    constructor(
+        @inject(MockBreakpointManager) breakpointManager: MockBreakpointManager
+    ) { }
+
+    setBreakpoints(breakpoints: any) {
+        breakpoints.array.forEach((element: any) => {
+            console.log(element);
+        });
     }
 }

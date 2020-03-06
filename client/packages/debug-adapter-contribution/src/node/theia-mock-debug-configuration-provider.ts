@@ -13,18 +13,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { AbstractVSCodeDebugAdapterContribution } from "@theia/debug/lib/node/vscode/vscode-debug-adapter-contribution";
+import { injectable } from "inversify";
+import * as path from "path";
 
-// diagram export
-export * from './diagram/glsp-diagram-client';
-export * from './diagram/glsp-diagram-manager';
-export * from './diagram/glsp-diagram-widget';
-export * from './diagram/glsp-theia-diagram-server';
-export * from './diagram/glsp-theia-sprotty-connector';
 
-// language export
-export * from './language/glsp-client';
-export * from './language/glsp-client-contribution';
-export * from './language/glsp-client-provider';
-export * from './language/glsp-client-services';
-export * from './language/glsp-frontend-contribution';
+export const THEIA_MOCK_DEBUG = 'theia-mock-debug';
 
+@injectable()
+export class TheiaMockDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
+    constructor() {
+        super(
+            'mock-debug',
+            path.join(__dirname, '../../../theia-mock-debug/')
+        );
+    }
+}

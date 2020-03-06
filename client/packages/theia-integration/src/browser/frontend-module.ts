@@ -40,10 +40,11 @@ export default new ContainerModule(bind => {
     bind(GLSPClientProvider).toService(GLSPClientProviderImpl);
 
     bind(GLSPTheiaSprottyConnector).toSelf().inSingletonScope();
-
     bind(CommandContribution).to(GLSPDiagramCommandContribution).inSingletonScope();
     bind(MenuContribution).to(GLSPDiagramMenuContribution).inSingletonScope();
     bind(KeybindingContribution).to(GLSPDiagramKeybindingContribution).inSingletonScope();
 
     bind(TheiaContextMenuService).toSelf().inSingletonScope();
+
+    bind(BreakpointsStorage).toSelf().inSingletonScope();
 });

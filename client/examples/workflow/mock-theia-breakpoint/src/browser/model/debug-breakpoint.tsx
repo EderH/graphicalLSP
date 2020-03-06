@@ -16,13 +16,13 @@
 import { DISABLED_CLASS, LabelProvider } from "@theia/core/lib/browser";
 import { TreeElement } from "@theia/core/lib/browser/source-tree";
 import URI from "@theia/core/lib/common/uri";
+import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { EditorManager } from "@theia/editor/lib/browser";
 import * as React from "react";
 import { DebugProtocol } from "vscode-debugprotocol/lib/debugProtocol";
 
 import { BaseBreakpoint } from "../breakpoint/breakpoint-marker";
 import { MockBreakpointManager } from "../breakpoint/mock-breakpoint-manager";
-import { MockDebugSession } from "../mock-debug-session";
 
 
 export class DebugBreakpointData {
@@ -33,7 +33,7 @@ export class DebugBreakpointOptions {
     readonly labelProvider: LabelProvider;
     readonly breakpoints: MockBreakpointManager;
     readonly editorManager: EditorManager;
-    readonly session?: MockDebugSession;
+    readonly session?: DebugSession;
 }
 
 export class DebugBreakpointDecoration {

@@ -13,10 +13,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { ActionMessage, ExportSvgAction, isGLSPServerStatusAction, ServerStatusAction } from "@glsp/sprotty-client/lib";
+import {
+    ActionMessage,
+    BreakpointsStorage,
+    ExportSvgAction,
+    isGLSPServerStatusAction,
+    ServerStatusAction
+} from "@glsp/sprotty-client/lib";
 import { MessageService } from "@theia/core";
 import { ConfirmDialog, WidgetManager } from "@theia/core/lib/browser";
 import { EditorManager } from "@theia/editor/lib/browser";
+import { inject } from "inversify";
+import { DiagramBreakpointManager } from "mock-breakpoint/lib/browser/diagram-breakpoint-manager";
 import { DiagramManager, DiagramWidget, TheiaDiagramServer, TheiaFileSaver, TheiaSprottyConnector } from "sprotty-theia/lib";
 
 import { GLSPClient } from "../language/glsp-client-services";
@@ -28,10 +36,14 @@ export interface GLSPTheiaSprottyConnectorServices {
     readonly editorManager: EditorManager,
     readonly widgetManager: WidgetManager,
     readonly diagramManager: DiagramManager,
-    readonly messageService: MessageService
+    readonly messageService: MessageService,
+    readonly diagramBreakpointManager: DiagramBreakpointManager,
 }
 
 export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPTheiaSprottyConnectorServices {
+
+    @inject(BreakpointsStorage) breakpoints: BreakpointsStorage;
+
     private servers: Map<String, TheiaDiagramServer> = new Map;
 
     readonly diagramClient: GLSPDiagramClient;
@@ -40,10 +52,12 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
     readonly widgetManager: WidgetManager;
     readonly diagramManager: DiagramManager;
     readonly messageService: MessageService;
+    readonly diagramBreakpointManager: DiagramBreakpointManager;
 
     constructor(services: GLSPTheiaSprottyConnectorServices) {
         Object.assign(this, services);
         this.diagramClient.connect(this);
+        this.breakpoints.onDidChangeBreakpoint(breakpoints => this.diagramBreakpointManager.setBreakpoints(breakpoints));
     }
 
     connect(diagramServer: TheiaDiagramServer) {
@@ -59,6 +73,10 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
 
     save(uri: string, action: ExportSvgAction): void {
         this.fileSaver.save(uri, action);
+    }
+
+    sendBreakpoints(breakpoints: any) {
+        this.diagramBreakpointManager.setBreakpoints(breakpoints);
     }
 
     showStatus(widgetId: string, status: ServerStatusAction): void {

@@ -1,17 +1,14 @@
 {
-  "name": "glsp-dap",
+  "name": "mock-breakpoint",
   "keywords": [
     "theia-extension"
   ],
-  "version": "0.0.0",
+  "version": "0.1.0",
   "files": [
     "lib",
     "src"
   ],
   "dependencies": {
-    "@glsp-examples/workflow-theia": "0.1.0",
-    "sprotty-theia": "0.7.0",
-    "@glsp/sprotty-client": "0.1.0",
     "@theia/core": "0.11.0",
     "@theia/filesystem": "0.11.0",
     "@theia/debug": "0.11.0",
@@ -34,8 +31,7 @@
   },
   "theiaExtensions": [
     {
-      "backend": "lib/node/glsp-da-backend-module",
-      "frontend": "lib/browser/glsp-da-frontend-module"
+      "frontend": "lib/browser/mock-theia-breakpoint-frontend-module"
     }
   ]
 }

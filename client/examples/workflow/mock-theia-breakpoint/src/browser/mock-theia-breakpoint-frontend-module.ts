@@ -13,27 +13,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { FrontendApplicationContribution, OpenHandler } from "@theia/core/lib/browser";
-import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule, interfaces } from "inversify";
 
 import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
-import { MockDebugDiagramManager } from "./mock-debug-diagram-manager";
-import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
-import { MockEditorManager } from "./mock-editor-manager";
-
-
+import { DiagramBreakpointManager } from "./diagram-breakpoint-manager";
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here
 
-    bind(DebugSessionContribution).to(MockDebugSessionContribution);
-    bind(MockDebugDiagramManager).toSelf().inSingletonScope();
-    bind(FrontendApplicationContribution).toService(MockDebugDiagramManager);
-    bind(MockEditorManager).toSelf().inSingletonScope();
-    bind(MockDebugSessionFactory).toSelf().inSingletonScope();
+    bind(DiagramBreakpointManager).toSelf().inSingletonScope();
     bind(MockBreakpointManager).toSelf().inSingletonScope();
-    bind(OpenHandler).toService(MockEditorManager);
-
 
 });
