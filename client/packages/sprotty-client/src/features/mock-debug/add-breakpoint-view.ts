@@ -46,6 +46,7 @@ export class AddBreakpointViewCommand extends SystemCommand {
     undo(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         index.all().filter(hasBreakpoint).forEach(removeBreakpointView);
+
         return context.root;
     }
 

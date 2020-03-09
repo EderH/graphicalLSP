@@ -45,6 +45,4 @@ export default new ContainerModule(bind => {
     bind(KeybindingContribution).to(GLSPDiagramKeybindingContribution).inSingletonScope();
 
     bind(TheiaContextMenuService).toSelf().inSingletonScope();
-
-    bind(BreakpointsStorage).toSelf().inSingletonScope();
 });

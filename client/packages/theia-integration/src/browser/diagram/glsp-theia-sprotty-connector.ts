@@ -13,22 +13,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import {
-    ActionMessage,
-    BreakpointsStorage,
-    ExportSvgAction,
-    isGLSPServerStatusAction,
-    ServerStatusAction
-} from "@glsp/sprotty-client/lib";
+import { ActionMessage, ExportSvgAction, isGLSPServerStatusAction, ServerStatusAction } from "@glsp/sprotty-client/lib";
 import { MessageService } from "@theia/core";
 import { ConfirmDialog, WidgetManager } from "@theia/core/lib/browser";
 import { EditorManager } from "@theia/editor/lib/browser";
-import { inject } from "inversify";
 import { DiagramBreakpointManager } from "mock-breakpoint/lib/browser/diagram-breakpoint-manager";
 import { DiagramManager, DiagramWidget, TheiaDiagramServer, TheiaFileSaver, TheiaSprottyConnector } from "sprotty-theia/lib";
 
 import { GLSPClient } from "../language/glsp-client-services";
 import { GLSPDiagramClient } from "./glsp-diagram-client";
+import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 
 export interface GLSPTheiaSprottyConnectorServices {
     readonly diagramClient: GLSPDiagramClient,
@@ -41,8 +35,6 @@ export interface GLSPTheiaSprottyConnectorServices {
 }
 
 export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPTheiaSprottyConnectorServices {
-
-    @inject(BreakpointsStorage) breakpoints: BreakpointsStorage;
 
     private servers: Map<String, TheiaDiagramServer> = new Map;
 
@@ -57,7 +49,6 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
     constructor(services: GLSPTheiaSprottyConnectorServices) {
         Object.assign(this, services);
         this.diagramClient.connect(this);
-        this.breakpoints.onDidChangeBreakpoint(breakpoints => this.diagramBreakpointManager.setBreakpoints(breakpoints));
     }
 
     connect(diagramServer: TheiaDiagramServer) {
@@ -75,7 +66,7 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
         this.fileSaver.save(uri, action);
     }
 
-    sendBreakpoints(breakpoints: any) {
+    sendBreakpoints(breakpoints: FunctionBreakpoint[]) {
         this.diagramBreakpointManager.setBreakpoints(breakpoints);
     }
 

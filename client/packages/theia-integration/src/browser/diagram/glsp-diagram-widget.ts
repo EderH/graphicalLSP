@@ -15,10 +15,12 @@
  ********************************************************************************/
 import {
     Action,
+    AddBreakpointAction,
     DiagramServer,
     IActionDispatcher,
     ModelSource,
     OperationKind,
+    RemoveBreakpointAction,
     RequestModelAction,
     RequestOperationsAction,
     RequestTypeHintsAction,
@@ -29,16 +31,19 @@ import { Saveable, SaveableSource } from "@theia/core/lib/browser";
 import { Disposable, DisposableCollection, Emitter, Event, MaybePromise } from "@theia/core/lib/common";
 import { EditorPreferences } from "@theia/editor/lib/browser";
 import { Container } from "inversify";
-import { DiagramWidget, DiagramWidgetOptions, TheiaSprottyConnector } from "sprotty-theia/lib";
+import { DiagramWidget, DiagramWidgetOptions } from "sprotty-theia/lib";
 
 import { GLSPTheiaDiagramServer, NotifyingModelSource } from "./glsp-theia-diagram-server";
+import { GLSPTheiaSprottyConnector } from "./glsp-theia-sprotty-connector";
+import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 
 export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
     saveable = new SaveableGLSPModelSource(this.actionDispatcher, this.diContainer.get<ModelSource>(TYPES.ModelSource));
+    breakpointService = new GLSPBreakpointService(this.actionDispatcher, this.diContainer.get<ModelSource>(TYPES.ModelSource), this.connector);
 
     constructor(options: DiagramWidgetOptions, readonly widgetId: string, readonly diContainer: Container,
-        readonly editorPreferences: EditorPreferences, readonly connector?: TheiaSprottyConnector) {
+        readonly editorPreferences: EditorPreferences, readonly connector?: GLSPTheiaSprottyConnector) {
         super(options, widgetId, diContainer, connector);
         this.updateSaveable();
         const prefUpdater = editorPreferences.onPreferenceChanged(() => this.updateSaveable());
@@ -71,6 +76,59 @@ export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
         }));
         this.actionDispatcher.dispatch(new RequestOperationsAction());
         this.actionDispatcher.dispatch(new RequestTypeHintsAction(this.options.diagramType));
+    }
+}
+
+export class GLSPBreakpointService {
+
+    protected breakpoints: FunctionBreakpoint[] = [];
+    readonly breakpointsChangedEmitter: Emitter<void> = new Emitter<void>();
+
+    constructor(readonly actionDispather: IActionDispatcher, readonly modelSource: ModelSource, readonly connector?: GLSPTheiaSprottyConnector) {
+        if (NotifyingModelSource.is(this.modelSource)) {
+            const notifyingModelSource = this.modelSource as NotifyingModelSource;
+            notifyingModelSource.onHandledAction((action) => {
+                if (action instanceof AddBreakpointAction) {
+                    this.addBreakpoint(action.parent.id);
+                } else if (action instanceof RemoveBreakpointAction) {
+                    this.removeBreakpoint(action.parent.id);
+                }
+
+            });
+        }
+        this.onBreakpointsChanged(() => {
+            if (connector) {
+                connector.sendBreakpoints(this.getBreakpoints())
+            }
+        });
+    }
+
+    get onBreakpointsChanged(): Event<void> {
+        return this.breakpointsChangedEmitter.event;
+    }
+
+    public addBreakpoint(parent: string) {
+        const breakpoint = this.breakpoints.find(b => b.raw.name === parent);
+        if (!breakpoint) {
+            this.breakpoints.push(FunctionBreakpoint.create({ name: parent }));
+            this.breakpointsChangedEmitter.fire();
+        }
+    }
+
+    public removeBreakpoint(parent: string) {
+        const oldLength = this.breakpoints.length;
+        this.breakpoints = this.breakpoints.filter(bp => bp.raw.name !== parent)
+        if (this.breakpoints.length !== oldLength) {
+            this.breakpointsChangedEmitter.fire();
+        }
+    }
+
+    public restoreBreakpoints() {
+        // this.breakpoints.forEach(breakpoint => new AddBreakpointAction(breakpoint))
+    }
+
+    public getBreakpoints() {
+        return this.breakpoints;
     }
 }
 

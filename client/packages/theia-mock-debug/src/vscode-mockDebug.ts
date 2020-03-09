@@ -206,7 +206,7 @@ export class MockDebugSession extends LoggingDebugSession {
 
         // set new function breakpoints
         const actualBreakpoints = args.breakpoints.map(functionBreakpoint => {
-            const { id, verified } = this._runtime.setFunctionBreakPoint(functionBreakpoint.name);
+            const { id, verified } = this._runtime.setFunctionBreakpoint(functionBreakpoint.name);
             const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
             bp.id = id;
             return bp;
@@ -215,6 +215,7 @@ export class MockDebugSession extends LoggingDebugSession {
         response.body = {
             breakpoints: actualBreakpoints
         };
+        this._runtime.sendBreakpointsToServer();
         this.sendResponse(response);
 
     }

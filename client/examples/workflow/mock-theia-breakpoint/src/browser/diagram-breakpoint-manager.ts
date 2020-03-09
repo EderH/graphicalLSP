@@ -16,17 +16,28 @@
 import { inject, injectable } from "inversify";
 
 import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
+import { FunctionBreakpoint } from "./breakpoint/breakpoint-marker";
+import { DebugFunctionBreakpoint } from "./model/debug-function-breakpoint";
+import { LabelProvider } from "@theia/core/lib/browser";
+import { EditorManager } from "@theia/editor/lib/browser";
 
 
 @injectable()
 export class DiagramBreakpointManager {
+
     constructor(
-        @inject(MockBreakpointManager) breakpointManager: MockBreakpointManager
+        @inject(MockBreakpointManager) readonly breakpointManager: MockBreakpointManager,
+        @inject(LabelProvider) readonly labelProvider: LabelProvider,
+        @inject(EditorManager) readonly editorManager: EditorManager
     ) { }
 
-    setBreakpoints(breakpoints: any) {
-        breakpoints.array.forEach((element: any) => {
-            console.log(element);
+    public setBreakpoints(breakpoints: FunctionBreakpoint[]) {
+        const functionBreakpoints = this.breakpointManager.getFunctionBreakpoints();
+        breakpoints.forEach(breakpoint => {
+            const options = { labelProvider: this.labelProvider, breakpoints: this.breakpointManager, editorManager: this.editorManager };
+            new DebugFunctionBreakpoint(breakpoint, options);
+            this.breakpointManager.setFunctionBreakpoints(breakpoints);
         });
+        this.breakpointManager.setFunctionBreakpoints(functionBreakpoints);
     }
 }

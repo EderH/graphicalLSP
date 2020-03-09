@@ -35,6 +35,14 @@ export function hasBreakpoint(element: SModelElement): element is SParentElement
     return element instanceof SParentElement && element.hasFeature(setBreakpointFeature);
 }
 
+
+export function isBreakpoint(element: SModelElement): Breakpoint & SModelElement | undefined {
+    if (element && element instanceof Breakpoint) {
+        return element;
+    }
+    return undefined;
+}
+
 export class Breakpoint extends SShapeElement {
     static readonly TYPE = 'breakpoint';
     type: string = Breakpoint.TYPE;

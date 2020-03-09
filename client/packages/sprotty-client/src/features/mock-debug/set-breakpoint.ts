@@ -21,24 +21,32 @@ import {
     MouseListener,
     SModelElement,
     SystemCommand,
-    TYPES
+    TYPES,
+    SParentElement
 } from "sprotty/lib";
 
-import { Breakpoint } from "./model";
+import { Breakpoint, isBreakpoint } from "./model";
 
-export class SetBreakpointAction implements Action {
-    static readonly KIND = 'setBreakpoint';
-    kind = SetBreakpointAction.KIND;
-    constructor(readonly breakpointId: string) {
+export class AddBreakpointAction implements Action {
+    static readonly KIND = 'addBreakpoint';
+    kind = AddBreakpointAction.KIND;
+    constructor(readonly breakpointId: string, readonly parent: SParentElement) {
+    }
+}
+
+export class RemoveBreakpointAction implements Action {
+    static readonly KIND = 'removeBreakpoint';
+    kind = RemoveBreakpointAction.KIND;
+    constructor(readonly breakpointId: string, readonly parent: SParentElement) {
     }
 }
 
 @injectable()
-export class SetBreakpointCommand extends SystemCommand {
-    static readonly KIND = SetBreakpointAction.KIND;
+export class AddBreakpointCommand extends SystemCommand {
+    static readonly KIND = AddBreakpointAction.KIND;
 
     constructor(
-        @inject(TYPES.Action) public action: SetBreakpointAction
+        @inject(TYPES.Action) public action: AddBreakpointAction
     ) {
         super();
     }
@@ -46,7 +54,7 @@ export class SetBreakpointCommand extends SystemCommand {
         const index = context.root.index;
         const element = index.getById(this.action.breakpointId);
         if (element && element instanceof Breakpoint) {
-            element.checked = !element.checked;
+            element.checked = true;
         }
         return context.root;
     }
@@ -55,7 +63,40 @@ export class SetBreakpointCommand extends SystemCommand {
         const index = context.root.index;
         const element = index.getById(this.action.breakpointId);
         if (element && element instanceof Breakpoint) {
-            element.checked = !element.checked;
+            element.checked = false;
+        }
+        return context.root;
+    }
+
+    redo(context: CommandExecutionContext): CommandReturn {
+        return this.execute(context);
+    }
+}
+
+
+@injectable()
+export class RemoveBreakpointCommand extends SystemCommand {
+    static readonly KIND = RemoveBreakpointAction.KIND;
+
+    constructor(
+        @inject(TYPES.Action) public action: RemoveBreakpointAction
+    ) {
+        super();
+    }
+    execute(context: CommandExecutionContext): CommandReturn {
+        const index = context.root.index;
+        const element = index.getById(this.action.breakpointId);
+        if (element && element instanceof Breakpoint) {
+            element.checked = false;
+        }
+        return context.root;
+    }
+
+    undo(context: CommandExecutionContext): CommandReturn {
+        const index = context.root.index;
+        const element = index.getById(this.action.breakpointId);
+        if (element && element instanceof Breakpoint) {
+            element.checked = true;
         }
         return context.root;
     }
@@ -67,20 +108,18 @@ export class SetBreakpointCommand extends SystemCommand {
 
 export class SetBreakpointMouseListener extends MouseListener {
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
-        const breakpoint = getBreakpoint(target);
+        const breakpoint = isBreakpoint(target);
         if (breakpoint) {
-            return [new SetBreakpointAction(breakpoint.id)];
+            if (!breakpoint.checked) {
+                return [new AddBreakpointAction(breakpoint.id, breakpoint.parent)];
+            } else {
+                return [new RemoveBreakpointAction(breakpoint.id, breakpoint.parent)];
+            }
         }
         return [];
     }
 }
 
-export function getBreakpoint(element: SModelElement): Breakpoint & SModelElement | undefined {
-    if (element instanceof Breakpoint) {
-        return element;
-    }
-    return undefined;
-}
 
 
 
