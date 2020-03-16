@@ -70,6 +70,11 @@ export class MockRuntime extends EventEmitter {
     private _continue = false;
     private _currentElement: string;
     private _init = true;
+
+    private _gettingData = false;
+    private _dataTotal = 0;
+    private _dataReceived = 0;
+    private _dataBytes: Buffer;
     // the initial (and one and only) file we are 'debugging'
     private _sourceFile!: string;
 
@@ -150,9 +155,8 @@ export class MockRuntime extends EventEmitter {
                 if (this._sourceFile !== '') {
                     const serverFilename = this.getServerPath(this._sourceFile);
                     if (serverFilename !== undefined && serverFilename !== '') {
-                        this.sendToServer('file', serverFilename);
+                        this.sendToServer("file", serverFilename);
                     }
-                    this.sendBreakpointsToServer();
                 }
                 for (let i = 0; i < this._queuedCommands.length; i++) {
                     this.sendToServer(this._queuedCommands[i]);
@@ -161,10 +165,47 @@ export class MockRuntime extends EventEmitter {
                 this._queuedCommands.length = 0;
             });
 
-            this.debugger.on('data', (data: string) => {
-                console.log("HALLLOO");
-                this.processFromDebugger(data);
-                console.log('Received: ' + data.replace(/\s/g, ""));
+            this.debugger.on('data', (data: any) => {
+                if (!this._gettingData) {
+                    const ind = data.toString().indexOf('\n');
+                    console.log("index: :" + ind);
+                    this._dataTotal = this._dataReceived = 0;
+                    if (ind > 0) {
+                        this._dataTotal = Number(data.slice(0, ind));
+                        console.log("  Received data size: " + this._dataTotal);
+                        if (isNaN(this._dataTotal)) {
+                            this._dataTotal = 0;
+                        }
+                    }
+                    if (this._dataTotal === 0) {
+                        this.processFromDebugger(data);
+                        return;
+                    }
+                    if (data.length > ind + 1) {
+                        data = data.slice(ind + 1);
+                    } else {
+                        data = '';
+                    }
+                    this._gettingData = true;
+                    console.log(" Started collecting data: " + data.toString().substring(0, 4));
+                }
+                if (this._gettingData) {
+                    if (this._dataReceived === 0) {
+                        this._dataBytes = data;
+                        this._dataReceived = data.length;
+                    } else {
+                        console.log("  EXTRA. Currently: " + this._dataReceived + ", total: " + this._dataTotal + ", new: " + data.length);
+                        const totalLength = this._dataBytes.length + data.length;
+                        this._dataBytes = Buffer.concat([this._dataBytes, data], totalLength);
+                        this._dataReceived = totalLength;
+                    }
+                    if (this._dataReceived >= this._dataTotal) {
+                        this._dataTotal = this._dataReceived = 0;
+                        this._gettingData = false;
+                        console.log("  COLLECTED: " + this._dataBytes.toString().substring(0, 4) + "...");
+                        this.processFromDebugger(this._dataBytes);
+                    }
+                }
             });
 
             this.debugger.on('close', () => {
@@ -174,7 +215,7 @@ export class MockRuntime extends EventEmitter {
         }
     }
 
-    public processFromDebugger(data: string) {
+    public processFromDebugger(data: any) {
         if (!this.isValid()) {
             return;
         }
@@ -221,17 +262,28 @@ export class MockRuntime extends EventEmitter {
             startVarsData++;
             this._currentElement = lines[1];
             console.log("Next ELement:" + this._currentElement);
-            if (this._continue) {
-                const bp = this.getBreakpoint(this._currentElement);
-                if (bp) {
-                    this.runOnce('stopOnStep');
+            console.log(this._continue);
+            if (this._currentElement != null) {
+                if (this._continue) {
+                    const bp = this.getBreakpoint(this._currentElement);
+
+                    if (bp) {
+                        console.log("Breakpoint: " + bp.name);
+                        this.runOnce('stopOnStep');
+                    } else {
+                        console.log("Breakpoint contine:");
+                        this.sendToServer('continue');
+                    }
                 } else {
-                    // this.sendToServer('continue');
-                    console.log("CONTINUE2");
+
+                    this.runOnce('stopOnStep');
                 }
-            } else {
-                this.runOnce('stopOnStep');
             }
+        }
+
+        if (command === 'file') {
+
+            this.sendBreakpointsToServer();
         }
 
         if (command === 'vars' || command === 'next') {
@@ -299,7 +351,7 @@ export class MockRuntime extends EventEmitter {
         if (!this.isValid()) {
             return;
         }
-        this.sendToServer('bye');
+        this.sendToServer("bye");
         this.debugger.end();
         this._connected = false;
         this.sendEvent('end');
@@ -311,7 +363,7 @@ export class MockRuntime extends EventEmitter {
         if (data !== '' || command.indexOf('|') < 0) {
             message += '|' + data;
         }
-        console.log(message);
+        console.log(message + '\n');
         if (!this._connected) {
             this._queuedCommands.push(message);
             return;
@@ -327,7 +379,7 @@ export class MockRuntime extends EventEmitter {
             return;
         }
         this._continue = true;
-        this.sendToServer('continue');
+        this.sendToServer("continue");
     }
 
     /**
@@ -341,7 +393,7 @@ export class MockRuntime extends EventEmitter {
         if (this._init) {
             this.runOnce(event);
         } else {
-            this.sendToServer('step');
+            this.sendToServer("step");
         }
     }
 
@@ -409,7 +461,7 @@ export class MockRuntime extends EventEmitter {
         });
 
         console.log("DATA: " + data);
-        this.sendToServer('setbp', data);
+        this.sendToServer("setbp", data);
     }
 
     /*
@@ -434,7 +486,6 @@ export class MockRuntime extends EventEmitter {
      * Set breakpoint in file with given line.
      */
     public setFunctionBreakpoint(breakpoint: string): MockFunctionBreakpoint {
-
         const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint, verified: false };
         if (!this._functionBreakpoints.has(bp.id)) {
             this._functionBreakpoints.set(bp.id, bp);
@@ -446,11 +497,11 @@ export class MockRuntime extends EventEmitter {
     }
 
     public getBreakpoint(element: string): MockFunctionBreakpoint | undefined {
-        this._functionBreakpoints.forEach(bp => {
-            if (bp.name === element) {
-                return bp;
+        for (const entry of this._functionBreakpoints.entries()) {
+            if (entry[1].name === element) {
+                return entry[1];
             }
-        });
+        }
         return undefined;
     }
 
@@ -560,7 +611,6 @@ export class MockRuntime extends EventEmitter {
         // is there a breakpoint?
         const bp = this.getBreakpoint(currentElement);
         if (bp) {
-            console.log("STOPONBREAKPOINT");
             this.sendEvent('stopOnBreakpoint');
             if (!bp.verified) {
                 bp.verified = true;

@@ -31,11 +31,11 @@ import { Saveable, SaveableSource } from "@theia/core/lib/browser";
 import { Disposable, DisposableCollection, Emitter, Event, MaybePromise } from "@theia/core/lib/common";
 import { EditorPreferences } from "@theia/editor/lib/browser";
 import { Container } from "inversify";
+import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 import { DiagramWidget, DiagramWidgetOptions } from "sprotty-theia/lib";
 
 import { GLSPTheiaDiagramServer, NotifyingModelSource } from "./glsp-theia-diagram-server";
 import { GLSPTheiaSprottyConnector } from "./glsp-theia-sprotty-connector";
-import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 
 export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
@@ -98,7 +98,7 @@ export class GLSPBreakpointService {
         }
         this.onBreakpointsChanged(() => {
             if (connector) {
-                connector.sendBreakpoints(this.getBreakpoints())
+                connector.sendBreakpoints(this.getBreakpoints());
             }
         });
     }
@@ -117,7 +117,7 @@ export class GLSPBreakpointService {
 
     public removeBreakpoint(parent: string) {
         const oldLength = this.breakpoints.length;
-        this.breakpoints = this.breakpoints.filter(bp => bp.raw.name !== parent)
+        this.breakpoints = this.breakpoints.filter(bp => bp.raw.name !== parent);
         if (this.breakpoints.length !== oldLength) {
             this.breakpointsChangedEmitter.fire();
         }

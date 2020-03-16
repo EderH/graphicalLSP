@@ -182,7 +182,7 @@ export class MockDebugSession extends LoggingDebugSession {
         const clientLines = args.lines || [];
 
         // clear all breakpoints for this file
-        this._runtime.clearBreakpoints();
+        // this._runtime.clearBreakpoints();
 
         // set and verify breakpoint locations
         const actualBreakpoints = clientLines.map(l => {
@@ -203,7 +203,7 @@ export class MockDebugSession extends LoggingDebugSession {
 
         // clear all existing function breakpoints
         this._runtime.clearBreakpoints();
-
+        console.log("CLEAR BREAKPOINTS");
         // set new function breakpoints
         const actualBreakpoints = args.breakpoints.map(functionBreakpoint => {
             const { id, verified } = this._runtime.setFunctionBreakpoint(functionBreakpoint.name);

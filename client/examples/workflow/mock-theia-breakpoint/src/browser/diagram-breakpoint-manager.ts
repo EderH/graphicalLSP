@@ -13,13 +13,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { inject, injectable } from "inversify";
-
-import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
-import { FunctionBreakpoint } from "./breakpoint/breakpoint-marker";
-import { DebugFunctionBreakpoint } from "./model/debug-function-breakpoint";
 import { LabelProvider } from "@theia/core/lib/browser";
 import { EditorManager } from "@theia/editor/lib/browser";
+import { inject, injectable } from "inversify";
+
+import { FunctionBreakpoint } from "./breakpoint/breakpoint-marker";
+import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
+import { DebugFunctionBreakpoint } from "./model/debug-function-breakpoint";
 
 
 @injectable()
@@ -32,12 +32,10 @@ export class DiagramBreakpointManager {
     ) { }
 
     public setBreakpoints(breakpoints: FunctionBreakpoint[]) {
-        const functionBreakpoints = this.breakpointManager.getFunctionBreakpoints();
         breakpoints.forEach(breakpoint => {
             const options = { labelProvider: this.labelProvider, breakpoints: this.breakpointManager, editorManager: this.editorManager };
             new DebugFunctionBreakpoint(breakpoint, options);
             this.breakpointManager.setFunctionBreakpoints(breakpoints);
         });
-        this.breakpointManager.setFunctionBreakpoints(functionBreakpoints);
     }
 }
