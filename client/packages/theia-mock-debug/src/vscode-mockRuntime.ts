@@ -125,7 +125,7 @@ export class MockRuntime extends EventEmitter {
         // this.loadSource(program);
         // this._currentLine = -1;
         this._sourceFile = program;
-        this.verifyBreakpoints(this._sourceFile);
+        // this.verifyBreakpoints(this._sourceFile);
 
         this.connectToDebugger();
 
@@ -246,6 +246,12 @@ export class MockRuntime extends EventEmitter {
         if (command === 'exc') {
             this.sendEvent('stopOnException');
             this._isException = true;
+            startVarsData = 2;
+            const nbVarsLines = Number(lines[startVarsData]);
+            this.fillVars(lines, startVarsData, nbVarsLines);
+
+            startStackData = startVarsData + nbVarsLines + 1;
+            this.fillStackTrace(lines, startStackData);
 
             const msg = lines.length < 2 ? '' : lines[1];
             const headerMsg = 'Exception thrown. ' + msg + ' ';
@@ -253,7 +259,7 @@ export class MockRuntime extends EventEmitter {
                 console.log(headerMsg);
             } else {
                 const entry = this._stackTrace[0];
-                console.log(headerMsg, entry.file, entry.name);
+                console.log(headerMsg, entry.file, entry.line);
             }
             return;
         }
@@ -395,6 +401,20 @@ export class MockRuntime extends EventEmitter {
         } else {
             this.sendToServer("step");
         }
+    }
+    public stepIn(event = 'stopOnStep') {
+        if (!this.verifyDebug(this._sourceFile)) {
+            return;
+        }
+        this._continue = false;
+        this.sendToServer('stepin');
+    }
+    public stepOut(event = 'stopOnStep') {
+        if (!this.verifyDebug(this._sourceFile)) {
+            return;
+        }
+        this._continue = false;
+        this.sendToServer('stepout');
     }
 
     private verifyException(): boolean {

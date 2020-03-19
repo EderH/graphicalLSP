@@ -826,12 +826,6 @@
       "targetId": "task4"
     },
     {
-      "id": "7e9818ee-e24b-4941-8a9c-4c52f2296b26",
-      "type": "edge",
-      "sourceId": "task0",
-      "targetId": "task8"
-    },
-    {
       "name": "AutomatedTask10",
       "taskType": "automated",
       "id": "63009c1d-dc84-4935-930e-4a7f5601bd25",
@@ -922,6 +916,12 @@
       "type": "edge",
       "sourceId": "task4",
       "targetId": "63009c1d-dc84-4935-930e-4a7f5601bd25"
+    },
+    {
+      "id": "a2383963-7919-450e-b488-366c603c13e4",
+      "type": "edge",
+      "sourceId": "task0",
+      "targetId": "task8"
     }
   ],
   "type": "graph"

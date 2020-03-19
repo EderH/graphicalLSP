@@ -314,6 +314,15 @@ export class MockDebugSession extends LoggingDebugSession {
         this.sendResponse(response);
     }
 
+    protected stepInRequest(response: DebugProtocol.StepInResponse, args: DebugProtocol.StepInArguments): void {
+        this._runtime.stepIn();
+        this.sendResponse(response);
+    }
+    protected stepOutRequest(response: DebugProtocol.StepOutResponse, args: DebugProtocol.StepOutArguments): void {
+        this._runtime.stepOut();
+        this.sendResponse(response);
+    }
+
     protected stepBackRequest(response: DebugProtocol.StepBackResponse, args: DebugProtocol.StepBackArguments): void {
         this._runtime.step();
 
