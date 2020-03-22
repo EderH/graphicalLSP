@@ -21,6 +21,7 @@ import { DebugProtocol } from "vscode-debugprotocol";
 
 
 const Net = require("net");
+const Path = require('path');
 
 export interface MockFunctionBreakpoint {
     id: number;
@@ -77,6 +78,7 @@ export class MockRuntime extends EventEmitter {
     private _dataBytes: Buffer;
     // the initial (and one and only) file we are 'debugging'
     private _sourceFile!: string;
+    private _localBase = '';
 
 
     public get sourceFile() {
@@ -336,13 +338,18 @@ export class MockRuntime extends EventEmitter {
 
     fillStackTrace(lines: string[], start = 0): void {
         let id = 0;
-        console.log("Lines:" + lines.length + " start: " + start);
         this._stackTrace.length = 0;
-        for (let i = start; i < lines.length; i++) {
-            const line = lines[i].trim();
-            console.log("Line:" + line);
-            const entry = <StackEntry>{ id: ++id, line: 0, name: line, file: this._sourceFile };
+        for (let i = start; i < lines.length; i += 2) {
+            if (i >= lines.length - 1) {
+                break;
+            }
+            const file = this.getLocalPath(lines[i].trim());
+            console.log("FILE: " + file);
+            const line = lines[i + 1].trim();
+            console.log(line);
+            const entry = <StackEntry>{ id: ++id, line: 0, name: line, file: file };
             this._stackTrace.push(entry);
+
         }
     }
 
@@ -431,24 +438,10 @@ export class MockRuntime extends EventEmitter {
             (file.endsWith('wf'));
     }
 
-    /**
-     * Returns a fake 'stacktrace' where every 'stackframe' is a word from the current line.
-     */
+
     public stack(startFrame: number, endFrame: number): any {
 
-        //  const words = this._sourceLines[this._currentLine];
-
         const frames = new Array<any>();
-        // every word of the current line becomes a stack frame.
-        /*for (let i = startFrame; i < Math.min(endFrame, words.length); i++) {
-            const name = words[i];	// use a word of the line as the stackframe name
-            frames.push({
-                /*index: i,
-                name: `${name}(${i})`,
-                file: this._sourceFile,
-                line: this._currentLine
-            });
-        } */
         for (let i = 0; i < this._stackTrace.length; i++) {
             const entry = this._stackTrace[i];
             frames.push({
@@ -458,12 +451,15 @@ export class MockRuntime extends EventEmitter {
                 line: entry.line
             });
         }
-        /* frames.push({
-            index: 0,
-            name: 'test',
-            file: this._sourceFile,
-            line: 1
-        }); */
+        if (frames.length === 0) {
+            const name = "";
+            frames.push({
+                index: 1,
+                name: name,
+                file: this._sourceFile,
+                line: 0
+            });
+        }
         return {
             frames: frames,
             count: this._stackTrace.length
@@ -562,6 +558,40 @@ export class MockRuntime extends EventEmitter {
         if (this._serverBase === "") {
             return pathname;
         }
+    }
+
+    setLocalBasePath(pathname: string) {
+        if (this._localBase !== undefined && this._localBase !== null && this._localBase !== '') {
+            return;
+        }
+        if (pathname === undefined || pathname === null) {
+            this._localBase = '';
+            return;
+        }
+        pathname = Path.resolve(pathname);
+        this._localBase = Path.dirname(pathname);
+    }
+
+    replace(str: string, search: string, replacement: string) {
+        str = str.split(search).join(replacement);
+        return str;
+    }
+
+    getLocalPath(pathname: string) {
+        if (pathname === undefined || pathname === null || pathname === "") {
+            return '';
+        }
+        if (this._serverBase === "") {
+            return pathname;
+        }
+
+        pathname = pathname.normalize();
+        pathname = this.replace(pathname, "'\'", "/");
+        const filename = Path.basename(pathname);
+        this.setLocalBasePath(pathname);
+
+        const localPath = Path.join(this._localBase, filename);
+        return localPath;
     }
 
     private runOnce(stepEvent?: string) {

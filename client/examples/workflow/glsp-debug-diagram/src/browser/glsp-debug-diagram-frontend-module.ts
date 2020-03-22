@@ -13,6 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { CommandContribution } from "@theia/core";
 import { FrontendApplicationContribution, OpenHandler } from "@theia/core/lib/browser";
 import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule, interfaces } from "inversify";
@@ -33,6 +34,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(FrontendApplicationContribution).toService(MockDebugDiagramManager);
     bind(MockEditorManager).toSelf().inSingletonScope();
     bind(OpenHandler).toService(MockEditorManager);
+    bind(CommandContribution).toService(MockDebugDiagramManager);
 
 
 });
