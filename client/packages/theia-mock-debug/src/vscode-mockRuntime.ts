@@ -148,6 +148,9 @@ export class MockRuntime extends EventEmitter {
 
         if (this._connectType === "sockets") {
             // const serverFilename = "example1.wf";
+            const timeout = this._host === '127.0.0.1' || this._host === 'localhost' || this._host === '' ? 3.5 : 10;
+            this.debugger.setTimeout(timeout * 1000);
+
             this.debugger.connect(this._port, this._host, () => {
                 this._connected = true;
                 this.debugger.setEncoding('utf8');
@@ -343,8 +346,9 @@ export class MockRuntime extends EventEmitter {
             if (i >= lines.length - 1) {
                 break;
             }
+            console.log("FILE1: " + lines[i].trim());
             const file = this.getLocalPath(lines[i].trim());
-            console.log("FILE: " + file);
+            console.log("FILE2: " + file);
             const line = lines[i + 1].trim();
             console.log(line);
             const entry = <StackEntry>{ id: ++id, line: 0, name: line, file: file };
@@ -365,8 +369,9 @@ export class MockRuntime extends EventEmitter {
             return;
         }
         this.sendToServer("bye");
-        this.debugger.end();
         this._connected = false;
+        this._sourceFile = '';
+        this.debugger.end();
         this.sendEvent('end');
         this.makeInvalid();
     }
@@ -554,13 +559,24 @@ export class MockRuntime extends EventEmitter {
     }
 
     getServerPath(pathname: string) {
-        // TODO serverbase
         if (this._serverBase === "") {
             return pathname;
         }
+
+
+        pathname = pathname.normalize();
+
+        this.setLocalBasePath(pathname);
+
+
+        const filename = Path.basename(pathname);
+        let serverPath = Path.join(this._serverBase, filename);
+        serverPath = serverPath.replace(/\\/g, "/");
+        return serverPath;
     }
 
     setLocalBasePath(pathname: string) {
+
         if (this._localBase !== undefined && this._localBase !== null && this._localBase !== '') {
             return;
         }
@@ -572,25 +588,18 @@ export class MockRuntime extends EventEmitter {
         this._localBase = Path.dirname(pathname);
     }
 
-    replace(str: string, search: string, replacement: string) {
-        str = str.split(search).join(replacement);
-        return str;
-    }
-
     getLocalPath(pathname: string) {
         if (pathname === undefined || pathname === null || pathname === "") {
             return '';
         }
-        if (this._serverBase === "") {
-            return pathname;
-        }
 
         pathname = pathname.normalize();
-        pathname = this.replace(pathname, "'\'", "/");
+        pathname = pathname.replace(/\\/g, "/");
         const filename = Path.basename(pathname);
         this.setLocalBasePath(pathname);
 
-        const localPath = Path.join(this._localBase, filename);
+        let localPath = Path.join(this._localBase, filename);
+        localPath = localPath.replace(/\\/g, "/");
         return localPath;
     }
 

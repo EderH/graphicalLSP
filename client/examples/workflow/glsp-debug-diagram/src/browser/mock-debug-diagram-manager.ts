@@ -14,13 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { AddBreakpointViewAction, RemoveBreakpointViewAction } from "@glsp/sprotty-client/lib";
-import { CommandContribution, CommandRegistry } from "@theia/core";
-import {
-    DebugCommands,
-    DebugFrontendApplicationContribution,
-    DebugThreadContextCommands
-} from "@theia/debug/lib/browser/debug-frontend-application-contribution";
-import { DebugState } from "@theia/debug/lib/browser/debug-session";
+import { DebugFrontendApplicationContribution } from "@theia/debug/lib/browser/debug-frontend-application-contribution";
 import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-manager";
 import { inject, injectable, postConstruct } from "inversify";
 
@@ -28,7 +22,7 @@ import { MockEditorManager } from "./mock-editor-manager";
 import { AnnotateStack } from "./stackframe/annotate-stack";
 
 @injectable()
-export class MockDebugDiagramManager implements CommandContribution {
+export class MockDebugDiagramManager {
 
     @inject(DebugFrontendApplicationContribution) protected readonly debugFrontend: DebugFrontendApplicationContribution;
     @inject(DebugSessionManager) protected readonly debugManager: DebugSessionManager;
@@ -70,25 +64,4 @@ export class MockDebugDiagramManager implements CommandContribution {
                     breakpoints.forEach(breakpoint => console.log("Breakpoint: " + breakpoint));
                 });*/
     }
-
-    registerCommands(registry: CommandRegistry): void {
-        registry.unregisterCommand(DebugCommands.STEP_INTO);
-        registry.unregisterCommand(DebugThreadContextCommands.STEP_INTO);
-        registry.registerCommand(DebugCommands.STEP_INTO, {
-            execute: () => this.debugManager.currentThread && this.debugManager.currentThread.stepIn() && this.openDiagram(),
-            isEnabled: () => this.debugManager.state === DebugState.Stopped
-        });
-
-        registry.registerCommand(DebugThreadContextCommands.STEP_INTO, {
-            execute: () => this.debugFrontend.selectedThread && this.debugFrontend.selectedThread.stepIn() && this.openDiagram(),
-            isEnabled: () => !!this.debugFrontend.selectedThread && this.debugFrontend.selectedThread.stopped,
-            isVisible: () => !!this.debugFrontend.selectedThread
-        });
-    }
-
-    openDiagram(): void {
-        this.editorManager.open();
-    }
-
-
 }
