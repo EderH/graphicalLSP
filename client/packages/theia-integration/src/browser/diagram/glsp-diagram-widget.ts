@@ -40,7 +40,7 @@ import { GLSPTheiaSprottyConnector } from "./glsp-theia-sprotty-connector";
 export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
     saveable = new SaveableGLSPModelSource(this.actionDispatcher, this.diContainer.get<ModelSource>(TYPES.ModelSource));
-    breakpointService = new GLSPBreakpointService(this.actionDispatcher, this.diContainer.get<ModelSource>(TYPES.ModelSource), this.connector);
+    breakpointService = new GLSPBreakpointService(this.actionDispatcher, this.diContainer.get<ModelSource>(TYPES.ModelSource), this, this.connector);
 
     constructor(options: DiagramWidgetOptions, readonly widgetId: string, readonly diContainer: Container,
         readonly editorPreferences: EditorPreferences, readonly connector?: GLSPTheiaSprottyConnector) {
@@ -84,7 +84,13 @@ export class GLSPBreakpointService {
     protected breakpoints: FunctionBreakpoint[] = [];
     readonly breakpointsChangedEmitter: Emitter<void> = new Emitter<void>();
 
-    constructor(readonly actionDispather: IActionDispatcher, readonly modelSource: ModelSource, readonly connector?: GLSPTheiaSprottyConnector) {
+    constructor(
+        readonly actionDispather: IActionDispatcher,
+        readonly modelSource: ModelSource,
+        readonly diagramWidget: GLSPDiagramWidget,
+        readonly connector?: GLSPTheiaSprottyConnector
+    ) {
+
         if (NotifyingModelSource.is(this.modelSource)) {
             const notifyingModelSource = this.modelSource as NotifyingModelSource;
             notifyingModelSource.onHandledAction((action) => {
@@ -110,7 +116,8 @@ export class GLSPBreakpointService {
     public addBreakpoint(parent: string) {
         const breakpoint = this.breakpoints.find(b => b.raw.name === parent);
         if (!breakpoint) {
-            this.breakpoints.push(FunctionBreakpoint.create({ name: parent }));
+
+            this.breakpoints.push(FunctionBreakpoint.create({ name: parent, condition: this.diagramWidget.uri.path.toString() }));
             this.breakpointsChangedEmitter.fire();
         }
     }

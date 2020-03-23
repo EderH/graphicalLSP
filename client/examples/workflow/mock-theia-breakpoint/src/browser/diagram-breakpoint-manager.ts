@@ -35,6 +35,7 @@ export class DiagramBreakpointManager {
         breakpoints.forEach(breakpoint => {
             const options = { labelProvider: this.labelProvider, breakpoints: this.breakpointManager, editorManager: this.editorManager };
             new DebugFunctionBreakpoint(breakpoint, options);
+            console.log("Condition: " + breakpoint.raw.condition);
             this.breakpointManager.setFunctionBreakpoints(breakpoints);
         });
     }

@@ -16,7 +16,6 @@
 import "reflect-metadata";
 
 import { EventEmitter } from "events";
-import { readFileSync } from "fs";
 import { DebugProtocol } from "vscode-debugprotocol";
 
 
@@ -26,6 +25,7 @@ const Path = require('path');
 export interface MockFunctionBreakpoint {
     id: number;
     name: string;
+    path: string;
     verified: boolean;
 }
 
@@ -80,6 +80,8 @@ export class MockRuntime extends EventEmitter {
     private _sourceFile!: string;
     private _localBase = '';
 
+    private _filenamesMap = new Map<string, string>();
+
 
     public get sourceFile() {
         return this._sourceFile;
@@ -97,7 +99,8 @@ export class MockRuntime extends EventEmitter {
 
     // maps from sourceFile to array of Mock breakpoints
     private _breakPoints = new Map<string, MockBreakpoint[]>();
-    private _functionBreakpoints = new Map<number, MockFunctionBreakpoint>();
+    private _functionBreakpoints = new Map<string, MockFunctionBreakpoint[]>();
+    private _breakPointMap = new Map<string, Map<string, MockFunctionBreakpoint>>();
 
     // since we want to send breakpoint events, we will assign an id to every event
     // so that the frontend can match events with breakpoints.
@@ -162,6 +165,7 @@ export class MockRuntime extends EventEmitter {
                     if (serverFilename !== undefined && serverFilename !== '') {
                         this.sendToServer("file", serverFilename);
                     }
+                    this.sendAllBreakpointsToServer();
                 }
                 for (let i = 0; i < this._queuedCommands.length; i++) {
                     this.sendToServer(this._queuedCommands[i]);
@@ -227,7 +231,8 @@ export class MockRuntime extends EventEmitter {
         // this.sendEvent('output', data.toString().trim(), "", -1, '\n');
         // const index = data.indexOf('|');
         const lines = data.split('\n');
-        const command = lines[0];
+        let currLine = 0;
+        const command = lines[currLine++];
         let startVarsData = 1;
         let startStackData = 1;
 
@@ -270,19 +275,19 @@ export class MockRuntime extends EventEmitter {
         }
 
         if (command === 'next') {
-            startVarsData++;
-            this._currentElement = lines[1];
-            console.log("Next ELement:" + this._currentElement);
-            console.log(this._continue);
+            const filename = this.getLocalPath(lines[currLine++]);
+            this.loadSource(filename);
+            this._currentElement = lines[currLine++];
+
+            startVarsData = currLine;
+
             if (this._currentElement != null) {
                 if (this._continue) {
                     const bp = this.getBreakpoint(this._currentElement);
 
                     if (bp) {
-                        console.log("Breakpoint: " + bp.name);
                         this.runOnce('stopOnStep');
                     } else {
-                        console.log("Breakpoint contine:");
                         this.sendToServer('continue');
                     }
                 } else {
@@ -290,11 +295,6 @@ export class MockRuntime extends EventEmitter {
                     this.runOnce('stopOnStep');
                 }
             }
-        }
-
-        if (command === 'file') {
-
-            this.sendBreakpointsToServer();
         }
 
         if (command === 'vars' || command === 'next') {
@@ -346,11 +346,8 @@ export class MockRuntime extends EventEmitter {
             if (i >= lines.length - 1) {
                 break;
             }
-            console.log("FILE1: " + lines[i].trim());
             const file = this.getLocalPath(lines[i].trim());
-            console.log("FILE2: " + file);
             const line = lines[i + 1].trim();
-            console.log(line);
             const entry = <StackEntry>{ id: ++id, line: 0, name: line, file: file };
             this._stackTrace.push(entry);
 
@@ -471,18 +468,32 @@ export class MockRuntime extends EventEmitter {
         };
     }
 
-    public sendBreakpointsToServer() {
+    public sendBreakpointsToServer(path: string) {
         if (!this._connected) {
             return;
         }
 
-        let data = '';
-        this._functionBreakpoints.forEach(bp => {
-            data += bp.name + '|';
-        });
+        const filename = Path.basename(path);
+        path = Path.resolve(path);
+        const lower = path.toLowerCase();
 
-        console.log("DATA: " + data);
-        this.sendToServer("setbp", data);
+        let data = filename;
+        const bps = this._functionBreakpoints.get(lower) || [];
+
+        for (let i = 0; i < bps.length; i++) {
+            const entry = bps[i].name;
+            data += "|" + entry;
+        }
+        console.log("SetBP: " + data);
+        this.sendToServer('setbp', data);
+    }
+
+    sendAllBreakpointsToServer() {
+        const keys = Array.from(this._functionBreakpoints.keys());
+        for (let i = 0; i < keys.length; i++) {
+            const path = keys[i];
+            this.sendBreakpointsToServer(path);
+        }
     }
 
     /*
@@ -506,10 +517,36 @@ export class MockRuntime extends EventEmitter {
     /*
      * Set breakpoint in file with given line.
      */
-    public setFunctionBreakpoint(breakpoint: string): MockFunctionBreakpoint {
-        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint, verified: false };
-        if (!this._functionBreakpoints.has(bp.id)) {
-            this._functionBreakpoints.set(bp.id, bp);
+    public setFunctionBreakpoint(breakpoint: DebugProtocol.FunctionBreakpoint): MockFunctionBreakpoint {
+        console.log("Here");
+        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, verified: false };
+
+        if (breakpoint.condition) {
+            let path = breakpoint.condition;
+            const char = path.charAt(2);
+            if (char === ':') {
+                path = path.substring(1);
+            }
+            path = Path.resolve(path);
+            this.cacheFilename(path);
+
+            const lower = path.toLowerCase();
+
+            bp.path = lower;
+            let bps = this._functionBreakpoints.get(lower);
+            if (!bps) {
+                bps = new Array<MockFunctionBreakpoint>();
+                this._functionBreakpoints.set(lower, bps);
+            }
+            bps.push(bp);
+
+
+            let bpMap = this._breakPointMap.get(lower);
+            if (!bpMap) {
+                bpMap = new Map<string, MockFunctionBreakpoint>();
+            }
+            bpMap.set(breakpoint.name, bp);
+            this._breakPointMap.set(lower, bpMap);
         }
 
         // this.verifyBreakpoints(path);
@@ -518,27 +555,39 @@ export class MockRuntime extends EventEmitter {
     }
 
     public getBreakpoint(element: string): MockFunctionBreakpoint | undefined {
-        for (const entry of this._functionBreakpoints.entries()) {
-            if (entry[1].name === element) {
-                return entry[1];
-            }
+
+        const pathname = Path.resolve(this._sourceFile);
+        const lower = pathname.toLowerCase();
+        const bpMap = this._breakPointMap.get(lower);
+        console.log(this._breakPointMap);
+        console.log(bpMap);
+        if (!bpMap) {
+            return undefined;
         }
-        return undefined;
+        const bp = bpMap.get(element);
+        return bp;
     }
 
     /*
 	 * Clear breakpoint in file with given line.
 	 */
     public clearBreakPoint(path: string, line: number): MockBreakpoint | undefined {
-        const bps = this._breakPoints.get(path);
-        if (bps) {
-            const index = bps.findIndex(bp => bp.line === line);
-            if (index >= 0) {
-                const bp = bps[index];
-                bps.splice(index, 1);
-                return bp;
-            }
-        }
+        /* let pathname = Path.resolve(path);
+                let lower = pathname.toLowerCase();
+                let bpMap = this._breakPointMap.get(lower);
+                if (bpMap) {
+                    bpMap.delete(line);
+                }
+
+                let bps = this._breakPoints.get(lower);
+                if (bps) {
+                    const index = bps.findIndex(bp => bp.line === line);
+                    if (index >= 0) {
+                        const bp = bps[index];
+                        bps.splice(index, 1);
+                        return bp;
+                    }
+                } */
         return undefined;
     }
 
@@ -547,14 +596,40 @@ export class MockRuntime extends EventEmitter {
      */
     public clearBreakpoints(): void {
         this._functionBreakpoints.clear();
+        this._breakPointMap.clear();
     }
 
-    // private methods
+    cacheFilename(filename: string) {
+        filename = Path.resolve(filename);
+        const lower = filename.toLowerCase();
+        if (lower === filename) {
+            return;
+        }
+        this._filenamesMap.set(lower, filename);
+    }
+    getActualFilename(filename: string): string {
+        // filename = Path.normalize(filename);
+        const pathname = Path.resolve(filename);
+        const lower = pathname.toLowerCase();
+        const result = this._filenamesMap.get(lower);
+        if (result === undefined || result === null) {
+            return filename;
+        }
+        return result;
+    }
 
-    private loadSource(file: string) {
-        if (this._sourceFile !== file) {
-            this._sourceFile = file;
-            this._sourceLines = readFileSync(this._sourceFile).toString().split('\n');
+    private loadSource(filename: string) {
+        if (filename === null || filename === undefined) {
+            return;
+        }
+        filename = Path.resolve(filename);
+        if (this._sourceFile !== null && this._sourceFile !== undefined &&
+            this._sourceFile.toLowerCase() === filename.toLowerCase()) {
+            return;
+        }
+        if (this.verifyDebug(filename)) {
+            // this.cacheFilename(filename);
+            this._sourceFile = filename;
         }
     }
 
