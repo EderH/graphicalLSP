@@ -15,7 +15,7 @@
  ********************************************************************************/
 import { GLSPDiagramManager, GLSPTheiaSprottyConnector } from "@glsp/theia-integration/lib/browser";
 import { MessageService } from "@theia/core";
-import { WidgetManager } from "@theia/core/lib/browser";
+import { ApplicationShell, WidgetManager } from "@theia/core/lib/browser";
 import { EditorManager } from "@theia/editor/lib/browser";
 import { inject, injectable } from "inversify";
 import { DiagramBreakpointManager } from "mock-breakpoint/lib/browser/diagram-breakpoint-manager";
@@ -39,10 +39,11 @@ export class WorkflowDiagramManager extends GLSPDiagramManager {
         @inject(WidgetManager) widgetManager: WidgetManager,
         @inject(EditorManager) editorManager: EditorManager,
         @inject(MessageService) messageService: MessageService,
-        @inject(DiagramBreakpointManager) diagramBreakpointManager: DiagramBreakpointManager) {
+        @inject(DiagramBreakpointManager) diagramBreakpointManager: DiagramBreakpointManager,
+        @inject(ApplicationShell) shell: ApplicationShell) {
         super();
         // tslint:disable-next-line: max-line-length
-        this._diagramConnector = new GLSPTheiaSprottyConnector({ diagramClient, fileSaver, editorManager, widgetManager, diagramManager: this, messageService, diagramBreakpointManager });
+        this._diagramConnector = new GLSPTheiaSprottyConnector({ diagramClient, fileSaver, editorManager, widgetManager, diagramManager: this, messageService, diagramBreakpointManager, shell });
     }
 
     get fileExtensions() {

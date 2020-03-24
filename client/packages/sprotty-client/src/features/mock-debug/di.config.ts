@@ -20,7 +20,7 @@ import { configureCommand, configureView, TYPES } from "sprotty/lib";
 
 import { AddBreakpointViewCommand, RemoveBreakpointViewCommand } from "./add-breakpoint-view";
 import { Breakpoint } from "./model";
-import { AddBreakpointCommand, RemoveBreakpointCommand, SetBreakpointMouseListener } from "./set-breakpoint";
+import { AddBreakpointCommand, ElementBreakpoint, RemoveBreakpointCommand } from "./set-breakpoint";
 import { AnnotateStackCommand, ClearStackAnnotationCommand, ElementHighlighter } from "./set-stack-frame";
 import { BreakpointView } from "./view";
 
@@ -32,8 +32,9 @@ const glspMockDebugModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, RemoveBreakpointCommand);
     configureCommand({ bind, isBound }, AddBreakpointViewCommand);
     configureCommand({ bind, isBound }, RemoveBreakpointViewCommand);
-    bind(TYPES.MouseListener).to(SetBreakpointMouseListener);
+    // bind(TYPES.MouseListener).to(SetBreakpointMouseListener);
     bind(TYPES.IVNodePostprocessor).to(ElementHighlighter).inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).to(ElementBreakpoint).inSingletonScope();
     configureView({ bind, isBound }, Breakpoint.TYPE, BreakpointView);
 });
 

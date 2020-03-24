@@ -15,14 +15,14 @@
  ********************************************************************************/
 import { ActionMessage, ExportSvgAction, isGLSPServerStatusAction, ServerStatusAction } from "@glsp/sprotty-client/lib";
 import { MessageService } from "@theia/core";
-import { ConfirmDialog, WidgetManager } from "@theia/core/lib/browser";
+import { ApplicationShell, ConfirmDialog, WidgetManager } from "@theia/core/lib/browser";
 import { EditorManager } from "@theia/editor/lib/browser";
+import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 import { DiagramBreakpointManager } from "mock-breakpoint/lib/browser/diagram-breakpoint-manager";
 import { DiagramManager, DiagramWidget, TheiaDiagramServer, TheiaFileSaver, TheiaSprottyConnector } from "sprotty-theia/lib";
 
 import { GLSPClient } from "../language/glsp-client-services";
 import { GLSPDiagramClient } from "./glsp-diagram-client";
-import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 
 export interface GLSPTheiaSprottyConnectorServices {
     readonly diagramClient: GLSPDiagramClient,
@@ -32,6 +32,7 @@ export interface GLSPTheiaSprottyConnectorServices {
     readonly diagramManager: DiagramManager,
     readonly messageService: MessageService,
     readonly diagramBreakpointManager: DiagramBreakpointManager,
+    readonly shell: ApplicationShell
 }
 
 export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPTheiaSprottyConnectorServices {
@@ -45,6 +46,7 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
     readonly diagramManager: DiagramManager;
     readonly messageService: MessageService;
     readonly diagramBreakpointManager: DiagramBreakpointManager;
+    readonly shell: ApplicationShell;
 
     constructor(services: GLSPTheiaSprottyConnectorServices) {
         Object.assign(this, services);

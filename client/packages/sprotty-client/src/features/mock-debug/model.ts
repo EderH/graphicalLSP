@@ -28,7 +28,7 @@ export function isHighlightable<T extends SModelElement>(element: T): element is
 export const setBreakpointFeature = Symbol('setBreakpointFeature');
 
 export interface BreakpointElement extends SModelExtension {
-    checked: boolean;
+    breakpoint: boolean;
 }
 
 export function hasBreakpoint(element: SModelElement): element is SParentElement & BreakpointElement {

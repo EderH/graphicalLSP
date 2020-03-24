@@ -19,6 +19,7 @@ import "sprotty/css/edit-label.css";
 
 import {
     boundsModule,
+    BreakpointContextMenuProviderRegistry,
     buttonModule,
     commandPaletteModule,
     configureModelElement,
@@ -88,6 +89,7 @@ const workflowDiagramModule = new ContainerModule((bind, unbind, isBound, rebind
     bind(GLSP_TYPES.IMovementRestrictor).to(NoCollisionMovementRestrictor).inSingletonScope();
     bind(TYPES.ICommandPaletteActionProvider).to(RevealNamedElementActionProvider);
     bind(GLSP_TYPES.IContextMenuProvider).to(DeleteContextMenuProviderRegistry);
+    bind(GLSP_TYPES.IContextMenuProvider).to(BreakpointContextMenuProviderRegistry);
     const context = { bind, unbind, isBound, rebind };
     configureModelElement(context, 'graph', GLSPGraph, SGraphView);
     configureModelElement(context, 'task:automated', TaskNode, TaskNodeView);

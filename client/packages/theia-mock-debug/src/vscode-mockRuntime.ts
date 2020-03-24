@@ -488,11 +488,25 @@ export class MockRuntime extends EventEmitter {
         this.sendToServer('setbp', data);
     }
 
+    public sendEmptyBreakpointsToServer() {
+        if (!this._connected) {
+            return;
+        }
+
+        console.log("Set Empty BP");
+        this.sendToServer('setbp', "");
+    }
+
     sendAllBreakpointsToServer() {
+        console.log("SEND");
         const keys = Array.from(this._functionBreakpoints.keys());
-        for (let i = 0; i < keys.length; i++) {
-            const path = keys[i];
-            this.sendBreakpointsToServer(path);
+        if (keys.length === 0) {
+            this.sendEmptyBreakpointsToServer();
+        } else {
+            for (let i = 0; i < keys.length; i++) {
+                const path = keys[i];
+                this.sendBreakpointsToServer(path);
+            }
         }
     }
 

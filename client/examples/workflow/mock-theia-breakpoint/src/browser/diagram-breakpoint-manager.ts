@@ -32,11 +32,15 @@ export class DiagramBreakpointManager {
     ) { }
 
     public setBreakpoints(breakpoints: FunctionBreakpoint[]) {
-        breakpoints.forEach(breakpoint => {
-            const options = { labelProvider: this.labelProvider, breakpoints: this.breakpointManager, editorManager: this.editorManager };
-            new DebugFunctionBreakpoint(breakpoint, options);
-            console.log("Condition: " + breakpoint.raw.condition);
-            this.breakpointManager.setFunctionBreakpoints(breakpoints);
-        });
+        if (breakpoints.length === 0) {
+            this.breakpointManager.removeBreakpoints();
+        } else {
+            breakpoints.forEach(breakpoint => {
+                const options = { labelProvider: this.labelProvider, breakpoints: this.breakpointManager, editorManager: this.editorManager };
+                new DebugFunctionBreakpoint(breakpoint, options);
+                console.log("Condition: " + breakpoint.raw.condition);
+                this.breakpointManager.setFunctionBreakpoints(breakpoints);
+            });
+        }
     }
 }

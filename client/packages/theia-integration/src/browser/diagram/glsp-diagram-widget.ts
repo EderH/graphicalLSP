@@ -25,6 +25,7 @@ import {
     RequestOperationsAction,
     RequestTypeHintsAction,
     SaveModelAction,
+    SModelElement,
     TYPES
 } from "@glsp/sprotty-client/lib";
 import { Saveable, SaveableSource } from "@theia/core/lib/browser";
@@ -95,9 +96,9 @@ export class GLSPBreakpointService {
             const notifyingModelSource = this.modelSource as NotifyingModelSource;
             notifyingModelSource.onHandledAction((action) => {
                 if (action instanceof AddBreakpointAction) {
-                    this.addBreakpoint(action.parent.id);
+                    this.addBreakpoint(action.selectedElements);
                 } else if (action instanceof RemoveBreakpointAction) {
-                    this.removeBreakpoint(action.parent.id);
+                    this.removeBreakpoint(action.selectedElements);
                 }
 
             });
@@ -113,21 +114,34 @@ export class GLSPBreakpointService {
         return this.breakpointsChangedEmitter.event;
     }
 
-    public addBreakpoint(parent: string) {
-        const breakpoint = this.breakpoints.find(b => b.raw.name === parent);
-        if (!breakpoint) {
-
-            this.breakpoints.push(FunctionBreakpoint.create({ name: parent, condition: this.diagramWidget.uri.path.toString() }));
-            this.breakpointsChangedEmitter.fire();
+    public addBreakpoint(selectedElements: SModelElement[]) {
+        for (const selectedElement of selectedElements) {
+            const breakpoint = this.breakpoints.find(b => b.raw.name === selectedElement.id);
+            if (!breakpoint) {
+                this.breakpoints.push(FunctionBreakpoint.create({ name: selectedElement.id, condition: this.getCurrentWidgetPath() }));
+            }
         }
+        this.breakpointsChangedEmitter.fire();
     }
 
-    public removeBreakpoint(parent: string) {
-        const oldLength = this.breakpoints.length;
-        this.breakpoints = this.breakpoints.filter(bp => bp.raw.name !== parent);
-        if (this.breakpoints.length !== oldLength) {
-            this.breakpointsChangedEmitter.fire();
+    protected getCurrentWidgetPath(): string | undefined {
+        if (this.connector) {
+            const widget = this.connector.shell.currentWidget;
+            if (widget instanceof GLSPDiagramWidget) {
+                return widget.uri.path.toString();
+            }
         }
+        return undefined;
+    }
+
+    public removeBreakpoint(selectedElements: SModelElement[]) {
+        const oldLength = this.breakpoints.length;
+        for (const selectedElement of selectedElements) {
+            this.breakpoints = this.breakpoints.filter(bp => bp.raw.name !== selectedElement.id);
+            if (this.breakpoints.length !== oldLength) {
+            }
+        }
+        this.breakpointsChangedEmitter.fire();
     }
 
     public restoreBreakpoints() {

@@ -203,9 +203,10 @@ export class MockDebugSession extends LoggingDebugSession {
 
         // clear all existing function breakpoints
         this._runtime.clearBreakpoints();
-        console.log("CLEAR BREAKPOINTS");
         // set new function breakpoints
+        console.log("TESSSSSSST111111111");
         const actualBreakpoints = args.breakpoints.map(functionBreakpoint => {
+            console.log("TESSSSSSST");
             const { id, verified } = this._runtime.setFunctionBreakpoint(functionBreakpoint);
             const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
             bp.id = id;

@@ -14,31 +14,44 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable } from "inversify";
+import { VNode } from "snabbdom/vnode";
 import {
     Action,
     CommandExecutionContext,
     CommandReturn,
-    MouseListener,
+    IVNodePostprocessor,
+    setClass,
     SModelElement,
     SystemCommand,
-    TYPES,
-    SParentElement
+    TYPES
 } from "sprotty/lib";
 
-import { Breakpoint, isBreakpoint } from "./model";
+import { hasBreakpoint } from "./model";
 
-export class AddBreakpointAction implements Action {
+/* export class AddBreakpointAction implements Action {
     static readonly KIND = 'addBreakpoint';
     kind = AddBreakpointAction.KIND;
     constructor(readonly breakpointId: string, readonly parent: SParentElement) {
     }
+} */
+
+export class AddBreakpointAction implements Action {
+    static readonly KIND = 'addBreakpoint';
+    kind = AddBreakpointAction.KIND;
+    constructor(readonly selectedElements: SModelElement[]) { }
 }
 
-export class RemoveBreakpointAction implements Action {
+/* export class RemoveBreakpointAction implements Action {
     static readonly KIND = 'removeBreakpoint';
     kind = RemoveBreakpointAction.KIND;
     constructor(readonly breakpointId: string, readonly parent: SParentElement) {
     }
+} */
+
+export class RemoveBreakpointAction implements Action {
+    static readonly KIND = 'removeBreakpoint';
+    kind = RemoveBreakpointAction.KIND;
+    constructor(readonly selectedElements: SModelElement[]) { }
 }
 
 @injectable()
@@ -52,18 +65,22 @@ export class AddBreakpointCommand extends SystemCommand {
     }
     execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
-        const element = index.getById(this.action.breakpointId);
-        if (element && element instanceof Breakpoint) {
-            element.checked = true;
+        for (const selectedElement of this.action.selectedElements) {
+            const element = index.getById(selectedElement.id);
+            if (element && hasBreakpoint(element)) {
+                element.breakpoint = true;
+            }
         }
         return context.root;
     }
 
     undo(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
-        const element = index.getById(this.action.breakpointId);
-        if (element && element instanceof Breakpoint) {
-            element.checked = false;
+        for (const selectedElement of this.action.selectedElements) {
+            const element = index.getById(selectedElement.id);
+            if (element && hasBreakpoint(element)) {
+                element.breakpoint = false;
+            }
         }
         return context.root;
     }
@@ -85,18 +102,22 @@ export class RemoveBreakpointCommand extends SystemCommand {
     }
     execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
-        const element = index.getById(this.action.breakpointId);
-        if (element && element instanceof Breakpoint) {
-            element.checked = false;
+        for (const selectedElement of this.action.selectedElements) {
+            const element = index.getById(selectedElement.id);
+            if (element && hasBreakpoint(element)) {
+                element.breakpoint = false;
+            }
         }
         return context.root;
     }
 
     undo(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
-        const element = index.getById(this.action.breakpointId);
-        if (element && element instanceof Breakpoint) {
-            element.checked = true;
+        for (const selectedElement of this.action.selectedElements) {
+            const element = index.getById(selectedElement.id);
+            if (element && hasBreakpoint(element)) {
+                element.breakpoint = true;
+            }
         }
         return context.root;
     }
@@ -106,7 +127,7 @@ export class RemoveBreakpointCommand extends SystemCommand {
     }
 }
 
-export class SetBreakpointMouseListener extends MouseListener {
+/*export class SetBreakpointMouseListener extends MouseListener {
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
         const breakpoint = isBreakpoint(target);
         if (breakpoint) {
@@ -118,9 +139,21 @@ export class SetBreakpointMouseListener extends MouseListener {
         }
         return [];
     }
+}*/
+
+@injectable()
+export class ElementBreakpoint implements IVNodePostprocessor {
+
+    decorate(vnode: VNode, element: SModelElement): VNode {
+        if (hasBreakpoint(element) && element.breakpoint) {
+            setClass(vnode, 'breakpoint', true);
+        }
+        return vnode;
+    }
+
+    postUpdate(): void {
+    }
 }
-
-
 
 
 
