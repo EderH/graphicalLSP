@@ -32,7 +32,7 @@ import { Saveable, SaveableSource } from "@theia/core/lib/browser";
 import { Disposable, DisposableCollection, Emitter, Event, MaybePromise } from "@theia/core/lib/common";
 import { EditorPreferences } from "@theia/editor/lib/browser";
 import { Container } from "inversify";
-import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
+import { GLSPBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 import { DiagramWidget, DiagramWidgetOptions } from "sprotty-theia/lib";
 
 import { GLSPTheiaDiagramServer, NotifyingModelSource } from "./glsp-theia-diagram-server";
@@ -82,7 +82,7 @@ export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
 export class GLSPBreakpointService {
 
-    protected breakpoints: FunctionBreakpoint[] = [];
+    protected breakpoints: GLSPBreakpoint[] = [];
     readonly breakpointsChangedEmitter: Emitter<void> = new Emitter<void>();
 
     constructor(
@@ -116,9 +116,12 @@ export class GLSPBreakpointService {
 
     public addBreakpoint(selectedElements: SModelElement[]) {
         for (const selectedElement of selectedElements) {
-            const breakpoint = this.breakpoints.find(b => b.raw.name === selectedElement.id);
+            const breakpoint = this.breakpoints.find(b => b.name === selectedElement.id);
             if (!breakpoint) {
-                this.breakpoints.push(FunctionBreakpoint.create({ name: selectedElement.id, condition: this.getCurrentWidgetPath() }));
+                const path = this.getCurrentWidgetPath();
+                if (path) {
+                    this.breakpoints.push(GLSPBreakpoint.create(path, selectedElement.id));
+                }
             }
         }
         this.breakpointsChangedEmitter.fire();
@@ -137,7 +140,7 @@ export class GLSPBreakpointService {
     public removeBreakpoint(selectedElements: SModelElement[]) {
         const oldLength = this.breakpoints.length;
         for (const selectedElement of selectedElements) {
-            this.breakpoints = this.breakpoints.filter(bp => bp.raw.name !== selectedElement.id);
+            this.breakpoints = this.breakpoints.filter(bp => bp.name !== selectedElement.id);
             if (this.breakpoints.length !== oldLength) {
             }
         }

@@ -21,9 +21,11 @@ import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-c
 import { DebugSessionOptions } from "@theia/debug/lib/browser/debug-session-options";
 import { FileSystem } from "@theia/filesystem/lib/common";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
+import { GLSPBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
 import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
 import { DebugBreakpoint, DebugBreakpointOptions } from "mock-breakpoint/lib/browser/model/debug-breakpoint";
 import { DebugFunctionBreakpoint } from "mock-breakpoint/lib/browser/model/debug-function-breakpoint";
+import { DebugProtocol } from "vscode-debugprotocol";
 
 import { MockEditorManager } from "./mock-editor-manager";
 
@@ -51,9 +53,8 @@ export class MockDebugSession extends DebugSession {
         }
         const { uri } = options;
         for (const affectedUri of this.getAffectedUris(uri)) {
-
-            if (affectedUri.toString() === MockBreakpointManager.FUNCTION_URI.toString()) {
-                await this.sendFunctionBreakpoints(affectedUri);
+            if (affectedUri.toString() === MockBreakpointManager.GLSP_URI.toString()) {
+                await this.sendGLSPBreakpoints(affectedUri);
             }
         }
     }
@@ -80,10 +81,10 @@ export class MockDebugSession extends DebugSession {
         const enabled = all.filter(b => b.enabled);
         if (this.capabilities.supportsFunctionBreakpoints) {
             try {
-                const response = await this.sendRequest('setFunctionBreakpoints', {
+                const response = await this.sendCustomRequest('setGraphicalBreakpoints', {
                     breakpoints: enabled.map(b => b.origin.raw)
                 });
-                response.body.breakpoints.map((raw, index) => {
+                response.body.breakpoints.map((raw: DebugProtocol.Breakpoint, index: number) => {
                     // node debug adapter returns more breakpoints sometimes
                     if (enabled[index]) {
                         enabled[index].update({ raw });
@@ -128,7 +129,63 @@ export class MockDebugSession extends DebugSession {
                 yield new URI(uriString);
             }
             yield MockBreakpointManager.FUNCTION_URI;
+            yield MockBreakpointManager.GLSP_URI;
         }
     }
+
+
+    protected readonly _glspBreakpoints = new Map<string, GLSPBreakpoint[]>();
+
+    getGLSPBreakpoints(): GLSPBreakpoint[] {
+        const breakpoints = [];
+        const uri = MockBreakpointManager.FUNCTION_URI;
+        if (uri) {
+            for (const breakpoint of this._glspBreakpoints.get(uri.toString()) || []) {
+                breakpoints.push(breakpoint);
+            }
+        }
+        return breakpoints;
+    }
+
+    protected async sendGLSPBreakpoints(affectedUri: URI): Promise<void> {
+        const all = this.breakpoints.getGLSPBreakpoints();
+        const enabled = all.filter(b => b.enabled);
+        if (this.capabilities.supportsFunctionBreakpoints) {
+            try {
+                const response = await this.sendCustomRequest('setGraphicalBreakpoints', {
+                    breakpoints: enabled
+                });
+                response.body.breakpoints.map((raw: DebugProtocol.Breakpoint, index: number) => {
+                    // node debug adapter returns more breakpoints sometimes
+                    /* if (enabled[index]) {
+                         enabled[index].update({ raw });
+                     }*/
+                });
+            } catch (error) {
+                // could be error or promise rejection of DebugProtocol.SetFunctionBreakpoints
+                if (error instanceof Error) {
+                    console.error(`Error setting breakpoints: ${error.message}`);
+                } else {
+                    // handle adapters that send failed DebugProtocol.SetFunctionBreakpoints for invalid breakpoints
+                    const genericMessage: string = 'Function breakpoint not valid for current debug session';
+                    const message: string = error.message ? `${error.message}` : genericMessage;
+                    console.warn(`Could not handle function breakpoints: ${message}, disabling...`);
+                    /*enabled.forEach(b => b.update({
+                        raw: {
+                            verified: false,
+                            message
+                        }
+                    })); */
+                }
+            }
+        }
+        this.setGLSPBreakpoints(affectedUri, all);
+    }
+
+    protected setGLSPBreakpoints(uri: URI, breakpoints: GLSPBreakpoint[]): void {
+        this._glspBreakpoints.set(uri.toString(), breakpoints);
+        this.fireDidChangeBreakpoints(uri);
+    }
+
 
 }

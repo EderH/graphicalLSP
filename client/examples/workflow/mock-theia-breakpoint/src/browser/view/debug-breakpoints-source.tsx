@@ -13,14 +13,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { ContainerModule, interfaces } from "inversify";
+import { TreeElement } from "@theia/core/lib/browser/source-tree";
+import { DebugBreakpointsSource } from "@theia/debug/lib/browser/view/debug-breakpoints-source";
+import { inject, injectable } from "inversify";
 
-import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
-import { DebugIrgendwasWidget } from "./view/debug-irgendwas-widget";
+import { MockBreakpointManager } from "../breakpoint/mock-breakpoint-manager";
 
-export default new ContainerModule((bind: interfaces.Bind) => {
-    // add your contribution bindings here
 
-    bind(MockBreakpointManager).toSelf().inSingletonScope();
-    bind(DebugIrgendwasWidget).toDynamicValue(({ container }) => DebugIrgendwasWidget.createWidget(container));
-});
+@injectable()
+export class MockDebugBreakpointsSource extends DebugBreakpointsSource {
+
+    @inject(MockBreakpointManager)
+    protected readonly breakpoints: MockBreakpointManager;
+
+    *getElements(): IterableIterator<TreeElement> {
+
+        for (const breakpoint of this.model.breakpoints) {
+            yield breakpoint;
+        }
+    }
+}

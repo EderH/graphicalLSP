@@ -19,7 +19,7 @@ import { BreakpointManager } from "@theia/debug/lib/browser/breakpoint/breakpoin
 import { SourceBreakpoint } from "@theia/debug/lib/browser/breakpoint/breakpoint-marker";
 import { injectable } from "inversify";
 
-import { BaseBreakpoint, FunctionBreakpoint } from "./breakpoint-marker";
+import { BaseBreakpoint, FunctionBreakpoint, GLSPBreakpoint } from "./breakpoint-marker";
 
 export interface BreakpointsChangeEvent<T extends BaseBreakpoint> {
     uri: URI
@@ -29,6 +29,7 @@ export interface BreakpointsChangeEvent<T extends BaseBreakpoint> {
 }
 
 export type FunctionBreakpointsChangeEvent = BreakpointsChangeEvent<FunctionBreakpoint>;
+export type GLSPBreakpointsChangeEvent = BreakpointsChangeEvent<GLSPBreakpoint>;
 
 @injectable()
 export class MockBreakpointManager extends BreakpointManager {
@@ -37,7 +38,11 @@ export class MockBreakpointManager extends BreakpointManager {
     protected readonly onDidChangeFunctionBreakpointsEmitter = new Emitter<FunctionBreakpointsChangeEvent>();
     readonly onDidChangeFunctionBreakpoints = this.onDidChangeFunctionBreakpointsEmitter.event;
 
+    protected readonly onDidChangeGLSPBreakpointsEmitter = new Emitter<GLSPBreakpointsChangeEvent>();
+    readonly onDidChangeGLSPBreakpoints = this.onDidChangeGLSPBreakpointsEmitter.event;
+
     static FUNCTION_URI = new URI('debug:function://');
+    static GLSP_URI = new URI('debug:glsp://');
 
 
     enableAllBreakpoints(enabled: boolean): void {
@@ -83,12 +88,13 @@ export class MockBreakpointManager extends BreakpointManager {
     }
 
     hasBreakpoints(): boolean {
-        return !!this.getUris().next().value || !!this.functionBreakpoints.length;
+        return !!this.getUris().next().value || !!this.functionBreakpoints.length || !!this.glspbreakpoints.length;
     }
 
     removeBreakpoints(): void {
         this.cleanAllMarkers();
         this.setFunctionBreakpoints([]);
+        this.setGLSPBreakpoints([]);
     }
 
     protected functionBreakpoints: FunctionBreakpoint[] = [];
@@ -123,6 +129,39 @@ export class MockBreakpointManager extends BreakpointManager {
         this.onDidChangeFunctionBreakpointsEmitter.fire({ uri: MockBreakpointManager.FUNCTION_URI, added, removed, changed });
     }
 
+    protected glspbreakpoints: GLSPBreakpoint[] = [];
+
+    getGLSPBreakpoints(): GLSPBreakpoint[] {
+        return this.glspbreakpoints;
+    }
+
+    setGLSPBreakpoints(glspBreakpoints: GLSPBreakpoint[]): void {
+        const oldBreakpoints = new Map(this.glspbreakpoints.map(b => [b.id, b] as [string, GLSPBreakpoint]));
+
+        this.glspbreakpoints = glspBreakpoints;
+        this.fireOnDidChangeMarkers(MockBreakpointManager.GLSP_URI);
+
+        const added: GLSPBreakpoint[] = [];
+        const removed: GLSPBreakpoint[] = [];
+        const changed: GLSPBreakpoint[] = [];
+        const ids = new Set<string>();
+        for (const newBreakpoint of glspBreakpoints) {
+            ids.add(newBreakpoint.id);
+            if (oldBreakpoints.has(newBreakpoint.id)) {
+                changed.push(newBreakpoint);
+            } else {
+                added.push(newBreakpoint);
+            }
+        }
+        for (const [id, breakpoint] of oldBreakpoints.entries()) {
+            if (!ids.has(id)) {
+                removed.push(breakpoint);
+            }
+        }
+        this.onDidChangeGLSPBreakpointsEmitter.fire({ uri: MockBreakpointManager.GLSP_URI, added, removed, changed });
+    }
+
+
     async load(): Promise<void> {
         const data = await this.storage.getData<MockBreakpointManager.Data>('breakpoints', {
             breakpointsEnabled: true,
@@ -136,6 +175,9 @@ export class MockBreakpointManager extends BreakpointManager {
         }
         if (data.functionBreakpoints) {
             this.setFunctionBreakpoints(data.functionBreakpoints);
+        }
+        if (data.glspBreakpoints) {
+            this.setGLSPBreakpoints(data.glspBreakpoints);
         }
     }
 
@@ -151,6 +193,9 @@ export class MockBreakpointManager extends BreakpointManager {
         if (this.functionBreakpoints.length) {
             data.functionBreakpoints = this.functionBreakpoints;
         }
+        if (this.glspbreakpoints.length) {
+            data.glspBreakpoints = this.glspbreakpoints;
+        }
         this.storage.setData('breakpoints', data);
     }
 
@@ -163,10 +208,7 @@ export namespace MockBreakpointManager {
             [uri: string]: SourceBreakpoint[]
         }
         functionBreakpoints?: FunctionBreakpoint[]
+        glspBreakpoints?: GLSPBreakpoint[]
     }
 }
-
-
-
-
 

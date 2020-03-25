@@ -13,11 +13,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { UUID } from "@phosphor/coreutils";
+import URI from "@theia/core/lib/common/uri";
+import { Marker } from "@theia/markers/lib/common/marker";
+import { DebugProtocol } from "vscode-debugprotocol/lib/debugProtocol";
 
-import { UUID } from '@phosphor/coreutils';
-import URI from '@theia/core/lib/common/uri';
-import { Marker } from '@theia/markers/lib/common/marker';
-import { DebugProtocol } from 'vscode-debugprotocol/lib/debugProtocol';
 
 export const BREAKPOINT_KIND = 'breakpoint';
 
@@ -81,6 +81,21 @@ export namespace FunctionBreakpoint {
                 ...(origin && origin.raw),
                 ...data
             }
+        };
+    }
+}
+
+export interface GLSPBreakpoint extends BaseBreakpoint {
+    path: string;
+    name: string;
+}
+export namespace GLSPBreakpoint {
+    export function create(path: string, data: string, origin?: GLSPBreakpoint): GLSPBreakpoint {
+        return {
+            id: origin ? origin.id : UUID.uuid4(),
+            path: origin ? origin.path : path,
+            enabled: origin ? origin.enabled : true,
+            name: origin ? origin.name : data
         };
     }
 }

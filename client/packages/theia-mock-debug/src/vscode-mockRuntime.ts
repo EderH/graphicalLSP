@@ -29,6 +29,13 @@ export interface MockFunctionBreakpoint {
     verified: boolean;
 }
 
+export interface GLSPBreakpoint {
+    id: number;
+    name: string;
+    path: string;
+    verified: boolean;
+}
+
 export interface MockBreakpoint {
     id: number;
     line: number;
@@ -524,6 +531,42 @@ export class MockRuntime extends EventEmitter {
         bps.push(bp);
 
         this.verifyBreakpoints(path);
+
+        return bp;
+    }
+
+    public setGLSPBreakpoint(breakpoint: any): MockFunctionBreakpoint {
+        console.log("Here");
+        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.path, verified: false };
+
+        let path = breakpoint.path;
+        console.log("URI: " + path);
+        const char = path.charAt(2);
+        if (char === ':') {
+            path = path.substring(1);
+        }
+        path = Path.resolve(path);
+        this.cacheFilename(path);
+
+        const lower = path.toLowerCase();
+
+        bp.path = lower;
+        let bps = this._functionBreakpoints.get(lower);
+        if (!bps) {
+            bps = new Array<MockFunctionBreakpoint>();
+            this._functionBreakpoints.set(lower, bps);
+        }
+        bps.push(bp);
+
+
+        let bpMap = this._breakPointMap.get(lower);
+        if (!bpMap) {
+            bpMap = new Map<string, MockFunctionBreakpoint>();
+        }
+        bpMap.set(breakpoint.name, bp);
+        this._breakPointMap.set(lower, bpMap);
+
+        // this.verifyBreakpoints(path);
 
         return bp;
     }

@@ -14,9 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { AddBreakpointViewAction, RemoveBreakpointViewAction } from "@glsp/sprotty-client/lib";
+import { WidgetManager } from "@theia/core/lib/browser";
 import { DebugFrontendApplicationContribution } from "@theia/debug/lib/browser/debug-frontend-application-contribution";
 import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-manager";
+import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
+import { DebugIrgendwasWidget } from "mock-breakpoint/lib/browser/view/debug-irgendwas-widget";
 
 import { MockEditorManager } from "./mock-editor-manager";
 import { AnnotateStack } from "./stackframe/annotate-stack";
@@ -27,6 +30,8 @@ export class MockDebugDiagramManager {
     @inject(DebugFrontendApplicationContribution) protected readonly debugFrontend: DebugFrontendApplicationContribution;
     @inject(DebugSessionManager) protected readonly debugManager: DebugSessionManager;
     @inject(MockEditorManager) protected readonly editorManager: MockEditorManager;
+    @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
+    @inject(DebugIrgendwasWidget) protected readonly debugIRgendwasWidget: DebugIrgendwasWidget;
     // @inject(ActiveBreakpoints) protected readonly activeBreakpoints: ActiveBreakpoints;
 
     private sessions = new Map<string, AnnotateStack>();
@@ -63,5 +68,15 @@ export class MockDebugDiagramManager {
                     const breakpoints = event.breakpoints;
                     breakpoints.forEach(breakpoint => console.log("Breakpoint: " + breakpoint));
                 });*/
+
+        this.widgetManager.onDidCreateWidget(({ factoryId, widget }) => {
+            if (factoryId === DebugWidget.ID && widget instanceof DebugWidget) {
+
+                const viewContainer = widget['sessionWidget']['viewContainer'];
+                const breakpointWidget = widget['sessionWidget']['breakpoints'];
+                viewContainer.removeWidget(breakpointWidget);
+                viewContainer.addWidget(this.debugIRgendwasWidget, { weight: 10 });
+            }
+        });
     }
 }

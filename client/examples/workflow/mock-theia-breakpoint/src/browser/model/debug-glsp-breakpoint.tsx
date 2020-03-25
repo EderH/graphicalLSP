@@ -13,14 +13,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { ContainerModule, interfaces } from "inversify";
+import { TreeElement } from "@theia/core/lib/browser/source-tree";
+import * as React from "react";
 
-import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
-import { DebugIrgendwasWidget } from "./view/debug-irgendwas-widget";
+import { GLSPBreakpoint } from "../breakpoint/breakpoint-marker";
 
-export default new ContainerModule((bind: interfaces.Bind) => {
-    // add your contribution bindings here
 
-    bind(MockBreakpointManager).toSelf().inSingletonScope();
-    bind(DebugIrgendwasWidget).toDynamicValue(({ container }) => DebugIrgendwasWidget.createWidget(container));
-});
+
+
+export class DebugGLSPBreakpoint implements TreeElement {
+
+    constructor(readonly data: GLSPBreakpoint) {
+
+    }
+
+    render(): React.ReactNode {
+        return <div title={this.data.name} className='theia-source-breakpoint'>
+            <span className='theia-debug-breakpoint-icon' />
+            <input type='checkbox' checked={this.data.enabled} />
+            <span className='line-info'>{this.data.name}</span>
+        </div>;
+    }
+
+}

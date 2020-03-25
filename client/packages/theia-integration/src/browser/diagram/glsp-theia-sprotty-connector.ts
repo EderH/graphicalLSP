@@ -17,8 +17,8 @@ import { ActionMessage, ExportSvgAction, isGLSPServerStatusAction, ServerStatusA
 import { MessageService } from "@theia/core";
 import { ApplicationShell, ConfirmDialog, WidgetManager } from "@theia/core/lib/browser";
 import { EditorManager } from "@theia/editor/lib/browser";
-import { FunctionBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
-import { DiagramBreakpointManager } from "mock-breakpoint/lib/browser/diagram-breakpoint-manager";
+import { GLSPBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
+import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
 import { DiagramManager, DiagramWidget, TheiaDiagramServer, TheiaFileSaver, TheiaSprottyConnector } from "sprotty-theia/lib";
 
 import { GLSPClient } from "../language/glsp-client-services";
@@ -31,7 +31,7 @@ export interface GLSPTheiaSprottyConnectorServices {
     readonly widgetManager: WidgetManager,
     readonly diagramManager: DiagramManager,
     readonly messageService: MessageService,
-    readonly diagramBreakpointManager: DiagramBreakpointManager,
+    readonly mockBreakpointManager: MockBreakpointManager,
     readonly shell: ApplicationShell
 }
 
@@ -45,7 +45,7 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
     readonly widgetManager: WidgetManager;
     readonly diagramManager: DiagramManager;
     readonly messageService: MessageService;
-    readonly diagramBreakpointManager: DiagramBreakpointManager;
+    readonly mockBreakpointManager: MockBreakpointManager;
     readonly shell: ApplicationShell;
 
     constructor(services: GLSPTheiaSprottyConnectorServices) {
@@ -68,8 +68,8 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
         this.fileSaver.save(uri, action);
     }
 
-    sendBreakpoints(breakpoints: FunctionBreakpoint[]) {
-        this.diagramBreakpointManager.setBreakpoints(breakpoints);
+    sendBreakpoints(breakpoints: GLSPBreakpoint[]) {
+        this.mockBreakpointManager.setGLSPBreakpoints(breakpoints);
     }
 
     showStatus(widgetId: string, status: ServerStatusAction): void {
