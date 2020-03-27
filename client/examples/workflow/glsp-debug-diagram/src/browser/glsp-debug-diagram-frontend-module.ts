@@ -1,3 +1,12 @@
+import { FrontendApplicationContribution, OpenHandler } from "@theia/core/lib/browser";
+import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
+import { ContainerModule, interfaces } from "inversify";
+
+import { MockDebugBreakpointsSource } from "./debug-breakpoints-source";
+import { MockDebugDiagramManager } from "./mock-debug-diagram-manager";
+import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
+import { MockEditorManager } from "./mock-editor-manager";
+
 /********************************************************************************
  * Copyright (c) 2019 EclipseSource and others.
  *
@@ -13,13 +22,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { FrontendApplicationContribution, OpenHandler } from "@theia/core/lib/browser";
-import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
-import { ContainerModule, interfaces } from "inversify";
 
-import { MockDebugDiagramManager } from "./mock-debug-diagram-manager";
-import { MockDebugSessionContribution, MockDebugSessionFactory } from "./mock-debug-session-contribution";
-import { MockEditorManager } from "./mock-editor-manager";
 
 
 
@@ -28,6 +31,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
 
     bind(DebugSessionContribution).to(MockDebugSessionContribution);
 
+    bind(MockDebugBreakpointsSource).toSelf().inSingletonScope();
     bind(MockDebugSessionFactory).toSelf().inSingletonScope();
     bind(MockDebugDiagramManager).toSelf().inSingletonScope();
     bind(FrontendApplicationContribution).toService(MockDebugDiagramManager);

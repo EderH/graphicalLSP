@@ -28,20 +28,14 @@ export interface BreakpointsChangeEvent<T extends BaseBreakpoint> {
     changed: T[]
 }
 
-export type FunctionBreakpointsChangeEvent = BreakpointsChangeEvent<FunctionBreakpoint>;
 export type GLSPBreakpointsChangeEvent = BreakpointsChangeEvent<GLSPBreakpoint>;
 
 @injectable()
 export class MockBreakpointManager extends BreakpointManager {
 
-
-    protected readonly onDidChangeFunctionBreakpointsEmitter = new Emitter<FunctionBreakpointsChangeEvent>();
-    readonly onDidChangeFunctionBreakpoints = this.onDidChangeFunctionBreakpointsEmitter.event;
-
     protected readonly onDidChangeGLSPBreakpointsEmitter = new Emitter<GLSPBreakpointsChangeEvent>();
     readonly onDidChangeGLSPBreakpoints = this.onDidChangeGLSPBreakpointsEmitter.event;
 
-    static FUNCTION_URI = new URI('debug:function://');
     static GLSP_URI = new URI('debug:glsp://');
 
 
@@ -60,16 +54,16 @@ export class MockBreakpointManager extends BreakpointManager {
                 this.fireOnDidChangeMarkers(uri);
             }
         }
-        let didChangeFunction = false;
-        for (const breakpoint of this.getFunctionBreakpoints()) {
+        let didChangeGLSP = false;
+        for (const breakpoint of this.getGLSPBreakpoints()) {
             if (breakpoint.enabled !== enabled) {
                 breakpoint.enabled = enabled;
-                didChangeFunction = true;
+                didChangeGLSP = true;
 
             }
         }
-        if (didChangeFunction) {
-            this.fireOnDidChangeMarkers(MockBreakpointManager.FUNCTION_URI);
+        if (didChangeGLSP) {
+            this.fireOnDidChangeMarkers(MockBreakpointManager.GLSP_URI);
         }
     }
 
@@ -83,62 +77,29 @@ export class MockBreakpointManager extends BreakpointManager {
             for (const uri of this.getUris()) {
                 this.fireOnDidChangeMarkers(new URI(uri));
             }
-            this.fireOnDidChangeMarkers(MockBreakpointManager.FUNCTION_URI);
+            this.fireOnDidChangeMarkers(MockBreakpointManager.GLSP_URI);
         }
     }
 
     hasBreakpoints(): boolean {
-        return !!this.getUris().next().value || !!this.functionBreakpoints.length || !!this.glspbreakpoints.length;
+        return !!this.getUris().next().value || !!this.glspBreakpoints.length;
     }
 
     removeBreakpoints(): void {
         this.cleanAllMarkers();
-        this.setFunctionBreakpoints([]);
         this.setGLSPBreakpoints([]);
     }
 
-    protected functionBreakpoints: FunctionBreakpoint[] = [];
-
-    getFunctionBreakpoints(): FunctionBreakpoint[] {
-        return this.functionBreakpoints;
-    }
-
-    setFunctionBreakpoints(functionBreakpoints: FunctionBreakpoint[]): void {
-        const oldBreakpoints = new Map(this.functionBreakpoints.map(b => [b.id, b] as [string, FunctionBreakpoint]));
-
-        this.functionBreakpoints = functionBreakpoints;
-        this.fireOnDidChangeMarkers(MockBreakpointManager.FUNCTION_URI);
-
-        const added: FunctionBreakpoint[] = [];
-        const removed: FunctionBreakpoint[] = [];
-        const changed: FunctionBreakpoint[] = [];
-        const ids = new Set<string>();
-        for (const newBreakpoint of functionBreakpoints) {
-            ids.add(newBreakpoint.id);
-            if (oldBreakpoints.has(newBreakpoint.id)) {
-                changed.push(newBreakpoint);
-            } else {
-                added.push(newBreakpoint);
-            }
-        }
-        for (const [id, breakpoint] of oldBreakpoints.entries()) {
-            if (!ids.has(id)) {
-                removed.push(breakpoint);
-            }
-        }
-        this.onDidChangeFunctionBreakpointsEmitter.fire({ uri: MockBreakpointManager.FUNCTION_URI, added, removed, changed });
-    }
-
-    protected glspbreakpoints: GLSPBreakpoint[] = [];
+    protected glspBreakpoints: GLSPBreakpoint[] = [];
 
     getGLSPBreakpoints(): GLSPBreakpoint[] {
-        return this.glspbreakpoints;
+        return this.glspBreakpoints;
     }
 
     setGLSPBreakpoints(glspBreakpoints: GLSPBreakpoint[]): void {
-        const oldBreakpoints = new Map(this.glspbreakpoints.map(b => [b.id, b] as [string, GLSPBreakpoint]));
+        const oldBreakpoints = new Map(this.glspBreakpoints.map(b => [b.id, b] as [string, GLSPBreakpoint]));
 
-        this.glspbreakpoints = glspBreakpoints;
+        this.glspBreakpoints = glspBreakpoints;
         this.fireOnDidChangeMarkers(MockBreakpointManager.GLSP_URI);
 
         const added: GLSPBreakpoint[] = [];
@@ -173,9 +134,6 @@ export class MockBreakpointManager extends BreakpointManager {
         for (const uri in data.breakpoints) {
             this.setBreakpoints(new URI(uri), data.breakpoints[uri]);
         }
-        if (data.functionBreakpoints) {
-            this.setFunctionBreakpoints(data.functionBreakpoints);
-        }
         if (data.glspBreakpoints) {
             this.setGLSPBreakpoints(data.glspBreakpoints);
         }
@@ -190,11 +148,8 @@ export class MockBreakpointManager extends BreakpointManager {
         for (const uri of uris) {
             data.breakpoints[uri] = this.findMarkers({ uri: new URI(uri) }).map(marker => marker.data);
         }
-        if (this.functionBreakpoints.length) {
-            data.functionBreakpoints = this.functionBreakpoints;
-        }
-        if (this.glspbreakpoints.length) {
-            data.glspBreakpoints = this.glspbreakpoints;
+        if (this.glspBreakpoints.length) {
+            data.glspBreakpoints = this.glspBreakpoints;
         }
         this.storage.setData('breakpoints', data);
     }

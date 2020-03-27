@@ -17,7 +17,6 @@ import { WorkflowDiagramManager } from "@glsp-examples/workflow-theia/lib/browse
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager, EditorOpenerOptions } from "@theia/editor/lib/browser";
 import { inject, injectable } from "inversify";
-import { DiagramWidget } from "sprotty-theia";
 
 
 @injectable()
@@ -26,16 +25,9 @@ export class MockEditorManager extends EditorManager {
     @inject(WorkflowDiagramManager)
     protected readonly workflowDiagramManager: WorkflowDiagramManager;
 
-    protected _currentDiagramEditor: DiagramWidget;
-
     async open(uri: URI, options?: EditorOpenerOptions): Promise<any> {
         const widget = await this.workflowDiagramManager.open(uri, options);
-        this._currentDiagramEditor = widget;
         return widget;
-    }
-
-    get currentDiagramEditor(): DiagramWidget | undefined {
-        return this._currentDiagramEditor;
     }
 
 }

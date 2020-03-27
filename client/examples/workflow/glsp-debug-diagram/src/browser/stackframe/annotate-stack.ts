@@ -14,10 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatcher } from "@glsp/sprotty-client/lib";
+import { GLSPDiagramWidget } from "@glsp/theia-integration/lib/browser";
+import { ApplicationShell } from "@theia/core/lib/browser";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
 
-import { MockEditorManager } from "../mock-editor-manager";
 
 
 
@@ -25,28 +26,29 @@ export class AnnotateStack {
 
     private actionDispatcher: IActionDispatcher;
 
-    private editorManager: MockEditorManager;
+    private shell: ApplicationShell;
     private currentFrame: DebugStackFrame;
     private session: DebugSession;
 
-    constructor(session: DebugSession, editorManager: MockEditorManager) {
+    constructor(session: DebugSession, shell: ApplicationShell) {
         this.session = session;
-        this.editorManager = editorManager;
+        this.shell = shell;
         this.session.onDidChange(() => this.annotateStack());
     }
 
 
     private sendAction(action: Action) {
-        const currentEditor = this.editorManager.currentDiagramEditor;
-        if (currentEditor) {
-            this.actionDispatcher = currentEditor.actionDispatcher;
-            if (this.actionDispatcher) {
-                this.actionDispatcher.dispatch(action);
+        const widgets = this.shell.widgets;
+        for (const currentDiagram of widgets)
+            if (currentDiagram instanceof GLSPDiagramWidget && this.currentFrame.source && currentDiagram.uri.path.base === this.currentFrame.source.uri.path.base) {
+                this.actionDispatcher = currentDiagram.actionDispatcher;
+                if (this.actionDispatcher) {
+                    this.actionDispatcher.dispatch(action);
+                }
             }
-        }
     }
 
-    public annotateStack() {
+    public async annotateStack() {
         if (this.session.currentFrame && (this.currentFrame !== this.session.currentFrame)) {
             if (this.currentFrame) {
                 this.clearStackAnnotation();

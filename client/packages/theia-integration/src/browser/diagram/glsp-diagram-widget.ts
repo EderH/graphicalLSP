@@ -82,7 +82,7 @@ export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
 export class GLSPBreakpointService {
 
-    protected breakpoints: GLSPBreakpoint[] = [];
+    protected breakpoints: SModelElement[] = [];
     readonly breakpointsChangedEmitter: Emitter<void> = new Emitter<void>();
 
     constructor(
@@ -116,12 +116,9 @@ export class GLSPBreakpointService {
 
     public addBreakpoint(selectedElements: SModelElement[]) {
         for (const selectedElement of selectedElements) {
-            const breakpoint = this.breakpoints.find(b => b.name === selectedElement.id);
+            const breakpoint = this.breakpoints.find(bp => bp.id === selectedElement.id);
             if (!breakpoint) {
-                const path = this.getCurrentWidgetPath();
-                if (path) {
-                    this.breakpoints.push(GLSPBreakpoint.create(path, selectedElement.id));
-                }
+                this.breakpoints.push(selectedElement);
             }
         }
         this.breakpointsChangedEmitter.fire();
@@ -138,21 +135,26 @@ export class GLSPBreakpointService {
     }
 
     public removeBreakpoint(selectedElements: SModelElement[]) {
-        const oldLength = this.breakpoints.length;
         for (const selectedElement of selectedElements) {
-            this.breakpoints = this.breakpoints.filter(bp => bp.name !== selectedElement.id);
-            if (this.breakpoints.length !== oldLength) {
-            }
+            this.breakpoints = this.breakpoints.filter(bp => bp.id !== selectedElement.id);
         }
         this.breakpointsChangedEmitter.fire();
     }
 
     public restoreBreakpoints() {
-        // this.breakpoints.forEach(breakpoint => new AddBreakpointAction(breakpoint))
+        new AddBreakpointAction(this.breakpoints);
     }
 
     public getBreakpoints() {
-        return this.breakpoints;
+        const glspBreakpoints: GLSPBreakpoint[] = [];
+
+        for (const breakpoint of this.breakpoints) {
+            const path = this.getCurrentWidgetPath();
+            if (path) {
+                glspBreakpoints.push(GLSPBreakpoint.create(path, breakpoint.id));
+            }
+        }
+        return glspBreakpoints;
     }
 }
 

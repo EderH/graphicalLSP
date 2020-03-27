@@ -202,10 +202,8 @@ export class MockDebugSession extends LoggingDebugSession {
     protected customRequest(command: string, response: DebugProtocol.Response, args: any, request?: DebugProtocol.Request): void {
         if (command === 'setGraphicalBreakpoints') {
             this._runtime.clearBreakpoints();
-            // set new function breakpoints
-            console.log("TESSSSSSST111111111" + args.breakpoints);
+            // set new GLSP breakpoints
             const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
-                console.log("TESSSSSSST");
                 const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
                 const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
                 bp.id = id;
@@ -226,9 +224,7 @@ export class MockDebugSession extends LoggingDebugSession {
         // clear all existing function breakpoints
         this._runtime.clearBreakpoints();
         // set new function breakpoints
-        console.log("TESSSSSSST22222222222");
         const actualBreakpoints = args.breakpoints.map(functionBreakpoint => {
-            console.log("TESSSSSSST");
             const { id, verified } = this._runtime.setFunctionBreakpoint(functionBreakpoint);
             const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
             bp.id = id;
