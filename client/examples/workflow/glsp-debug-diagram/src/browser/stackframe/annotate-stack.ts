@@ -15,9 +15,14 @@
  ********************************************************************************/
 import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatcher } from "@glsp/sprotty-client/lib";
 import { GLSPDiagramWidget } from "@glsp/theia-integration/lib/browser";
-import { ApplicationShell } from "@theia/core/lib/browser";
+import { ApplicationShell, WidgetOpenerOptions } from "@theia/core/lib/browser";
+import URI from "@theia/core/lib/common/uri";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
+import { DebugSource } from "@theia/debug/lib/browser/model/debug-source";
 import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
+import { EditorManager } from "@theia/editor/lib/browser";
+
+import { MockEditorManager } from "../mock-editor-manager";
 
 
 
@@ -29,36 +34,75 @@ export class AnnotateStack {
     private shell: ApplicationShell;
     private currentFrame: DebugStackFrame;
     private session: DebugSession;
+    private editorManager: EditorManager;
 
-    constructor(session: DebugSession, shell: ApplicationShell) {
+    constructor(session: DebugSession, shell: ApplicationShell, editorManager: MockEditorManager) {
         this.session = session;
         this.shell = shell;
-        this.session.onDidChange(() => this.annotateStack());
+        this.editorManager = editorManager;
+        this.session.onDidChange(async () => this.annotateStack());
     }
 
 
-    private sendAction(action: Action) {
-        const widgets = this.shell.widgets;
-        for (const currentDiagram of widgets)
-            if (currentDiagram instanceof GLSPDiagramWidget && this.currentFrame.source && currentDiagram.uri.path.base === this.currentFrame.source.uri.path.base) {
-                this.actionDispatcher = currentDiagram.actionDispatcher;
-                if (this.actionDispatcher) {
-                    this.actionDispatcher.dispatch(action);
+    private async sendAction(action: Action) {
+        const widgets = await this.shell.getWidgets("main").filter(async widget => {
+            if (widget && widget instanceof GLSPDiagramWidget) {
+                if (this.currentFrame.source) {
+                    if (this.currentFrame.source.uri.path.base === widget.uri.path.base) {
+                        return widget;
+                    } else {
+                        await this.open();
+                    }
                 }
             }
+            return undefined;
+        });
+        if (widgets) {
+            for (const currentDiagram of widgets)
+                if (currentDiagram instanceof GLSPDiagramWidget && this.currentFrame.source && currentDiagram.uri.path.base === this.currentFrame.source.uri.path.base) {
+                    this.actionDispatcher = currentDiagram.actionDispatcher;
+                    if (this.actionDispatcher) {
+                        this.actionDispatcher.dispatch(action);
+                    }
+                }
+        }
     }
 
     public async annotateStack() {
         if (this.session.currentFrame && (this.currentFrame !== this.session.currentFrame)) {
             if (this.currentFrame) {
-                this.clearStackAnnotation();
+                await this.clearStackAnnotation();
             }
             this.currentFrame = this.session.currentFrame;
-            this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
+            await this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
         }
     }
 
-    public clearStackAnnotation() {
-        this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
+    public async clearStackAnnotation() {
+        await this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
+    }
+
+    get source(): DebugSource | undefined {
+        return this.currentFrame && this.currentFrame.source && this.session && this.session.getSource(this.currentFrame.source);
+    }
+
+    get uri(): URI | undefined {
+        return this.currentFrame && this.currentFrame.source && this.currentFrame.source.uri;
+    }
+
+    async open(options: WidgetOpenerOptions = {
+        mode: 'reveal'
+    }): Promise<void> {
+        if (this.source) {
+            await this.source.open({
+                ...options
+            });
+        } else {
+            if (this.uri) {
+                await this.editorManager.open(this.uri, {
+                    ...options
+                });
+            }
+        }
     }
 }

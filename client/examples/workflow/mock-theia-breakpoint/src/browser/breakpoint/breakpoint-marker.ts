@@ -86,14 +86,14 @@ export namespace FunctionBreakpoint {
 }
 
 export interface GLSPBreakpoint extends BaseBreakpoint {
-    path: string;
+    uri: string;
     name: string;
 }
 export namespace GLSPBreakpoint {
-    export function create(path: string, data: string, origin?: GLSPBreakpoint): GLSPBreakpoint {
+    export function create(uri: URI, data: string, origin?: GLSPBreakpoint): GLSPBreakpoint {
         return {
             id: origin ? origin.id : UUID.uuid4(),
-            path: origin ? origin.path : path,
+            uri: uri.toString(),
             enabled: origin ? origin.enabled : true,
             name: origin ? origin.name : data
         };

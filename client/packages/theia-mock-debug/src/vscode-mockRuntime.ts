@@ -537,9 +537,9 @@ export class MockRuntime extends EventEmitter {
 
     public setGLSPBreakpoint(breakpoint: any): MockFunctionBreakpoint {
         console.log("Here");
-        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.path, verified: false };
+        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.uri, verified: false };
 
-        let path = breakpoint.path;
+        let path = breakpoint.uri;
         console.log("URI: " + path);
         const char = path.charAt(2);
         if (char === ':') {

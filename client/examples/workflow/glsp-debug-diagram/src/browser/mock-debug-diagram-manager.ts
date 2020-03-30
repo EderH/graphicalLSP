@@ -41,7 +41,7 @@ export class MockDebugDiagramManager {
     protected init(): void {
         this.debugManager.onDidStartDebugSession(
             session => {
-                this.sessions.set(session.id, new AnnotateStack(session, this.shell));
+                this.sessions.set(session.id, new AnnotateStack(session, this.shell, this.editorManager));
             });
         /*this.debugManager.onDidStopDebugSession(session => {
             const annotateStack = this.sessions.get(session.id);

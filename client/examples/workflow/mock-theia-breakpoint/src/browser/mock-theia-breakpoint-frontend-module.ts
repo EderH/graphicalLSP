@@ -23,7 +23,6 @@ import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
 import { DebugFrontendApplicationContribution } from "./debug-frontend-application-contribution";
 
 
-
 export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here
 

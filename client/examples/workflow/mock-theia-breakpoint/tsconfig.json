@@ -3,7 +3,13 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "reactNamespace": "JSX",
+    "lib": [
+      "es6",
+      "dom",
+      "ES2017"
+    ]
   },
   "include": [
     "src"

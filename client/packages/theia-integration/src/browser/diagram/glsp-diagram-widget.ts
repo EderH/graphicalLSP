@@ -83,6 +83,7 @@ export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 export class GLSPBreakpointService {
 
     protected breakpoints: SModelElement[] = [];
+    protected glspBreakpoints: GLSPBreakpoint[] = [];
     readonly breakpointsChangedEmitter: Emitter<void> = new Emitter<void>();
 
     constructor(
@@ -119,6 +120,10 @@ export class GLSPBreakpointService {
             const breakpoint = this.breakpoints.find(bp => bp.id === selectedElement.id);
             if (!breakpoint) {
                 this.breakpoints.push(selectedElement);
+                const path = this.getCurrentWidgetPath();
+                if (path) {
+                    this.glspBreakpoints.push(GLSPBreakpoint.create(path, selectedElement.id));
+                }
             }
         }
         this.breakpointsChangedEmitter.fire();
@@ -137,6 +142,7 @@ export class GLSPBreakpointService {
     public removeBreakpoint(selectedElements: SModelElement[]) {
         for (const selectedElement of selectedElements) {
             this.breakpoints = this.breakpoints.filter(bp => bp.id !== selectedElement.id);
+            this.glspBreakpoints = this.glspBreakpoints.filter(bp => bp.id !== selectedElement.id);
         }
         this.breakpointsChangedEmitter.fire();
     }
@@ -146,15 +152,7 @@ export class GLSPBreakpointService {
     }
 
     public getBreakpoints() {
-        const glspBreakpoints: GLSPBreakpoint[] = [];
-
-        for (const breakpoint of this.breakpoints) {
-            const path = this.getCurrentWidgetPath();
-            if (path) {
-                glspBreakpoints.push(GLSPBreakpoint.create(path, breakpoint.id));
-            }
-        }
-        return glspBreakpoints;
+        return this.glspBreakpoints;
     }
 }
 
