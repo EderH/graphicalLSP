@@ -16,8 +16,8 @@
 import { UUID } from "@phosphor/coreutils";
 import URI from "@theia/core/lib/common/uri";
 import { Marker } from "@theia/markers/lib/common/marker";
+import { SModelElement } from "sprotty/lib";
 import { DebugProtocol } from "vscode-debugprotocol/lib/debugProtocol";
-
 
 export const BREAKPOINT_KIND = 'breakpoint';
 
@@ -87,15 +87,15 @@ export namespace FunctionBreakpoint {
 
 export interface GLSPBreakpoint extends BaseBreakpoint {
     uri: string;
-    name: string;
+    element: SModelElement;
 }
 export namespace GLSPBreakpoint {
-    export function create(uri: URI, data: string, origin?: GLSPBreakpoint): GLSPBreakpoint {
+    export function create(uri: string, element: SModelElement, origin?: GLSPBreakpoint): GLSPBreakpoint {
         return {
             id: origin ? origin.id : UUID.uuid4(),
-            uri: uri.toString(),
+            uri: uri,
             enabled: origin ? origin.enabled : true,
-            name: origin ? origin.name : data
+            element: element
         };
     }
 }

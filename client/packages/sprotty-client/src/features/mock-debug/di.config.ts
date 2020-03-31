@@ -19,6 +19,7 @@ import { ContainerModule } from "inversify";
 import { configureCommand, configureView, TYPES } from "sprotty/lib";
 
 import { AddBreakpointViewCommand, RemoveBreakpointViewCommand } from "./add-breakpoint-view";
+import { DisableBreakpointCommand, EnableBreakpointCommand } from "./enable-breakpoint";
 import { Breakpoint } from "./model";
 import { AddBreakpointCommand, ElementBreakpoint, RemoveBreakpointCommand } from "./set-breakpoint";
 import { AnnotateStackCommand, ClearStackAnnotationCommand, ElementHighlighter } from "./set-stack-frame";
@@ -32,6 +33,8 @@ const glspMockDebugModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, RemoveBreakpointCommand);
     configureCommand({ bind, isBound }, AddBreakpointViewCommand);
     configureCommand({ bind, isBound }, RemoveBreakpointViewCommand);
+    configureCommand({ bind, isBound }, EnableBreakpointCommand);
+    configureCommand({ bind, isBound }, DisableBreakpointCommand);
     // bind(TYPES.MouseListener).to(SetBreakpointMouseListener);
     bind(TYPES.IVNodePostprocessor).to(ElementHighlighter).inSingletonScope();
     bind(TYPES.IVNodePostprocessor).to(ElementBreakpoint).inSingletonScope();

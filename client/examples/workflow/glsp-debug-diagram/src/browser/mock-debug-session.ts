@@ -79,7 +79,7 @@ export class MockDebugSession extends DebugSession {
 
     getGLSPBreakpoints(): DebugGLSPBreakpoint[] {
         const breakpoints = [];
-        for (const breakpoint of this.getBreakpoints(MockBreakpointManager.GLSP_URI)) {
+        for (const breakpoint of this._glspBreakpoints.get(MockBreakpointManager.GLSP_URI.toString()) || []) {
             if (breakpoint instanceof DebugGLSPBreakpoint) {
                 breakpoints.push(breakpoint);
             }

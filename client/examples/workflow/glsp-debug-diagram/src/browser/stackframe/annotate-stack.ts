@@ -40,23 +40,13 @@ export class AnnotateStack {
         this.session = session;
         this.shell = shell;
         this.editorManager = editorManager;
-        this.session.onDidChange(async () => this.annotateStack());
+        this.session.onDidChange(() => this.annotateStack());
     }
 
 
-    private async sendAction(action: Action) {
-        const widgets = await this.shell.getWidgets("main").filter(async widget => {
-            if (widget && widget instanceof GLSPDiagramWidget) {
-                if (this.currentFrame.source) {
-                    if (this.currentFrame.source.uri.path.base === widget.uri.path.base) {
-                        return widget;
-                    } else {
-                        await this.open();
-                    }
-                }
-            }
-            return undefined;
-        });
+    private async sendAction(action: Action): Promise<void> {
+
+        const widgets = this.shell.getWidgets("main");
         if (widgets) {
             for (const currentDiagram of widgets)
                 if (currentDiagram instanceof GLSPDiagramWidget && this.currentFrame.source && currentDiagram.uri.path.base === this.currentFrame.source.uri.path.base) {
@@ -68,17 +58,18 @@ export class AnnotateStack {
         }
     }
 
-    public async annotateStack() {
+    public async annotateStack(): Promise<void> {
         if (this.session.currentFrame && (this.currentFrame !== this.session.currentFrame)) {
             if (this.currentFrame) {
                 await this.clearStackAnnotation();
             }
             this.currentFrame = this.session.currentFrame;
+            setTimeout(() => 2000);
             await this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
         }
     }
 
-    public async clearStackAnnotation() {
+    public async clearStackAnnotation(): Promise<void> {
         await this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
     }
 

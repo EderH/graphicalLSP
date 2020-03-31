@@ -41,6 +41,7 @@ export * from './features/command-palette/server-command-palette-provider';
 export * from './features/context-menu/mouse-listener';
 export * from './features/context-menu/context-menu-service';
 export * from './features/context-menu/menu-providers';
+export * from './features/context-menu/add-breakpoint-context-menu';
 export * from './features/edit-label-validation/edit-label-validator';
 export * from './features/execute/execute-command';
 export * from './features/execute/model';
@@ -87,6 +88,7 @@ export * from "./features/mock-debug/model";
 export * from "./features/mock-debug/set-stack-frame";
 export * from "./features/mock-debug/set-breakpoint";
 export * from "./features/mock-debug/add-breakpoint-view";
+export * from "./features/mock-debug/enable-breakpoint";
 
 export {
     validationModule, saveModule, executeModule, paletteModule, toolFeedbackModule, defaultGLSPModule, modelHintsModule, glspCommandPaletteModule, requestResponseModule, //

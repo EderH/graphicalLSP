@@ -13,13 +13,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import {
+    DisableBreakpointAction,
+    EnableBreakpointAction,
+    RemoveBreakpointAction,
+    SModelElement
+} from "@glsp/sprotty-client/lib";
+import { GLSPDiagramWidget } from "@glsp/theia-integration/lib/browser/diagram/glsp-diagram-widget";
 import { Emitter } from "@theia/core";
+import { ApplicationShell } from "@theia/core/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { BreakpointManager } from "@theia/debug/lib/browser/breakpoint/breakpoint-manager";
 import { SourceBreakpoint } from "@theia/debug/lib/browser/breakpoint/breakpoint-marker";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 
 import { BaseBreakpoint, FunctionBreakpoint, GLSPBreakpoint } from "./breakpoint-marker";
+
 
 export interface BreakpointsChangeEvent<T extends BaseBreakpoint> {
     uri: URI
@@ -32,6 +41,8 @@ export type GLSPBreakpointsChangeEvent = BreakpointsChangeEvent<GLSPBreakpoint>;
 
 @injectable()
 export class MockBreakpointManager extends BreakpointManager {
+
+    @inject(ApplicationShell) protected readonly shell: ApplicationShell;
 
     protected readonly onDidChangeGLSPBreakpointsEmitter = new Emitter<GLSPBreakpointsChangeEvent>();
     readonly onDidChangeGLSPBreakpoints = this.onDidChangeGLSPBreakpointsEmitter.event;
@@ -154,6 +165,72 @@ export class MockBreakpointManager extends BreakpointManager {
         this.storage.setData('breakpoints', data);
     }
 
+    getAllBreakpointsByDiagram(): Map<string, SModelElement[]> {
+        const bpMap: Map<string, SModelElement[]> = new Map;
+        for (const breakpoint of this.getGLSPBreakpoints()) {
+            let bps = bpMap.get(breakpoint.uri);
+            if (!bps) {
+                bps = new Array<SModelElement>();
+                bpMap.set(breakpoint.uri, bps);
+            }
+            bps.push(breakpoint.element);
+        }
+        return bpMap;
+    }
+
+    setEnableAllBreakpoints(enable: boolean) {
+        const bpMap = this.getAllBreakpointsByDiagram();
+        for (const key of bpMap.keys()) {
+            const breakpoints = bpMap.get(key);
+            if (breakpoints) {
+                if (enable) {
+                    this.enableDiagramBreakpoints(key, breakpoints);
+                } else {
+                    this.disableDiagramBreakpoints(key, breakpoints);
+                }
+            }
+        }
+    }
+
+    enableDiagramBreakpoints(diagramUri: string, breakpoints: SModelElement[]) {
+        const widget = this.findWidget(diagramUri);
+        if (widget) {
+            widget.actionDispatcher.dispatch(new EnableBreakpointAction(breakpoints));
+        }
+    }
+
+    disableDiagramBreakpoints(diagramUri: string, breakpoints: SModelElement[]) {
+        const widget = this.findWidget(diagramUri);
+        if (widget) {
+            widget.actionDispatcher.dispatch(new DisableBreakpointAction(breakpoints));
+        }
+    }
+
+    removeAllBreakpoints() {
+        const bpMap = this.getAllBreakpointsByDiagram();
+        for (const key of bpMap.keys()) {
+            const breakpoints = bpMap.get(key);
+            if (breakpoints) {
+                this.removeDiagramBreakpoints(key, breakpoints);
+            }
+        }
+    }
+
+    removeDiagramBreakpoints(diagramUri: string, breakpoints: SModelElement[]) {
+        const widget = this.findWidget(diagramUri);
+        if (widget) {
+            widget.actionDispatcher.dispatch(new RemoveBreakpointAction(breakpoints));
+        }
+    }
+
+    findWidget(diagramUri: string): GLSPDiagramWidget | undefined {
+        const widgets = this.shell.getWidgets("main").filter(w => w instanceof GLSPDiagramWidget) as GLSPDiagramWidget[];
+        const widget = widgets.find(w => w.uri.path.toString() === diagramUri);
+        if (widget) {
+            return widget;
+        }
+        return undefined;
+    }
 }
 
 export namespace MockBreakpointManager {

@@ -13,21 +13,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import "../../src/browser/style/index.css";
+import "../../css/index.css";
 
-import { CommandContribution } from "@theia/core";
-import { FrontendApplicationContribution } from "@theia/core/lib/browser";
 import { ContainerModule, interfaces } from "inversify";
 
 import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
-import { DebugFrontendApplicationContribution } from "./debug-frontend-application-contribution";
-
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here
 
     bind(MockBreakpointManager).toSelf().inSingletonScope();
-    bind(DebugFrontendApplicationContribution).toSelf().inSingletonScope();
-    bind(CommandContribution).to(DebugFrontendApplicationContribution);
-    bind(FrontendApplicationContribution).toService(DebugFrontendApplicationContribution);
+
+
 });

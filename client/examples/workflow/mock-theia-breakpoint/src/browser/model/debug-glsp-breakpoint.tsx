@@ -13,16 +13,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import "../../../src/browser/style/index.css";
-
-import { DISABLED_CLASS, WidgetOpenerOptions } from "@theia/core/lib/browser";
+import { WidgetOpenerOptions } from "@theia/core/lib/browser";
 import { TreeElement } from "@theia/core/lib/browser/source-tree";
 import URI from "@theia/core/lib/common/uri";
 import { DebugSource } from "@theia/debug/lib/browser/model/debug-source";
 import * as React from "react";
+import { SModelElement } from "sprotty";
 
 import { GLSPBreakpoint } from "../breakpoint/breakpoint-marker";
 import { DebugBreakpoint, DebugBreakpointDecoration, DebugBreakpointOptions } from "./debug-breakpoint";
+
 
 export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> implements TreeElement {
 
@@ -36,6 +36,13 @@ export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> impleme
         if (breakpoint && breakpoint.enabled !== enabled) {
             breakpoint.enabled = enabled;
             this.breakpoints.setGLSPBreakpoints(breakpoints);
+            const bp = new Array<SModelElement>();
+            bp.push(breakpoint.element);
+            if (enabled) {
+                this.breakpoints.enableDiagramBreakpoints(breakpoint.uri, bp);
+            } else {
+                this.breakpoints.disableDiagramBreakpoints(breakpoint.uri, bp);
+            }
         }
     }
 
@@ -44,7 +51,7 @@ export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> impleme
     }
 
     get name(): string {
-        return this.origin.name;
+        return this.origin.element.id;
     }
 
     protected readonly setBreakpointEnabled = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,18 +64,6 @@ export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> impleme
         if (breakpoints.length !== newBreakpoints.length) {
             this.breakpoints.setGLSPBreakpoints(newBreakpoints);
         }
-    }
-
-    render(): React.ReactNode {
-        const classNames = ['theia-source-breakpoint'];
-        if (!this.isEnabled()) {
-            classNames.push(DISABLED_CLASS);
-        }
-        return <div title={this.origin.name} className={classNames.join(' ')}>
-            <span className='theia-debug-breakpoint-icon' />
-            <input type='checkbox' checked={this.origin.enabled} onChange={this.setBreakpointEnabled} />
-            {this.doRender()}
-        </div>;
     }
 
     protected doRender(): React.ReactNode {

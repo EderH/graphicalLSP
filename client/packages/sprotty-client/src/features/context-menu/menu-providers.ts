@@ -1,10 +1,3 @@
-import { injectable, multiInject, optional } from "inversify";
-import { DeleteElementAction, isDeletable, LabeledAction, Point, SModelRoot } from "sprotty";
-
-import { GLSP_TYPES } from "../../types";
-import { isSelected } from "../../utils/smodel-util";
-import { MenuItem } from "./context-menu-service";
-
 /********************************************************************************
  * Copyright (c) 2019 EclipseSource and others.
  *
@@ -20,6 +13,13 @@ import { MenuItem } from "./context-menu-service";
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { injectable, multiInject, optional } from "inversify";
+import { DeleteElementAction, isDeletable, LabeledAction, Point, SModelRoot } from "sprotty";
+
+import { GLSP_TYPES } from "../../types";
+import { isSelected } from "../../utils/smodel-util";
+import { MenuItem } from "./context-menu-service";
+
 export interface IContextMenuItemProvider {
     getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point): Promise<LabeledAction[]>;
 }

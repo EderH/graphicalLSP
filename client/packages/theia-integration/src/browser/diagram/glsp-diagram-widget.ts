@@ -82,8 +82,8 @@ export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
 export class GLSPBreakpointService {
 
-    protected breakpoints: SModelElement[] = [];
-    protected glspBreakpoints: GLSPBreakpoint[] = [];
+    private breakpoints: SModelElement[] = [];
+    private glspBreakpoints: GLSPBreakpoint[] = [];
     readonly breakpointsChangedEmitter: Emitter<void> = new Emitter<void>();
 
     constructor(
@@ -106,7 +106,7 @@ export class GLSPBreakpointService {
         }
         this.onBreakpointsChanged(() => {
             if (connector) {
-                connector.sendBreakpoints(this.getBreakpoints());
+                connector.sendBreakpoints(this.getGLSPBreakpoints());
             }
         });
     }
@@ -115,14 +115,14 @@ export class GLSPBreakpointService {
         return this.breakpointsChangedEmitter.event;
     }
 
-    public addBreakpoint(selectedElements: SModelElement[]) {
+    protected addBreakpoint(selectedElements: SModelElement[]) {
         for (const selectedElement of selectedElements) {
             const breakpoint = this.breakpoints.find(bp => bp.id === selectedElement.id);
             if (!breakpoint) {
                 this.breakpoints.push(selectedElement);
                 const path = this.getCurrentWidgetPath();
                 if (path) {
-                    this.glspBreakpoints.push(GLSPBreakpoint.create(path, selectedElement.id));
+                    this.glspBreakpoints.push(GLSPBreakpoint.create(path, selectedElement));
                 }
             }
         }
@@ -139,19 +139,19 @@ export class GLSPBreakpointService {
         return undefined;
     }
 
-    public removeBreakpoint(selectedElements: SModelElement[]) {
+    protected removeBreakpoint(selectedElements: SModelElement[]) {
         for (const selectedElement of selectedElements) {
             this.breakpoints = this.breakpoints.filter(bp => bp.id !== selectedElement.id);
-            this.glspBreakpoints = this.glspBreakpoints.filter(bp => bp.id !== selectedElement.id);
+            this.glspBreakpoints = this.glspBreakpoints.filter(bp => bp.element.id !== selectedElement.id);
         }
         this.breakpointsChangedEmitter.fire();
     }
 
-    public restoreBreakpoints() {
+    protected restoreBreakpoints() {
         new AddBreakpointAction(this.breakpoints);
     }
 
-    public getBreakpoints() {
+    protected getGLSPBreakpoints(): GLSPBreakpoint[] {
         return this.glspBreakpoints;
     }
 }

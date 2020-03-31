@@ -29,7 +29,7 @@ export interface MockFunctionBreakpoint {
     verified: boolean;
 }
 
-export interface GLSPBreakpoint {
+export interface MockGLSPBreakpoint {
     id: number;
     name: string;
     path: string;
@@ -107,7 +107,9 @@ export class MockRuntime extends EventEmitter {
     // maps from sourceFile to array of Mock breakpoints
     private _breakPoints = new Map<string, MockBreakpoint[]>();
     private _functionBreakpoints = new Map<string, MockFunctionBreakpoint[]>();
-    private _breakPointMap = new Map<string, Map<string, MockFunctionBreakpoint>>();
+
+    private _glspBreakpoints = new Map<string, MockFunctionBreakpoint[]>();
+    private _breakPointMap = new Map<string, Map<string, MockGLSPBreakpoint>>();
 
     // since we want to send breakpoint events, we will assign an id to every event
     // so that the frontend can match events with breakpoints.
@@ -485,7 +487,7 @@ export class MockRuntime extends EventEmitter {
         const lower = path.toLowerCase();
 
         let data = filename;
-        const bps = this._functionBreakpoints.get(lower) || [];
+        const bps = this._glspBreakpoints.get(lower) || [];
 
         for (let i = 0; i < bps.length; i++) {
             const entry = bps[i].name;
@@ -506,7 +508,7 @@ export class MockRuntime extends EventEmitter {
 
     sendAllBreakpointsToServer() {
         console.log("SEND");
-        const keys = Array.from(this._functionBreakpoints.keys());
+        const keys = Array.from(this._glspBreakpoints.keys());
         if (keys.length === 0) {
             this.sendEmptyBreakpointsToServer();
         } else {
@@ -535,9 +537,9 @@ export class MockRuntime extends EventEmitter {
         return bp;
     }
 
-    public setGLSPBreakpoint(breakpoint: any): MockFunctionBreakpoint {
+    public setGLSPBreakpoint(breakpoint: any): MockGLSPBreakpoint {
         console.log("Here");
-        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.uri, verified: false };
+        const bp = <MockGLSPBreakpoint>{ id: this._breakpointId++, name: breakpoint.element.id, path: breakpoint.uri, verified: true };
 
         let path = breakpoint.uri;
         console.log("URI: " + path);
@@ -553,7 +555,7 @@ export class MockRuntime extends EventEmitter {
         bp.path = lower;
         let bps = this._functionBreakpoints.get(lower);
         if (!bps) {
-            bps = new Array<MockFunctionBreakpoint>();
+            bps = new Array<MockGLSPBreakpoint>();
             this._functionBreakpoints.set(lower, bps);
         }
         bps.push(bp);
@@ -561,7 +563,7 @@ export class MockRuntime extends EventEmitter {
 
         let bpMap = this._breakPointMap.get(lower);
         if (!bpMap) {
-            bpMap = new Map<string, MockFunctionBreakpoint>();
+            bpMap = new Map<string, MockGLSPBreakpoint>();
         }
         bpMap.set(breakpoint.name, bp);
         this._breakPointMap.set(lower, bpMap);
@@ -611,7 +613,7 @@ export class MockRuntime extends EventEmitter {
         return bp;
     }
 
-    public getBreakpoint(element: string): MockFunctionBreakpoint | undefined {
+    public getBreakpoint(element: string): MockGLSPBreakpoint | undefined {
 
         const pathname = Path.resolve(this._sourceFile);
         const lower = pathname.toLowerCase();
@@ -652,7 +654,7 @@ export class MockRuntime extends EventEmitter {
      * Clear all breakpoints for file.
      */
     public clearBreakpoints(): void {
-        this._functionBreakpoints.clear();
+        this._glspBreakpoints.clear();
         this._breakPointMap.clear();
     }
 

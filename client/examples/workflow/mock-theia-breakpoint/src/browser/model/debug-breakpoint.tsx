@@ -13,8 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import "../../../src/browser/style/index.css";
-
 import { DISABLED_CLASS, LabelProvider } from "@theia/core/lib/browser";
 import { TreeElement } from "@theia/core/lib/browser/source-tree";
 import URI from "@theia/core/lib/common/uri";
@@ -25,6 +23,7 @@ import { DebugProtocol } from "vscode-debugprotocol/lib/debugProtocol";
 
 import { BaseBreakpoint } from "../breakpoint/breakpoint-marker";
 import { MockBreakpointManager } from "../breakpoint/mock-breakpoint-manager";
+
 
 export class DebugBreakpointData {
     readonly raw?: DebugProtocol.Breakpoint;
