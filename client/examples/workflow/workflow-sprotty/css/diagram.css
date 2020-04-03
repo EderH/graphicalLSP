@@ -88,6 +88,11 @@
     stroke-width: 4px;
 }
 
+.sprotty-edge.current {
+    stroke-width: 5px;
+    stroke: rgb(0, 255, 0) !important;
+}
+
 .sprotty-edge.mouseover:not(.selected) {
     stroke-width: 3px;
 }
@@ -141,6 +146,11 @@
     stroke: rgb(87, 87, 214);
 }
 
+.sprotty-node.forkOrJoin.current {
+    stroke-width: 5;
+    stroke: rgb(0, 255, 0) !important;
+}
+
 text {
     stroke-width: 0;
     stroke: #000;
@@ -185,6 +195,11 @@ polygon.sprotty-node {
     stroke: rgb(87, 87, 214);
 }
 
+.sprotty-node.current {
+    stroke-width: 5;
+    stroke: rgb(0, 255, 0) !important;
+}
+
 svg {
     border-style: solid;
     border-width: 1px;
@@ -196,12 +211,17 @@ svg {
     margin-left: -5px;
 }
 
-.sprotty-node.current {
+.sprotty-node.breakpoint {
     stroke-width: 5;
-    stroke: rgb(0, 255, 0);
+    stroke: rgb(255, 0, 0);
 }
 
-.sprotty-node.breakpoint {
+.sprotty-edge.breakpoint {
+    stroke-width: 5;
+    stroke: rgb(255, 0, 0);
+}
+
+.sprotty-edge.breakpoint .arrow {
     stroke-width: 5;
     stroke: rgb(255, 0, 0);
 }

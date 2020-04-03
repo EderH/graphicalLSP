@@ -102,11 +102,10 @@ export class MockDebugSession extends LoggingDebugSession {
         this._runtime.on('breakpointValidated', (bp: MockFunctionBreakpoint) => {
             this.sendEvent(new BreakpointEvent('changed', <DebugProtocol.Breakpoint>{ verified: bp.verified, id: bp.id }));
         });
-        this._runtime.on('output', (text, filePath, line, column) => {
+        this._runtime.on('output', (category, text, filePath) => {
             const e: DebugProtocol.OutputEvent = new OutputEvent(`${text}\n`);
+            e.body.category = category;
             e.body.source = this.createSource(filePath);
-            e.body.line = this.convertDebuggerLineToClient(line);
-            e.body.column = this.convertDebuggerColumnToClient(column);
             this.sendEvent(e);
         });
         this._runtime.on('onDebuggerMessage', () => {
@@ -201,6 +200,7 @@ export class MockDebugSession extends LoggingDebugSession {
 
     protected customRequest(command: string, response: DebugProtocol.Response, args: any, request?: DebugProtocol.Request): void {
         if (command === 'setGraphicalBreakpoints') {
+            console.log("Set GLSP Breakpoints");
             this._runtime.clearBreakpoints();
             // set new GLSP breakpoints
             const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {

@@ -23,7 +23,7 @@ import { MenuItem } from "./context-menu-service";
 import { IContextMenuItemProvider } from "./menu-providers";
 
 @injectable()
-export class BreakpointContextMenuProviderRegistry implements IContextMenuItemProvider {
+export class BreakpointContextMenuItemProvider implements IContextMenuItemProvider {
     getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point): Promise<MenuItem[]> {
         const selectedElements = Array.from(root.index.all().filter(isSelected).filter(hasBreakpoint));
         return Promise.resolve([

@@ -94,7 +94,9 @@ export class MockDebugSession extends DebugSession {
         const enabled = all.filter(b => b.enabled);
         try {
             const response = await this.sendCustomRequest('setGraphicalBreakpoints', {
-                breakpoints: enabled.map(b => b.origin)
+                breakpoints: enabled.map(b => ({
+                    uri: b.origin.uri, name: b.origin.element.id
+                }))
             });
             response.body.breakpoints.map((raw: DebugProtocol.Breakpoint, index: number) => {
                 // node debug adapter returns more breakpoints sometimes

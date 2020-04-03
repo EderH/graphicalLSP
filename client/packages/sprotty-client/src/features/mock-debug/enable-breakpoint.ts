@@ -14,8 +14,17 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable } from "inversify";
-import { Action, CommandExecutionContext, CommandReturn, SModelElement, SystemCommand, TYPES } from "sprotty/lib";
+import {
+    Action,
+    CommandExecutionContext,
+    CommandReturn,
+    SModelElement,
+    SModelRoot,
+    SystemCommand,
+    TYPES
+} from "sprotty/lib";
 
+import { SModelRootListener } from "../../base/model/update-model-command";
 import { hasBreakpoint } from "./model";
 
 
@@ -73,7 +82,7 @@ export class DisableBreakpointCommand extends SystemCommand {
     static readonly KIND = DisableBreakpointAction.KIND;
 
     constructor(
-        @inject(TYPES.Action) public action: DisableBreakpointAction
+        @inject(TYPES.Action) public action: DisableBreakpointAction,
     ) {
         super();
     }
@@ -102,4 +111,33 @@ export class DisableBreakpointCommand extends SystemCommand {
     redo(context: CommandExecutionContext): CommandReturn {
         return this.execute(context);
     }
+}
+
+
+
+@injectable()
+export class RestoreBreakpoints implements SModelRootListener {
+
+    private elements: SModelElement[];
+
+    constructor(
+    ) { }
+
+    addElements(selectedElement: SModelElement) {
+        if (!this.elements.includes(selectedElement)) {
+            this.elements.push(selectedElement);
+        }
+    }
+
+    removeElements(selectedElement: SModelElement) {
+        const index = this.elements.indexOf(selectedElement);
+        if (index > -1) {
+            this.elements.splice(index);
+        }
+    }
+
+    modelRootChanged(root: Readonly<SModelRoot>): void {
+
+    }
+
 }

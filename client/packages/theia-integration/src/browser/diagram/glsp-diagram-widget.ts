@@ -147,10 +147,6 @@ export class GLSPBreakpointService {
         this.breakpointsChangedEmitter.fire();
     }
 
-    protected restoreBreakpoints() {
-        new AddBreakpointAction(this.breakpoints);
-    }
-
     protected getGLSPBreakpoints(): GLSPBreakpoint[] {
         return this.glspBreakpoints;
     }

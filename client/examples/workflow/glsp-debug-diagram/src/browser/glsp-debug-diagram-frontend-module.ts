@@ -13,6 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { GLSP_TYPES } from "@glsp/sprotty-client/lib";
 import { CommandContribution } from "@theia/core";
 import { OpenHandler } from "@theia/core/lib/browser";
 import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
@@ -35,6 +36,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(MockDebugSessionFactory).toSelf().inSingletonScope();
     bind(DebugDiagramFrontendApplicationContribution).toSelf().inSingletonScope();
     bind(CommandContribution).to(DebugDiagramFrontendApplicationContribution);
+    bind(GLSP_TYPES.SModelRootListener).to(DebugDiagramFrontendApplicationContribution);
     bind(MockEditorManager).toSelf().inSingletonScope();
     bind(OpenHandler).toService(MockEditorManager);
 

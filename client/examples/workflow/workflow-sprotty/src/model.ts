@@ -20,6 +20,7 @@ import {
     connectableFeature,
     deletableFeature,
     DiamondNode,
+    editFeature,
     executeCommandFeature,
     fadeFeature,
     highlightElementFeature,
@@ -51,8 +52,8 @@ export class TaskNode extends RectangularNode implements Nameable, WithEditableL
     duration?: number;
     taskType?: string;
     reference?: string;
-    current?: boolean;
-    breakpoint?: boolean;
+    current: boolean = false;
+    breakpoint: boolean = false;
 
     get editableLabel() {
         const headerComp = this.children.find(element => element.type === 'comp:header');
@@ -66,11 +67,23 @@ export class TaskNode extends RectangularNode implements Nameable, WithEditableL
     }
 }
 
-export class WeightedEdge extends SEdge {
+export class GLSPEdge extends SEdge {
+    static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
+        hoverFeedbackFeature, highlightElementFeature, setBreakpointFeature];
+    current: boolean = false;
+    breakpoint: boolean = false;
+}
+
+export class WeightedEdge extends GLSPEdge {
     probability?: string;
+
 }
 
 export class ActivityNode extends DiamondNode {
+    static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
+        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, highlightElementFeature, setBreakpointFeature];
+    current: boolean = false;
+    breakpoint: boolean = false;
     nodeType: string = ActivityNodeSchema.Type.UNDEFINED;
     size = {
         width: 32,

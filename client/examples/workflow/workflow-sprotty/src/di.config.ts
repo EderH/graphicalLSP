@@ -19,7 +19,7 @@ import "sprotty/css/edit-label.css";
 
 import {
     boundsModule,
-    BreakpointContextMenuProviderRegistry,
+    BreakpointContextMenuItemProvider,
     buttonModule,
     commandPaletteModule,
     configureModelElement,
@@ -28,7 +28,6 @@ import {
     defaultGLSPModule,
     defaultModule,
     DeleteContextMenuProviderRegistry,
-    DiamondNodeView,
     edgeLayoutModule,
     editLabelFeature,
     ExpandButtonView,
@@ -65,7 +64,6 @@ import {
     SButton,
     SCompartment,
     SCompartmentView,
-    SEdge,
     SGraphView,
     SLabel,
     SLabelView,
@@ -80,16 +78,26 @@ import {
 import executeCommandModule from "@glsp/sprotty-client/lib/features/execute/di.config";
 import { Container, ContainerModule } from "inversify";
 
-import { ActivityNode, Icon, TaskNode, WeightedEdge } from "./model";
-import { ForkOrJoinNodeView, IconView, TaskNodeView, WeightedEdgeView, WorkflowEdgeView } from "./workflow-views";
+import { ActivityNode, GLSPEdge, Icon, TaskNode, WeightedEdge } from "./model";
+import { RestoreBreakpoints } from "./restore-breakpoints";
+import {
+    DecisionOrMergeNodeView,
+    ForkOrJoinNodeView,
+    IconView,
+    TaskNodeView,
+    WeightedEdgeView,
+    WorkflowEdgeView
+} from "./workflow-views";
 
 const workflowDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
+    bind(RestoreBreakpoints).toSelf().inSingletonScope();
+    bind(GLSP_TYPES.SModelRootListener).toService(RestoreBreakpoints);
     rebind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
     bind(GLSP_TYPES.IMovementRestrictor).to(NoCollisionMovementRestrictor).inSingletonScope();
     bind(TYPES.ICommandPaletteActionProvider).to(RevealNamedElementActionProvider);
     bind(GLSP_TYPES.IContextMenuProvider).to(DeleteContextMenuProviderRegistry);
-    bind(GLSP_TYPES.IContextMenuProvider).to(BreakpointContextMenuProviderRegistry);
+    bind(GLSP_TYPES.IContextMenuProvider).to(BreakpointContextMenuItemProvider);
     const context = { bind, unbind, isBound, rebind };
     configureModelElement(context, 'graph', GLSPGraph, SGraphView);
     configureModelElement(context, 'task:automated', TaskNode, TaskNodeView);
@@ -103,11 +111,11 @@ const workflowDiagramModule = new ContainerModule((bind, unbind, isBound, rebind
     configureModelElement(context, 'button:expand', SButton, ExpandButtonView);
     configureModelElement(context, 'routing-point', SRoutingHandle, SRoutingHandleView);
     configureModelElement(context, 'volatile-routing-point', SRoutingHandle, SRoutingHandleView);
-    configureModelElement(context, 'edge', SEdge, WorkflowEdgeView);
+    configureModelElement(context, 'edge', GLSPEdge, WorkflowEdgeView);
     configureModelElement(context, 'edge:weighted', WeightedEdge, WeightedEdgeView);
     configureModelElement(context, 'icon', Icon, IconView);
-    configureModelElement(context, 'activityNode:merge', ActivityNode, DiamondNodeView);
-    configureModelElement(context, 'activityNode:decision', ActivityNode, DiamondNodeView);
+    configureModelElement(context, 'activityNode:merge', ActivityNode, DecisionOrMergeNodeView);
+    configureModelElement(context, 'activityNode:decision', ActivityNode, DecisionOrMergeNodeView);
     configureModelElement(context, 'activityNode:fork', ActivityNode, ForkOrJoinNodeView);
     configureModelElement(context, 'activityNode:join', ActivityNode, ForkOrJoinNodeView);
 });

@@ -59,7 +59,7 @@ export class AddBreakpointCommand extends SystemCommand {
     static readonly KIND = AddBreakpointAction.KIND;
 
     constructor(
-        @inject(TYPES.Action) public action: AddBreakpointAction
+        @inject(TYPES.Action) public action: AddBreakpointAction,
     ) {
         super();
     }
@@ -96,7 +96,7 @@ export class RemoveBreakpointCommand extends SystemCommand {
     static readonly KIND = RemoveBreakpointAction.KIND;
 
     constructor(
-        @inject(TYPES.Action) public action: RemoveBreakpointAction
+        @inject(TYPES.Action) public action: RemoveBreakpointAction,
     ) {
         super();
     }
@@ -126,6 +126,8 @@ export class RemoveBreakpointCommand extends SystemCommand {
         return this.execute(context);
     }
 }
+
+
 
 /*export class SetBreakpointMouseListener extends MouseListener {
     doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {

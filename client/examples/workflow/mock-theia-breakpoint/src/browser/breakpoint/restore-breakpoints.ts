@@ -13,19 +13,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import "../../css/index.css";
+import { SModelRoot, SModelRootListener } from "@glsp/sprotty-client/lib";
+import { injectable } from "inversify";
 
-import { GLSP_TYPES } from "@glsp/sprotty-client/lib";
-import { ContainerModule, interfaces } from "inversify";
 
-import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
-import { RestoreBreakpoints } from "./breakpoint/restore-breakpoints";
 
-export default new ContainerModule((bind: interfaces.Bind) => {
-    // add your contribution bindings here
+@injectable()
+export class RestoreBreakpoints implements SModelRootListener {
+    modelRootChanged(root: Readonly<SModelRoot>): void {
+        console.log("MODEL CHANGEd");
+    }
 
-    bind(MockBreakpointManager).toSelf().inSingletonScope();
-    bind(RestoreBreakpoints).toSelf().inSingletonScope();
-    bind(GLSP_TYPES.SModelRootListener).toService(RestoreBreakpoints);
-
-});
+}

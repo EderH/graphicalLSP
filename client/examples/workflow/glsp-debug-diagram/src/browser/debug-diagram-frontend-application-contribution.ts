@@ -17,7 +17,9 @@ import {
     DisableBreakpointAction,
     EnableBreakpointAction,
     RemoveBreakpointAction,
-    SModelElement
+    SModelElement,
+    SModelRoot,
+    SModelRootListener
 } from "@glsp/sprotty-client/lib";
 import { GLSPDiagramWidget } from "@glsp/theia-integration/lib/browser";
 import { CommandContribution, CommandRegistry } from "@theia/core";
@@ -35,7 +37,8 @@ import { AnnotateStack } from "./stackframe/annotate-stack";
 
 
 @injectable()
-export class DebugDiagramFrontendApplicationContribution implements CommandContribution {
+export class DebugDiagramFrontendApplicationContribution implements CommandContribution, SModelRootListener {
+
 
     @inject(MockBreakpointManager) protected readonly breakpointManager: MockBreakpointManager;
     @inject(DebugSessionManager) protected readonly debugManager: DebugSessionManager;
@@ -66,7 +69,23 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
                 const breakpointWidget = widget['sessionWidget']['breakpoints'];
                 breakpointWidget.source = this.debugSource;
             }
+            if (widget instanceof GLSPDiagramWidget) {
+                // this.restorBreakpoints(widget);
+            }
         });
+
+        this.shell.onDidAddWidget(widget => {
+            if (widget instanceof GLSPDiagramWidget) {
+
+            }
+        });
+    }
+
+    modelRootChanged(root: Readonly<SModelRoot>): void {
+        console.log("MODEL CHANGED ASWEELLLLL");
+        if (root && root instanceof GLSPDiagramWidget) {
+            this.restorBreakpoints(root);
+        }
     }
 
     registerCommands(registry: CommandRegistry): void {
@@ -87,6 +106,16 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
             isEnabled: () => this.breakpointManager.hasBreakpoints(),
             isVisible: widget => !(widget instanceof Widget) || (widget instanceof DebugBreakpointsWidget)
         });
+    }
+
+    restorBreakpoints(widget: GLSPDiagramWidget) {
+        const bpMap = this.getAllBreakpointsByDiagram();
+        if (bpMap) {
+            const breakpoints = bpMap.get(widget.uri.path.toString());
+            if (breakpoints) {
+                widget.actionDispatcher.dispatch(new EnableBreakpointAction(breakpoints));
+            }
+        }
     }
 
     getAllBreakpointsByDiagram(): Map<string, SModelElement[]> {

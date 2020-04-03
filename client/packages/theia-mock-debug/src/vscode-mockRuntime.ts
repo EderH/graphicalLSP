@@ -273,12 +273,14 @@ export class MockRuntime extends EventEmitter {
             this.fillStackTrace(lines, startStackData);
 
             const msg = lines.length < 2 ? '' : lines[1];
-            const headerMsg = 'Exception thrown. ' + msg + ' ';
+            const headerMsg = 'Exception thrown: ' + msg + ' ';
             if (this._stackTrace.length < 1) {
                 console.log(headerMsg);
+                this.sendEvent('output', 'stderr', headerMsg, '');
             } else {
                 const entry = this._stackTrace[0];
-                console.log(headerMsg, entry.file, entry.line);
+                console.log(headerMsg, entry.file, entry.name);
+                this.sendEvent('output', 'stderr', headerMsg, entry.file);
             }
             return;
         }
@@ -539,7 +541,7 @@ export class MockRuntime extends EventEmitter {
 
     public setGLSPBreakpoint(breakpoint: any): MockGLSPBreakpoint {
         console.log("Here");
-        const bp = <MockGLSPBreakpoint>{ id: this._breakpointId++, name: breakpoint.element.id, path: breakpoint.uri, verified: true };
+        const bp = <MockGLSPBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.uri, verified: true };
 
         let path = breakpoint.uri;
         console.log("URI: " + path);
