@@ -55,6 +55,7 @@
 
 	<modules>
 		<module>glsp-api</module>
+		<module>example/state-machine-example</module>
 		<module>example/workflow-example</module>
 		<module>example/workflow-modelserver-example</module>
 		<module>glsp-server</module>

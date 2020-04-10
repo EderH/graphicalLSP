@@ -1,0 +1,107 @@
+/********************************************************************************
+ * Copyright (c) 2019 EclipseSource and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the Eclipse
+ * Public License v. 2.0 are satisfied: GNU General Public License, version 2
+ * with the GNU Classpath Exception which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ ********************************************************************************/
+import {
+    Bounds,
+    boundsFeature,
+    CommandExecutor,
+    connectableFeature,
+    deletableFeature,
+    DiamondNode,
+    editFeature,
+    executeCommandFeature,
+    fadeFeature,
+    highlightElementFeature,
+    hoverFeedbackFeature,
+    isEditableLabel,
+    layoutableChildFeature,
+    LayoutContainer,
+    layoutContainerFeature,
+    moveFeature,
+    Nameable,
+    nameFeature,
+    popupFeature,
+    RectangularNode,
+    SEdge,
+    selectFeature,
+    setBreakpointFeature,
+    SShapeElement,
+    WithEditableLabel,
+    withEditLabelFeature
+} from "@glsp/sprotty-client/lib";
+
+import { ActivityNodeSchema } from "./model-schema";
+
+export class TaskNode extends RectangularNode implements Nameable, WithEditableLabel {
+    static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
+        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, nameFeature, withEditLabelFeature,
+        highlightElementFeature, setBreakpointFeature];
+    name: string = "";
+    duration?: number;
+    taskType?: string;
+    reference?: string;
+    current: boolean = false;
+    breakpoint: boolean = false;
+
+    get editableLabel() {
+        const headerComp = this.children.find(element => element.type === 'comp:header');
+        if (headerComp) {
+            const label = headerComp.children.find(element => element.type === 'label:heading');
+            if (label && isEditableLabel(label)) {
+                return label;
+            }
+        }
+        return undefined;
+    }
+}
+
+export class GLSPEdge extends SEdge {
+    static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
+        hoverFeedbackFeature, highlightElementFeature, setBreakpointFeature];
+    current: boolean = false;
+    breakpoint: boolean = false;
+}
+
+export class WeightedEdge extends GLSPEdge {
+    probability?: string;
+
+}
+
+export class ActivityNode extends DiamondNode {
+    static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
+        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, highlightElementFeature, setBreakpointFeature];
+    current: boolean = false;
+    breakpoint: boolean = false;
+    nodeType: string = ActivityNodeSchema.Type.UNDEFINED;
+    size = {
+        width: 32,
+        height: 32
+    };
+    strokeWidth = 1;
+}
+
+
+export class Icon extends SShapeElement implements LayoutContainer, CommandExecutor {
+    static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature, executeCommandFeature];
+
+    commandId: string;
+    layout: string;
+    layoutOptions?: { [key: string]: string | number | boolean; };
+    bounds: Bounds;
+    size = {
+        width: 32,
+        height: 32
+    };
+}
