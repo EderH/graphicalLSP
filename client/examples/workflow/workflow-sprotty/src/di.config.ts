@@ -79,7 +79,6 @@ import executeCommandModule from "@glsp/sprotty-client/lib/features/execute/di.c
 import { Container, ContainerModule } from "inversify";
 
 import { ActivityNode, GLSPEdge, Icon, TaskNode, WeightedEdge } from "./model";
-import { RestoreBreakpoints } from "./restore-breakpoints";
 import {
     DecisionOrMergeNodeView,
     ForkOrJoinNodeView,
@@ -91,8 +90,6 @@ import {
 
 const workflowDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-    bind(RestoreBreakpoints).toSelf().inSingletonScope();
-    bind(GLSP_TYPES.SModelRootListener).toService(RestoreBreakpoints);
     rebind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
     bind(GLSP_TYPES.IMovementRestrictor).to(NoCollisionMovementRestrictor).inSingletonScope();
     bind(TYPES.ICommandPaletteActionProvider).to(RevealNamedElementActionProvider);

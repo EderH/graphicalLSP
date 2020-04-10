@@ -129,7 +129,13 @@ export class MockDebugSession extends LoggingDebugSession {
         response.body.supportsConfigurationDoneRequest = true;
 
         // This debug adapter supports function breakpoints.
-        response.body.supportsFunctionBreakpoints = true;
+        response.body.supportsFunctionBreakpoints = false;
+
+        response.body.supportsEvaluateForHovers = false;
+        response.body.supportsSetVariable = false;
+        response.body.supportsRestartRequest = false;
+        response.body.supportsRestartFrame = false;
+        response.body.supportsModulesRequest = false;
 
         // make VS Code to use 'evaluate' when hovering over source
         // response.body.supportsEvaluateForHovers = true;
@@ -283,34 +289,6 @@ export class MockDebugSession extends LoggingDebugSession {
     protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
 
         const variables = args.variablesReference === this._localScope ? this._runtime.localVariables : this._runtime.globalVariables;
-        /*const variables = new Array<DebugProtocol.Variable>();
-        const id = this._variableHandles.get(args.variablesReference);
-        if (id !== null) {
-            variables.push({
-                name: id + "_i",
-                type: "integer",
-                value: "123",
-                variablesReference: 0
-            });
-            variables.push({
-                name: id + "_f",
-                type: "float",
-                value: "3.14",
-                variablesReference: 0
-            });
-            variables.push({
-                name: id + "_s",
-                type: "string",
-                value: "hello world",
-                variablesReference: 0
-            });
-            variables.push({
-                name: id + "_o",
-                type: "object",
-                value: "Object",
-                variablesReference: this._variableHandles.create("object_")
-            });
-        }*/
 
         response.body = {
             variables: variables

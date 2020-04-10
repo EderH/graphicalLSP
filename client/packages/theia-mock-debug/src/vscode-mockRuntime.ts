@@ -555,10 +555,10 @@ export class MockRuntime extends EventEmitter {
         const lower = path.toLowerCase();
 
         bp.path = lower;
-        let bps = this._functionBreakpoints.get(lower);
+        let bps = this._glspBreakpoints.get(lower);
         if (!bps) {
             bps = new Array<MockGLSPBreakpoint>();
-            this._functionBreakpoints.set(lower, bps);
+            this._glspBreakpoints.set(lower, bps);
         }
         bps.push(bp);
 
