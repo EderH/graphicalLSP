@@ -9,7 +9,7 @@
     "src"
   ],
   "dependencies": {
-    "@glsp-examples/workflow-theia": "0.1.0",
+    "@glsp/theia-integration": "0.1.0",
     "@glsp/sprotty-client": "0.1.0",
     "sprotty-theia": "0.7.0",
     "mock-breakpoint": "0.1.0",
@@ -31,7 +31,7 @@
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
     "build": "tsc && yarn run lint",
-    "lint": "tslint -c ../../../configs/tslint.json --project ./tsconfig.json",
+    "lint": "tslint -c ../../configs/tslint.json --project ./tsconfig.json",
     "watch": "tsc -w"
   },
   "theiaExtensions": [

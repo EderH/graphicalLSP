@@ -13,21 +13,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { WorkflowDiagramManager } from "@glsp-examples/workflow-theia/lib/browser/diagram/workflow-diagram-manager";
+import { GLSPDiagramManager } from "@glsp/theia-integration/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager, EditorOpenerOptions } from "@theia/editor/lib/browser";
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 
 
 @injectable()
 export class MockEditorManager extends EditorManager {
 
-    @inject(WorkflowDiagramManager)
-    protected readonly workflowDiagramManager: WorkflowDiagramManager;
+    protected glspDiagramManager: GLSPDiagramManager;
 
     async open(uri: URI, options?: EditorOpenerOptions): Promise<any> {
-        const widget = await this.workflowDiagramManager.open(uri, options);
+        const widget = await this.glspDiagramManager.open(uri, options);
         return widget;
+    }
+
+    set diagramManager(glspDiagramManager: GLSPDiagramManager) {
+        this.glspDiagramManager = glspDiagramManager;
     }
 
 }
