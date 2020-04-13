@@ -18,7 +18,6 @@ package com.eclipsesource.glsp.example.statemachine.smgraph.util;
 import com.eclipsesource.glsp.example.statemachine.smgraph.*;
 
 import com.eclipsesource.glsp.graph.GBoundsAware;
-import com.eclipsesource.glsp.graph.GCompartment;
 import com.eclipsesource.glsp.graph.GEdge;
 import com.eclipsesource.glsp.graph.GEdgeLayoutable;
 import com.eclipsesource.glsp.graph.GLayouting;
@@ -88,68 +87,32 @@ public class SmGraphSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-		case SmGraphPackage.ACTIVITY_NODE: {
-			ActivityNode activityNode = (ActivityNode) theEObject;
-			T result = caseActivityNode(activityNode);
+		case SmGraphPackage.STATE: {
+			State state = (State) theEObject;
+			T result = caseState(state);
 			if (result == null)
-				result = caseGNode(activityNode);
+				result = caseGNode(state);
 			if (result == null)
-				result = caseGShapeElement(activityNode);
+				result = caseGShapeElement(state);
 			if (result == null)
-				result = caseGEdgeLayoutable(activityNode);
+				result = caseGEdgeLayoutable(state);
 			if (result == null)
-				result = caseGLayouting(activityNode);
+				result = caseGLayouting(state);
 			if (result == null)
-				result = caseGModelElement(activityNode);
+				result = caseGModelElement(state);
 			if (result == null)
-				result = caseGBoundsAware(activityNode);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case SmGraphPackage.TASK_NODE: {
-			TaskNode taskNode = (TaskNode) theEObject;
-			T result = caseTaskNode(taskNode);
-			if (result == null)
-				result = caseGNode(taskNode);
-			if (result == null)
-				result = caseGShapeElement(taskNode);
-			if (result == null)
-				result = caseGEdgeLayoutable(taskNode);
-			if (result == null)
-				result = caseGLayouting(taskNode);
-			if (result == null)
-				result = caseGModelElement(taskNode);
-			if (result == null)
-				result = caseGBoundsAware(taskNode);
+				result = caseGBoundsAware(state);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case SmGraphPackage.ICON: {
-			Icon icon = (Icon) theEObject;
-			T result = caseIcon(icon);
+		case SmGraphPackage.TRANSITION: {
+			Transition transition = (Transition) theEObject;
+			T result = caseTransition(transition);
 			if (result == null)
-				result = caseGCompartment(icon);
+				result = caseGEdge(transition);
 			if (result == null)
-				result = caseGShapeElement(icon);
-			if (result == null)
-				result = caseGLayouting(icon);
-			if (result == null)
-				result = caseGModelElement(icon);
-			if (result == null)
-				result = caseGBoundsAware(icon);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case SmGraphPackage.WEIGHTED_EDGE: {
-			WeightedEdge weightedEdge = (WeightedEdge) theEObject;
-			T result = caseWeightedEdge(weightedEdge);
-			if (result == null)
-				result = caseGEdge(weightedEdge);
-			if (result == null)
-				result = caseGModelElement(weightedEdge);
+				result = caseGModelElement(transition);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -160,62 +123,32 @@ public class SmGraphSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Activity Node</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>State</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Activity Node</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>State</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseActivityNode(ActivityNode object) {
+	public T caseState(State object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Task Node</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Transition</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Task Node</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Transition</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseTaskNode(TaskNode object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Icon</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Icon</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseIcon(Icon object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Weighted Edge</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Weighted Edge</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseWeightedEdge(WeightedEdge object) {
+	public T caseTransition(Transition object) {
 		return null;
 	}
 
@@ -306,21 +239,6 @@ public class SmGraphSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseGNode(GNode object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>GCompartment</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>GCompartment</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseGCompartment(GCompartment object) {
 		return null;
 	}
 

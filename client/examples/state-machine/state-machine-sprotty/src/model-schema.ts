@@ -15,29 +15,21 @@
  ********************************************************************************/
 import { SEdgeSchema, SNodeSchema } from "@glsp/sprotty-client/lib";
 
-export namespace ActivityNodeSchema {
-    export namespace Type {
-        export const INITIAL = 'initalNode';
-        export const FINAL = 'finalNode';
-        export const DECISION = 'decisionNode';
-        export const MERGE = 'mergeNode';
-        export const JOIN = 'joinNode';
-        export const FORK = 'forkNode';
+export namespace StateKindSchema {
+    export namespace Kind {
+        export const INITIAL = 'initalState';
+        export const FINAL = 'finalState';
+        export const DEFAULT = 'defaultState';
         export const UNDEFINED = "undefined";
     }
 }
 
-export interface TaskNodeSchema extends SNodeSchema {
+export interface StateNodeSchema extends SNodeSchema {
     name?: string
-    duration?: number
-    taskType?: string
-    reference?: string
+    kind?: string
 }
 
-export interface WeightedEdgeSchema extends SEdgeSchema {
-    probability?: string
-}
-
-export interface ActivityNodeSchema extends SNodeSchema {
-    nodeType: string
+export interface TransitionSchema extends SEdgeSchema {
+    trigger?: string
+    effect?: string
 }

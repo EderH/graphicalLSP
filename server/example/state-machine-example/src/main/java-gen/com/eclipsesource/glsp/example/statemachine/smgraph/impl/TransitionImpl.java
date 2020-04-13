@@ -16,7 +16,7 @@
 package com.eclipsesource.glsp.example.statemachine.smgraph.impl;
 
 import com.eclipsesource.glsp.example.statemachine.smgraph.SmGraphPackage;
-import com.eclipsesource.glsp.example.statemachine.smgraph.WeightedEdge;
+import com.eclipsesource.glsp.example.statemachine.smgraph.Transition;
 
 import com.eclipsesource.glsp.graph.impl.GEdgeImpl;
 
@@ -28,44 +28,65 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Weighted Edge</b></em>'.
+ * An implementation of the model object '<em><b>Transition</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link com.eclipsesource.glsp.example.statemachine.smgraph.impl.WeightedEdgeImpl#getProbability <em>Probability</em>}</li>
+ *   <li>{@link com.eclipsesource.glsp.example.statemachine.smgraph.impl.TransitionImpl#getTrigger <em>Trigger</em>}</li>
+ *   <li>{@link com.eclipsesource.glsp.example.statemachine.smgraph.impl.TransitionImpl#getEffect <em>Effect</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
+public class TransitionImpl extends GEdgeImpl implements Transition {
 	/**
-	 * The default value of the '{@link #getProbability() <em>Probability</em>}' attribute.
+	 * The default value of the '{@link #getTrigger() <em>Trigger</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getProbability()
+	 * @see #getTrigger()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String PROBABILITY_EDEFAULT = null;
+	protected static final String TRIGGER_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getProbability() <em>Probability</em>}' attribute.
+	 * The cached value of the '{@link #getTrigger() <em>Trigger</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getProbability()
+	 * @see #getTrigger()
 	 * @generated
 	 * @ordered
 	 */
-	protected String probability = PROBABILITY_EDEFAULT;
+	protected String trigger = TRIGGER_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getEffect() <em>Effect</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getEffect()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String EFFECT_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getEffect() <em>Effect</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getEffect()
+	 * @generated
+	 * @ordered
+	 */
+	protected String effect = EFFECT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public WeightedEdgeImpl() {
+	public TransitionImpl() {
 		super();
 	}
 
@@ -76,7 +97,7 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return SmGraphPackage.Literals.WEIGHTED_EDGE;
+		return SmGraphPackage.Literals.TRANSITION;
 	}
 
 	/**
@@ -85,8 +106,8 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 	 * @generated
 	 */
 	@Override
-	public String getProbability() {
-		return probability;
+	public String getTrigger() {
+		return trigger;
 	}
 
 	/**
@@ -95,12 +116,36 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 	 * @generated
 	 */
 	@Override
-	public void setProbability(String newProbability) {
-		String oldProbability = probability;
-		probability = newProbability;
+	public void setTrigger(String newTrigger) {
+		String oldTrigger = trigger;
+		trigger = newTrigger;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, SmGraphPackage.WEIGHTED_EDGE__PROBABILITY,
-					oldProbability, probability));
+			eNotify(new ENotificationImpl(this, Notification.SET, SmGraphPackage.TRANSITION__TRIGGER, oldTrigger,
+					trigger));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getEffect() {
+		return effect;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setEffect(String newEffect) {
+		String oldEffect = effect;
+		effect = newEffect;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, SmGraphPackage.TRANSITION__EFFECT, oldEffect,
+					effect));
 	}
 
 	/**
@@ -111,8 +156,10 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case SmGraphPackage.WEIGHTED_EDGE__PROBABILITY:
-			return getProbability();
+		case SmGraphPackage.TRANSITION__TRIGGER:
+			return getTrigger();
+		case SmGraphPackage.TRANSITION__EFFECT:
+			return getEffect();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -125,8 +172,11 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case SmGraphPackage.WEIGHTED_EDGE__PROBABILITY:
-			setProbability((String) newValue);
+		case SmGraphPackage.TRANSITION__TRIGGER:
+			setTrigger((String) newValue);
+			return;
+		case SmGraphPackage.TRANSITION__EFFECT:
+			setEffect((String) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -140,8 +190,11 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case SmGraphPackage.WEIGHTED_EDGE__PROBABILITY:
-			setProbability(PROBABILITY_EDEFAULT);
+		case SmGraphPackage.TRANSITION__TRIGGER:
+			setTrigger(TRIGGER_EDEFAULT);
+			return;
+		case SmGraphPackage.TRANSITION__EFFECT:
+			setEffect(EFFECT_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -155,8 +208,10 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case SmGraphPackage.WEIGHTED_EDGE__PROBABILITY:
-			return PROBABILITY_EDEFAULT == null ? probability != null : !PROBABILITY_EDEFAULT.equals(probability);
+		case SmGraphPackage.TRANSITION__TRIGGER:
+			return TRIGGER_EDEFAULT == null ? trigger != null : !TRIGGER_EDEFAULT.equals(trigger);
+		case SmGraphPackage.TRANSITION__EFFECT:
+			return EFFECT_EDEFAULT == null ? effect != null : !EFFECT_EDEFAULT.equals(effect);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -172,10 +227,12 @@ public class WeightedEdgeImpl extends GEdgeImpl implements WeightedEdge {
 			return super.toString();
 
 		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (probability: ");
-		result.append(probability);
+		result.append(" (trigger: ");
+		result.append(trigger);
+		result.append(", effect: ");
+		result.append(effect);
 		result.append(')');
 		return result.toString();
 	}
 
-} //WeightedEdgeImpl
+} //TransitionImpl

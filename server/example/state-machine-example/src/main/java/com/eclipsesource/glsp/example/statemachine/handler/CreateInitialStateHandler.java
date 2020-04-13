@@ -17,10 +17,10 @@ package com.eclipsesource.glsp.example.statemachine.handler;
 
 import com.eclipsesource.glsp.example.statemachine.utils.ModelTypes;
 
-public class CreateManualTaskHandler extends CreateTaskHandler {
+public class CreateInitialStateHandler extends CreateStateHandler {
 
-	public CreateManualTaskHandler() {
-		super(ModelTypes.MANUAL_TASK, i -> "ManualTask" + i);
+	public CreateInitialStateHandler() {
+		super(ModelTypes.STATE_INITIAL, i -> "InitialState" + i);
 	}
 
 }

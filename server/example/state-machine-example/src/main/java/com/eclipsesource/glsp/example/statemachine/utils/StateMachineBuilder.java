@@ -16,7 +16,6 @@
 package com.eclipsesource.glsp.example.statemachine.utils;
 
 
-import com.eclipsesource.glsp.example.statemachine.handler.SimulateCommandHandler;
 import com.eclipsesource.glsp.example.statemachine.smgraph.*;
 import com.eclipsesource.glsp.graph.GCompartment;
 import com.eclipsesource.glsp.graph.GLabel;
@@ -30,159 +29,106 @@ import com.eclipsesource.glsp.graph.util.GConstants;
 
 public final class StateMachineBuilder {
 
-	public static class WeightedEdgeBuilder extends AbstractGEdgeBuilder<WeightedEdge, WeightedEdgeBuilder> {
+	public static class TransitionBuilder extends AbstractGEdgeBuilder<Transition, TransitionBuilder> {
 
-		private String probability;
+		private String effect;
+		private String trigger;
 
-		public WeightedEdgeBuilder() {
-			super(ModelTypes.WEIGHTED_EDGE);
+		public TransitionBuilder() {
+			super(ModelTypes.TRANSITION);
 		}
 
-		public WeightedEdgeBuilder probability(String probability) {
-			this.probability = probability;
+		public TransitionBuilder effect(String effect) {
+			this.effect = effect;
+			return self();
+		}
+
+		public TransitionBuilder trigger(String trigger) {
+			this.trigger = trigger;
 			return self();
 		}
 
 		@Override
-		protected void setProperties(WeightedEdge edge) {
-			super.setProperties(edge);
-			edge.setProbability(probability);
+		protected void setProperties(Transition transition) {
+			super.setProperties(transition);
+			transition.setEffect(effect);
+			transition.setTrigger(trigger);
+			transition.getChildren().add(createCompartment(transition));
 		}
 
 		@Override
-		protected WeightedEdge instantiate() {
-			return SmGraphFactory.eINSTANCE.createWeightedEdge();
+		protected Transition instantiate() {
+			return SmGraphFactory.eINSTANCE.createTransition();
 		}
 
 		@Override
-		protected WeightedEdgeBuilder self() {
+		protected TransitionBuilder self() {
 			return this;
+		}
+
+		private GCompartment createCompartment(Transition transition) {
+			return new GCompartmentBuilder(ModelTypes.COMP_HEADER) //
+					.id(transition.getId() + "_header") //
+					.layout(GConstants.Layout.HBOX) //
+					.add(createCompartmentTrigger(transition)) //
+					.build();
+		}
+
+		private GLabel createCompartmentTrigger(Transition transition) {
+			return new GLabelBuilder(ModelTypes.LABEL_HEADING) //
+					.id(transition.getId() + "_classname") //
+					.text(transition.getTrigger() + " | " + transition.getEffect()) //
+					.build();
 		}
 
 	}
 
-	public static class ActivityNodeBuilder extends AbstractGNodeBuilder<ActivityNode, ActivityNodeBuilder> {
-		protected String nodeType;
-
-		public ActivityNodeBuilder(String type, String nodeType) {
-			super(type);
-			this.nodeType = nodeType;
-		}
-
-		@Override
-		protected void setProperties(ActivityNode node) {
-			super.setProperties(node);
-			node.setNodeType(nodeType);
-		}
-
-		@Override
-		protected ActivityNode instantiate() {
-			return SmGraphFactory.eINSTANCE.createActivityNode();
-		}
-
-		@Override
-		protected ActivityNodeBuilder self() {
-			return this;
-		}
-	}
-
-	public static class TaskNodeBuilder extends AbstractGNodeBuilder<TaskNode, TaskNodeBuilder> {
+	public static class StateBuilder extends AbstractGNodeBuilder<State, StateBuilder> {
 		private String name;
-		private String taskType;
-		private int duration;
+		private String kind;
 
-		public TaskNodeBuilder(String type, String name, String taskType, int duration) {
+		public StateBuilder(String type, String name, String kind) {
 			super(type);
 			this.name = name;
-			this.taskType = taskType;
-			this.duration = duration;
+			this.kind = kind;
 
 		}
 
 		@Override
-		protected TaskNode instantiate() {
-			return SmGraphFactory.eINSTANCE.createTaskNode();
+		protected State instantiate() {
+			return SmGraphFactory.eINSTANCE.createState();
 		}
 
 		@Override
-		protected TaskNodeBuilder self() {
+		protected StateBuilder self() {
 			return this;
 		}
 
 		@Override
-		public void setProperties(TaskNode taskNode) {
-			super.setProperties(taskNode);
-			taskNode.setName(name);
-			taskNode.setTaskType(taskType);
-			taskNode.setDuration(duration);
-			taskNode.setLayout(GConstants.Layout.VBOX);
-			taskNode.getChildren().add(createCompartment(taskNode));
+		public void setProperties(State state) {
+			super.setProperties(state);
+			state.setName(name);
+			state.setKind(kind);
+			state.setLayout(GConstants.Layout.VBOX);
+			state.getChildren().add(createCompartment(state));
 		}
 
-		private GCompartment createCompartment(TaskNode taskNode) {
+		private GCompartment createCompartment(State state) {
 			return new GCompartmentBuilder(ModelTypes.COMP_HEADER) //
-					.id(taskNode.getId() + "_header") //
+					.id(state.getId() + "_header") //
 					.layout(GConstants.Layout.HBOX) //
-					.add(createCompartmentIcon(taskNode)) //
-					.add(createCompartmentHeader(taskNode)) //
+					.add(createCompartmentHeader(state)) //
 					.build();
 		}
 
-		private GLabel createCompartmentHeader(TaskNode taskNode) {
+		private GLabel createCompartmentHeader(State state) {
 			return new GLabelBuilder(ModelTypes.LABEL_HEADING) //
-					.id(taskNode.getId() + "_classname") //
-					.text(taskNode.getName()) //
+					.id(state.getId() + "_classname") //
+					.text(state.getName()) //
 					.build();
 		}
 
-		private Icon createCompartmentIcon(TaskNode taskNode) {
-			return new IconBuilder() //
-					.id(taskNode.getId() + "_icon") //
-					.layout(GConstants.Layout.STACK) //
-					.commandId(SimulateCommandHandler.SIMULATE_COMMAND_ID) //
-					.layoutOptions(new GLayoutOptionsBuilder() //
-							.hAlign("center") //
-							.resizeContainer(false) //
-							.build()) //
-					.add(createCompartmentIconLabel(taskNode)).build();
-		}
 
-		private GLabel createCompartmentIconLabel(TaskNode taskNode) {
-			return new GLabelBuilder(ModelTypes.LABEL_ICON) //
-					.id(taskNode.getId() + "_ticon") //
-					.text("" + taskNode.getTaskType().toUpperCase().charAt(0)) //
-					.build();
-		}
-
-	}
-
-	public static class IconBuilder extends AbstractGCompartmentBuilder<Icon, IconBuilder> {
-		private String commandId;
-
-		public IconBuilder() {
-			super(ModelTypes.ICON);
-		}
-
-		public IconBuilder commandId(String commandId) {
-			this.commandId = commandId;
-			return self();
-		}
-
-		@Override
-		protected Icon instantiate() {
-			return SmGraphFactory.eINSTANCE.createIcon();
-		}
-
-		@Override
-		protected void setProperties(Icon comp) {
-			super.setProperties(comp);
-			comp.setCommandId(commandId);
-		}
-
-		@Override
-		protected IconBuilder self() {
-			return this;
-		}
 
 	}
 

@@ -125,32 +125,6 @@
     text-anchor: middle;
 }
 
-.sprotty-node.task {
-    stroke-width: 1px;
-    stroke: black;
-}
-
-.sprotty-node.task.automated {
-    fill: gray;
-}
-
-.sprotty-node.task.manual {
-    fill: lightblue;
-}
-
-.sprotty-node.forkOrJoin {
-    fill: black;
-}
-
-.sprotty-node.forkOrJoin.selected {
-    stroke: rgb(87, 87, 214);
-}
-
-.sprotty-node.forkOrJoin.current {
-    stroke-width: 5;
-    stroke: rgb(0, 255, 0) !important;
-}
-
 text {
     stroke-width: 0;
     stroke: #000;
@@ -158,30 +132,6 @@ text {
     font-family: sans-serif;
     font-size: 8pt;
     text-anchor: middle;
-}
-
-.sprotty-edge.weighted.low, .sprotty-edge.weighted.low .arrow {
-    stroke: lightblue
-}
-
-.sprotty-edge.weighted.low .arrow {
-    fill: lightblue;
-}
-
-.sprotty-edge.weighted, .sprotty-edge.weighted .arrow, .sprotty-edge.weighted.medium, .sprotty-edge.weighted.medium .arrow {
-    stroke: rgb(53, 53, 226);
-}
-
-.sprotty-edge.weighted .arrow, .sprotty-edge.weighted.medium .arrow {
-    fill: rgb(53, 53, 226);
-}
-
-.sprotty-edge.weighted.high, .sprotty-edge.weighted.high .arrow {
-    stroke: darkblue
-}
-
-.sprotty-edge.weighted.high .arrow {
-    fill: darkblue;
 }
 
 polygon.sprotty-node {
@@ -224,4 +174,19 @@ svg {
 .sprotty-edge.breakpoint .arrow {
     stroke-width: 5;
     stroke: rgb(255, 0, 0);
+}
+
+.sprotty-node.state.initial {
+    fill: black;
+}
+
+.sprotty-node.state.final {
+    fill: white;
+    stroke: black;
+    stroke-width: 5;
+}
+
+.sprotty-node.state {
+    stroke-width: 1px;
+    stroke: black;
 }

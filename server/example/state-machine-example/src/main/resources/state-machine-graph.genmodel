@@ -10,28 +10,13 @@
   <foreignModel>state-machine-graph.ecore</foreignModel>
   <genPackages prefix="SmGraph" basePackage="com.eclipsesource.glsp.example.statemachine"
       disposableProviderFactory="true" ecorePackage="state-machine-graph.ecore#/">
-    <genClasses image="false" ecoreClass="state-machine-graph.ecore#//ActivityNode">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//ActivityNode/nodeType"/>
+    <genClasses ecoreClass="state-machine-graph.ecore#//State">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//State/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//State/kind"/>
     </genClasses>
-    <genClasses ecoreClass="state-machine-graph.ecore#//DecisionNode"/>
-    <genClasses ecoreClass="state-machine-graph.ecore#//MergeNode"/>
-    <genClasses image="false" ecoreClass="state-machine-graph.ecore#//TaskNode">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//TaskNode/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//TaskNode/expanded"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//TaskNode/duration"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//TaskNode/taskType"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//TaskNode/reference"/>
+    <genClasses ecoreClass="state-machine-graph.ecore#//Transition">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//Transition/trigger"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//Transition/effect"/>
     </genClasses>
-    <genClasses ecoreClass="state-machine-graph.ecore#//AutomatedTask"/>
-    <genClasses ecoreClass="state-machine-graph.ecore#//ManualTask"/>
-    <genClasses ecoreClass="state-machine-graph.ecore#//Icon">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//Icon/commandId"/>
-    </genClasses>
-    <genClasses ecoreClass="state-machine-graph.ecore#//WeightedEdge">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute state-machine-graph.ecore#//WeightedEdge/probability"/>
-    </genClasses>
-    <genClasses ecoreClass="state-machine-graph.ecore#//LabelHeading"/>
-    <genClasses ecoreClass="state-machine-graph.ecore#//LabelText"/>
-    <genClasses ecoreClass="state-machine-graph.ecore#//LabelIcon"/>
   </genPackages>
 </genmodel:GenModel>

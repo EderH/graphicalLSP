@@ -30,7 +30,7 @@ import com.eclipsesource.glsp.api.action.kind.DeleteOperationAction;
 import com.eclipsesource.glsp.api.model.GraphicalModelState;
 import com.eclipsesource.glsp.api.provider.CommandPaletteActionProvider;
 import com.eclipsesource.glsp.api.types.LabeledAction;
-import com.eclipsesource.glsp.example.statemachine.smgraph.TaskNode;
+import com.eclipsesource.glsp.example.statemachine.smgraph.State;
 import com.eclipsesource.glsp.example.statemachine.utils.ModelTypes;
 import com.eclipsesource.glsp.graph.GModelElement;
 import com.eclipsesource.glsp.graph.GModelIndex;
@@ -50,31 +50,28 @@ public class StateMachineCommandPaletteActionProvider implements CommandPaletteA
 
 		// Create node actions are always possible
 		actions.addAll(Sets.newHashSet(
-				new LabeledAction("Create Automated Task", "fa-plus-square",
-						new CreateNodeOperationAction(ModelTypes.AUTOMATED_TASK,
+				new LabeledAction("Create Initial State", "fa-plus-square",
+						new CreateNodeOperationAction(ModelTypes.STATE_INITIAL,
 								lastMousePosition.orElse(point(0, 0)))),
-				new LabeledAction("Create Manual Task", "fa-plus-square",
-						new CreateNodeOperationAction(ModelTypes.MANUAL_TASK, lastMousePosition.orElse(point(0, 0)))),
-				new LabeledAction("Create Merge Node", "fa-plus-square",
-						new CreateNodeOperationAction(ModelTypes.MERGE_NODE, lastMousePosition.orElse(point(0, 0)))),
-				new LabeledAction("Create Decision Node", "fa-plus-square", new CreateNodeOperationAction(
-						ModelTypes.DECISION_NODE, lastMousePosition.orElse(point(0, 0))))));
+				new LabeledAction("Create Final State", "fa-plus-square",
+						new CreateNodeOperationAction(ModelTypes.STATE_FINAL, lastMousePosition.orElse(point(0, 0)))),
+				new LabeledAction("Create State", "fa-plus-square",
+						new CreateNodeOperationAction(ModelTypes.STATE_DEFAULT, lastMousePosition.orElse(point(0, 0))))));
 
 		// Create edge actions between two nodes
 		if (selectedElements.size() == 1) {
 			GModelElement element = selectedElements.iterator().next();
 			if (element instanceof GNode) {
-				actions.addAll(createEdgeActions((GNode) element, index.getAllByClass(TaskNode.class)));
+				actions.addAll(createEdgeActions((GNode) element, index.getAllByClass(State.class)));
 			}
 		} else if (selectedElements.size() == 2) {
 			Iterator<GModelElement> iterator = selectedElements.iterator();
 			GModelElement firstElement = iterator.next();
 			GModelElement secondElement = iterator.next();
-			if (firstElement instanceof TaskNode && secondElement instanceof TaskNode) {
+			if (firstElement instanceof State && secondElement instanceof State) {
 				GNode firstNode = (GNode) firstElement;
 				GNode secondNode = (GNode) secondElement;
-				actions.add(createEdgeAction("Connect with Edge", firstNode, secondNode));
-				actions.add(createWeightedEdgeAction("Connect with Weighted Edge", firstNode, secondNode));
+				actions.add(createTransitionAction("Connect with Transition", firstNode, secondNode));
 			}
 		}
 
@@ -91,25 +88,18 @@ public class StateMachineCommandPaletteActionProvider implements CommandPaletteA
 	private Set<LabeledAction> createEdgeActions(GNode source, Set<? extends GNode> targets) {
 		Set<LabeledAction> actions = Sets.newLinkedHashSet();
 		// add first all edge, then all weighted edge actions to keep a nice order
-		targets.forEach(node -> actions.add(createEdgeAction("Create Edge to " + getLabel(node), source, node)));
-		targets.forEach(node -> actions
-				.add(createWeightedEdgeAction("Create Weighted Edge to " + getLabel(node), source, node)));
+		targets.forEach(node -> actions.add(createTransitionAction("Create Transition to " + getLabel(node), source, node)));
 		return actions;
 	}
 
-	private LabeledAction createWeightedEdgeAction(String label, GNode source, GNode node) {
+	private LabeledAction createTransitionAction(String label, GNode source, GNode node) {
 		return new LabeledAction(label, "fa-plus-square",
-				new CreateConnectionOperationAction(ModelTypes.WEIGHTED_EDGE, source.getId(), node.getId()));
-	}
-
-	private LabeledAction createEdgeAction(String label, GNode source, GNode node) {
-		return new LabeledAction(label, "fa-plus-square",
-				new CreateConnectionOperationAction(EDGE, source.getId(), node.getId()));
+				new CreateConnectionOperationAction(ModelTypes.TRANSITION, source.getId(), node.getId()));
 	}
 
 	private String getLabel(GNode node) {
-		if (node instanceof TaskNode) {
-			return ((TaskNode) node).getName();
+		if (node instanceof State) {
+			return ((State) node).getName();
 		}
 		return node.getId();
 	}

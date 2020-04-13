@@ -35,40 +35,22 @@ public interface SmGraphFactory extends EFactory {
 	SmGraphFactory eINSTANCE = com.eclipsesource.glsp.example.statemachine.smgraph.impl.SmGraphFactoryImpl.init();
 
 	/**
-	 * Returns a new object of class '<em>Activity Node</em>'.
+	 * Returns a new object of class '<em>State</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Activity Node</em>'.
+	 * @return a new object of class '<em>State</em>'.
 	 * @generated
 	 */
-	ActivityNode createActivityNode();
+	State createState();
 
 	/**
-	 * Returns a new object of class '<em>Task Node</em>'.
+	 * Returns a new object of class '<em>Transition</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Task Node</em>'.
+	 * @return a new object of class '<em>Transition</em>'.
 	 * @generated
 	 */
-	TaskNode createTaskNode();
-
-	/**
-	 * Returns a new object of class '<em>Icon</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Icon</em>'.
-	 * @generated
-	 */
-	Icon createIcon();
-
-	/**
-	 * Returns a new object of class '<em>Weighted Edge</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Weighted Edge</em>'.
-	 * @generated
-	 */
-	WeightedEdge createWeightedEdge();
+	Transition createTransition();
 
 	/**
 	 * Returns the package supported by this factory.

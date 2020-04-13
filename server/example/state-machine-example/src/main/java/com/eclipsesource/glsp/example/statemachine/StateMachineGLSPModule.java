@@ -30,18 +30,7 @@ import com.eclipsesource.glsp.api.model.ModelExpansionListener;
 import com.eclipsesource.glsp.api.model.ModelSelectionListener;
 import com.eclipsesource.glsp.api.provider.CommandPaletteActionProvider;
 import com.eclipsesource.glsp.api.provider.ContextMenuItemProvider;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateAutomatedTaskHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateDecisionNodeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateEdgeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateForkNodeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateJoinNodeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateManualTaskHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateMergeNodeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.CreateWeightedEdgeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.DeleteWorkflowElementHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.ReconnectEdgeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.RerouteEdgeHandler;
-import com.eclipsesource.glsp.example.statemachine.handler.SimulateCommandHandler;
+import com.eclipsesource.glsp.example.statemachine.handler.*;
 import com.eclipsesource.glsp.graph.GraphExtension;
 import com.eclipsesource.glsp.server.di.DefaultGLSPModule;
 import com.eclipsesource.glsp.server.operationhandler.ApplyLabelEditOperationHandler;
@@ -75,14 +64,10 @@ public class StateMachineGLSPModule extends DefaultGLSPModule {
 	protected Collection<Class<? extends OperationHandler>> bindOperationHandlers() {
 		return new ArrayList<Class<? extends OperationHandler>>() {
 			{
-				add(CreateAutomatedTaskHandler.class);
-				add(CreateManualTaskHandler.class);
-				add(CreateDecisionNodeHandler.class);
-				add(CreateMergeNodeHandler.class);
-				add(CreateForkNodeHandler.class);
-				add(CreateJoinNodeHandler.class);
-				add(CreateWeightedEdgeHandler.class);
-				add(CreateEdgeHandler.class);
+				add(CreateFinalStateHandler.class);
+				add(CreateDefaultStateHandler.class);
+				add(CreateInitialStateHandler.class);
+				add(CreateTransitionHandler.class);
 				add(ReconnectEdgeHandler.class);
 				add(RerouteEdgeHandler.class);
 				add(DeleteWorkflowElementHandler.class);

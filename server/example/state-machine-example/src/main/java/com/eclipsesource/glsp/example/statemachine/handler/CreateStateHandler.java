@@ -28,28 +28,28 @@ import com.eclipsesource.glsp.graph.GPoint;
 import com.eclipsesource.glsp.server.operationhandler.CreateNodeOperationHandler;
 import com.eclipsesource.glsp.server.util.GModelUtil;
 
-public abstract class CreateTaskHandler extends CreateNodeOperationHandler {
+public abstract class CreateStateHandler extends CreateNodeOperationHandler {
 
 	private Function<Integer, String> labelProvider;
 
-	public CreateTaskHandler(String elementTypeId, Function<Integer, String> labelProvider) {
+	public CreateStateHandler(String elementTypeId, Function<Integer, String> labelProvider) {
 		super(elementTypeId);
 		this.labelProvider = labelProvider;
 	}
 
 	@Override
 	protected GNode createNode(Optional<GPoint> point, GraphicalModelState modelState) {
-		int nodeCounter = GModelUtil.generateId(SmGraphPackage.Literals.TASK_NODE, "task", modelState);
+		int nodeCounter = GModelUtil.generateId(SmGraphPackage.Literals.STATE, "state", modelState);
 		String name = labelProvider.apply(nodeCounter);
-		String taskType = ModelTypes.toNodeType(elementTypeId);
-		return new StateMachineBuilder.TaskNodeBuilder(elementTypeId, name, taskType, 0) //
+		String kind = ModelTypes.toNodeType(elementTypeId);
+		return new StateMachineBuilder.StateBuilder(elementTypeId, name, kind) //
 				.position(point.orElse(null)) //
 				.build();
 	}
 
 	@Override
 	public String getLabel(AbstractOperationAction action) {
-		return "Create task";
+		return "Create state";
 	}
 
 }

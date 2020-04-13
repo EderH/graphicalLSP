@@ -69,14 +69,10 @@ public class SmGraphFactoryImpl extends EFactoryImpl implements SmGraphFactory {
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case SmGraphPackage.ACTIVITY_NODE:
-			return createActivityNode();
-		case SmGraphPackage.TASK_NODE:
-			return createTaskNode();
-		case SmGraphPackage.ICON:
-			return createIcon();
-		case SmGraphPackage.WEIGHTED_EDGE:
-			return createWeightedEdge();
+		case SmGraphPackage.STATE:
+			return createState();
+		case SmGraphPackage.TRANSITION:
+			return createTransition();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -88,9 +84,9 @@ public class SmGraphFactoryImpl extends EFactoryImpl implements SmGraphFactory {
 	 * @generated
 	 */
 	@Override
-	public ActivityNode createActivityNode() {
-		ActivityNodeImpl activityNode = new ActivityNodeImpl();
-		return activityNode;
+	public State createState() {
+		StateImpl state = new StateImpl();
+		return state;
 	}
 
 	/**
@@ -99,31 +95,9 @@ public class SmGraphFactoryImpl extends EFactoryImpl implements SmGraphFactory {
 	 * @generated
 	 */
 	@Override
-	public TaskNode createTaskNode() {
-		TaskNodeImpl taskNode = new TaskNodeImpl();
-		return taskNode;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Icon createIcon() {
-		IconImpl icon = new IconImpl();
-		return icon;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public WeightedEdge createWeightedEdge() {
-		WeightedEdgeImpl weightedEdge = new WeightedEdgeImpl();
-		return weightedEdge;
+	public Transition createTransition() {
+		TransitionImpl transition = new TransitionImpl();
+		return transition;
 	}
 
 	/**

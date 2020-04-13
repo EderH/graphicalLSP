@@ -2,64 +2,27 @@
   "id": "blubb",
   "children": [
     {
-      "name": "AutomatedTask0",
-      "taskType": "automated",
-      "id": "125c6747-427f-465d-bc04-cdb19259500e",
+      "name": "InitialState0",
+      "kind": "initialState",
+      "id": "50502532-3880-43a3-858e-b4232ca75728",
       "children": [
         {
-          "id": "125c6747-427f-465d-bc04-cdb19259500e_header",
+          "id": "50502532-3880-43a3-858e-b4232ca75728_header",
           "children": [
             {
-              "commandId": "simulate-command",
-              "id": "125c6747-427f-465d-bc04-cdb19259500e_icon",
-              "children": [
-                {
-                  "id": "125c6747-427f-465d-bc04-cdb19259500e_ticon",
-                  "type": "label:icon",
-                  "position": {
-                    "x": 8.7890625,
-                    "y": 4.796875
-                  },
-                  "size": {
-                    "width": 14.421875,
-                    "height": 22.40625
-                  },
-                  "text": "A",
-                  "alignment": {
-                    "x": 7.484375,
-                    "y": 18.40625
-                  }
-                }
-              ],
-              "type": "icon",
+              "id": "50502532-3880-43a3-858e-b4232ca75728_classname",
+              "type": "label:heading",
               "position": {
                 "x": 5.0,
                 "y": 5.0
               },
               "size": {
-                "width": 32.0,
-                "height": 32.0
-              },
-              "layout": "stack",
-              "layoutOptions": {
-                "resizeContainer": false,
-                "hAlign": "center"
-              }
-            },
-            {
-              "id": "125c6747-427f-465d-bc04-cdb19259500e_classname",
-              "type": "label:heading",
-              "position": {
-                "x": 38.0,
-                "y": 9.796875
-              },
-              "size": {
-                "width": 160.5625,
+                "width": 112.359375,
                 "height": 22.40625
               },
-              "text": "AutomatedTask3",
+              "text": "InitialState0",
               "alignment": {
-                "x": 80.640625,
+                "x": 56.140625,
                 "y": 18.40625
               }
             }
@@ -70,82 +33,45 @@
             "y": 5.0
           },
           "size": {
-            "width": 203.5625,
-            "height": 42.0
+            "width": 122.359375,
+            "height": 32.40625
           },
           "layout": "hbox"
         }
       ],
-      "type": "task:automated",
+      "type": "state:initial",
       "position": {
-        "x": 109.0,
-        "y": 154.0
+        "x": 204.0,
+        "y": 175.0
       },
       "size": {
-        "width": 213.5625,
-        "height": 52.0
+        "width": 132.359375,
+        "height": 42.40625
       },
       "layout": "vbox"
     },
     {
-      "name": "ManualTask1",
-      "taskType": "manual",
-      "id": "683f0ec3-9d82-4c16-8df8-339d0d94b5cc",
+      "name": "State1",
+      "kind": "defaultState",
+      "id": "48f05b82-d45b-4a67-bcc0-f96902af48c4",
       "children": [
         {
-          "id": "683f0ec3-9d82-4c16-8df8-339d0d94b5cc_header",
+          "id": "48f05b82-d45b-4a67-bcc0-f96902af48c4_header",
           "children": [
             {
-              "commandId": "simulate-command",
-              "id": "683f0ec3-9d82-4c16-8df8-339d0d94b5cc_icon",
-              "children": [
-                {
-                  "id": "683f0ec3-9d82-4c16-8df8-339d0d94b5cc_ticon",
-                  "type": "label:icon",
-                  "position": {
-                    "x": 7.65625,
-                    "y": 4.796875
-                  },
-                  "size": {
-                    "width": 16.6875,
-                    "height": 22.40625
-                  },
-                  "text": "M",
-                  "alignment": {
-                    "x": 8.34375,
-                    "y": 18.40625
-                  }
-                }
-              ],
-              "type": "icon",
+              "id": "48f05b82-d45b-4a67-bcc0-f96902af48c4_classname",
+              "type": "label:heading",
               "position": {
                 "x": 5.0,
                 "y": 5.0
               },
               "size": {
-                "width": 32.0,
-                "height": 32.0
-              },
-              "layout": "stack",
-              "layoutOptions": {
-                "resizeContainer": false,
-                "hAlign": "center"
-              }
-            },
-            {
-              "id": "683f0ec3-9d82-4c16-8df8-339d0d94b5cc_classname",
-              "type": "label:heading",
-              "position": {
-                "x": 38.0,
-                "y": 9.796875
-              },
-              "size": {
-                "width": 124.125,
+                "width": 60.03125,
                 "height": 22.40625
               },
-              "text": "ManualTask1",
+              "text": "State1",
               "alignment": {
-                "x": 62.0625,
+                "x": 30.015625,
                 "y": 18.40625
               }
             }
@@ -156,22 +82,264 @@
             "y": 5.0
           },
           "size": {
-            "width": 167.125,
-            "height": 42.0
+            "width": 70.03125,
+            "height": 32.40625
           },
           "layout": "hbox"
         }
       ],
-      "type": "task:manual",
+      "type": "state:default",
       "position": {
-        "x": 517.0,
-        "y": 146.0
+        "x": 495.0,
+        "y": 179.0
       },
       "size": {
-        "width": 177.125,
-        "height": 52.0
+        "width": 80.03125,
+        "height": 42.40625
       },
       "layout": "vbox"
+    },
+    {
+      "name": "State2",
+      "kind": "defaultState",
+      "id": "59e31629-c23a-45d1-80e5-440f143e83bf",
+      "children": [
+        {
+          "id": "59e31629-c23a-45d1-80e5-440f143e83bf_header",
+          "children": [
+            {
+              "id": "59e31629-c23a-45d1-80e5-440f143e83bf_classname",
+              "type": "label:heading",
+              "position": {
+                "x": 5.0,
+                "y": 5.0
+              },
+              "size": {
+                "width": 60.109375,
+                "height": 22.40625
+              },
+              "text": "State2",
+              "alignment": {
+                "x": 30.015625,
+                "y": 18.40625
+              }
+            }
+          ],
+          "type": "comp:header",
+          "position": {
+            "x": 5.0,
+            "y": 5.0
+          },
+          "size": {
+            "width": 70.109375,
+            "height": 32.40625
+          },
+          "layout": "hbox"
+        }
+      ],
+      "type": "state:default",
+      "position": {
+        "x": 495.0,
+        "y": 312.0
+      },
+      "size": {
+        "width": 80.109375,
+        "height": 42.40625
+      },
+      "layout": "vbox"
+    },
+    {
+      "name": "FinalState3",
+      "kind": "finalState",
+      "id": "fbc5ef9c-4825-4507-9cdc-87b6ad37382f",
+      "children": [
+        {
+          "id": "fbc5ef9c-4825-4507-9cdc-87b6ad37382f_header",
+          "children": [
+            {
+              "id": "fbc5ef9c-4825-4507-9cdc-87b6ad37382f_classname",
+              "type": "label:heading",
+              "position": {
+                "x": 5.0,
+                "y": 5.0
+              },
+              "size": {
+                "width": 106.796875,
+                "height": 22.40625
+              },
+              "text": "FinalState3",
+              "alignment": {
+                "x": 53.359375,
+                "y": 18.40625
+              }
+            }
+          ],
+          "type": "comp:header",
+          "position": {
+            "x": 5.0,
+            "y": 5.0
+          },
+          "size": {
+            "width": 116.796875,
+            "height": 32.40625
+          },
+          "layout": "hbox"
+        }
+      ],
+      "type": "state:final",
+      "position": {
+        "x": 749.0,
+        "y": 180.0
+      },
+      "size": {
+        "width": 126.796875,
+        "height": 42.40625
+      },
+      "layout": "vbox"
+    },
+    {
+      "trigger": "trigger",
+      "effect": "event",
+      "id": "b183831f-2344-4a97-ac80-c31aac610455",
+      "children": [
+        {
+          "id": "b183831f-2344-4a97-ac80-c31aac610455_header",
+          "children": [
+            {
+              "id": "b183831f-2344-4a97-ac80-c31aac610455_classname",
+              "type": "label:heading",
+              "size": {
+                "width": 132.84375,
+                "height": 22.40625
+              },
+              "text": "trigger | event",
+              "alignment": {
+                "x": 66.15625,
+                "y": 18.40625
+              }
+            }
+          ],
+          "type": "comp:header",
+          "size": {
+            "width": 132.84375,
+            "height": 22.40625
+          }
+        }
+      ],
+      "type": "transition",
+      "sourceId": "50502532-3880-43a3-858e-b4232ca75728",
+      "targetId": "48f05b82-d45b-4a67-bcc0-f96902af48c4"
+    },
+    {
+      "trigger": "trigger",
+      "effect": "event",
+      "id": "4c8e574a-0fef-4768-8195-d0b13e46726a",
+      "children": [
+        {
+          "id": "4c8e574a-0fef-4768-8195-d0b13e46726a_header",
+          "children": [
+            {
+              "id": "4c8e574a-0fef-4768-8195-d0b13e46726a_classname",
+              "type": "label:heading",
+              "size": {
+                "width": 132.84375,
+                "height": 22.40625
+              },
+              "text": "trigger | event",
+              "alignment": {
+                "x": 66.15625,
+                "y": 18.40625
+              }
+            }
+          ],
+          "type": "comp:header",
+          "size": {
+            "width": 132.84375,
+            "height": 22.40625
+          }
+        }
+      ],
+      "type": "transition",
+      "sourceId": "48f05b82-d45b-4a67-bcc0-f96902af48c4",
+      "targetId": "fbc5ef9c-4825-4507-9cdc-87b6ad37382f"
+    },
+    {
+      "trigger": "trigger",
+      "effect": "event",
+      "id": "26f71637-460a-44dd-bcb7-565d36bc4ccb",
+      "children": [
+        {
+          "id": "26f71637-460a-44dd-bcb7-565d36bc4ccb_header",
+          "children": [
+            {
+              "id": "26f71637-460a-44dd-bcb7-565d36bc4ccb_classname",
+              "type": "label:heading",
+              "size": {
+                "width": 132.84375,
+                "height": 22.40625
+              },
+              "text": "trigger | event",
+              "alignment": {
+                "x": 66.15625,
+                "y": 18.40625
+              }
+            }
+          ],
+          "type": "comp:header",
+          "size": {
+            "width": 132.84375,
+            "height": 22.40625
+          }
+        }
+      ],
+      "type": "transition",
+      "routingPoints": [
+        {
+          "x": 468.03515625,
+          "y": 267.703125
+        }
+      ],
+      "sourceId": "48f05b82-d45b-4a67-bcc0-f96902af48c4",
+      "targetId": "59e31629-c23a-45d1-80e5-440f143e83bf"
+    },
+    {
+      "trigger": "trigger",
+      "effect": "event",
+      "id": "8599e312-8695-4683-93fe-611c2f84874f",
+      "children": [
+        {
+          "id": "8599e312-8695-4683-93fe-611c2f84874f_header",
+          "children": [
+            {
+              "id": "8599e312-8695-4683-93fe-611c2f84874f_classname",
+              "type": "label:heading",
+              "size": {
+                "width": 132.84375,
+                "height": 22.40625
+              },
+              "text": "trigger | event",
+              "alignment": {
+                "x": 66.15625,
+                "y": 18.40625
+              }
+            }
+          ],
+          "type": "comp:header",
+          "size": {
+            "width": 132.84375,
+            "height": 22.40625
+          }
+        }
+      ],
+      "type": "transition",
+      "routingPoints": [
+        {
+          "x": 594.03515625,
+          "y": 269.703125
+        }
+      ],
+      "sourceId": "59e31629-c23a-45d1-80e5-440f143e83bf",
+      "targetId": "48f05b82-d45b-4a67-bcc0-f96902af48c4"
     }
   ],
   "type": "graph"

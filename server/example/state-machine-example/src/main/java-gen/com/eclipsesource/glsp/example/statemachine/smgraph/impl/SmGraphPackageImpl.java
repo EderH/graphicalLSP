@@ -15,12 +15,10 @@
  */
 package com.eclipsesource.glsp.example.statemachine.smgraph.impl;
 
-import com.eclipsesource.glsp.example.statemachine.smgraph.ActivityNode;
-import com.eclipsesource.glsp.example.statemachine.smgraph.Icon;
 import com.eclipsesource.glsp.example.statemachine.smgraph.SmGraphFactory;
 import com.eclipsesource.glsp.example.statemachine.smgraph.SmGraphPackage;
-import com.eclipsesource.glsp.example.statemachine.smgraph.TaskNode;
-import com.eclipsesource.glsp.example.statemachine.smgraph.WeightedEdge;
+import com.eclipsesource.glsp.example.statemachine.smgraph.State;
+import com.eclipsesource.glsp.example.statemachine.smgraph.Transition;
 
 import com.eclipsesource.glsp.graph.GraphPackage;
 
@@ -42,28 +40,14 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass activityNodeEClass = null;
+	private EClass stateEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass taskNodeEClass = null;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	private EClass iconEClass = null;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	private EClass weightedEdgeEClass = null;
+	private EClass transitionEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -138,8 +122,8 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 	 * @generated
 	 */
 	@Override
-	public EClass getActivityNode() {
-		return activityNodeEClass;
+	public EClass getState() {
+		return stateEClass;
 	}
 
 	/**
@@ -148,8 +132,8 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getActivityNode_NodeType() {
-		return (EAttribute) activityNodeEClass.getEStructuralFeatures().get(0);
+	public EAttribute getState_Name() {
+		return (EAttribute) stateEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -158,8 +142,8 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 	 * @generated
 	 */
 	@Override
-	public EClass getTaskNode() {
-		return taskNodeEClass;
+	public EAttribute getState_Kind() {
+		return (EAttribute) stateEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -168,8 +152,8 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getTaskNode_Name() {
-		return (EAttribute) taskNodeEClass.getEStructuralFeatures().get(0);
+	public EClass getTransition() {
+		return transitionEClass;
 	}
 
 	/**
@@ -178,8 +162,8 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getTaskNode_Expanded() {
-		return (EAttribute) taskNodeEClass.getEStructuralFeatures().get(1);
+	public EAttribute getTransition_Trigger() {
+		return (EAttribute) transitionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -188,68 +172,8 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getTaskNode_Duration() {
-		return (EAttribute) taskNodeEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getTaskNode_TaskType() {
-		return (EAttribute) taskNodeEClass.getEStructuralFeatures().get(3);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getTaskNode_Reference() {
-		return (EAttribute) taskNodeEClass.getEStructuralFeatures().get(4);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EClass getIcon() {
-		return iconEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getIcon_CommandId() {
-		return (EAttribute) iconEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EClass getWeightedEdge() {
-		return weightedEdgeEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getWeightedEdge_Probability() {
-		return (EAttribute) weightedEdgeEClass.getEStructuralFeatures().get(0);
+	public EAttribute getTransition_Effect() {
+		return (EAttribute) transitionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -282,21 +206,13 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 		isCreated = true;
 
 		// Create classes and their features
-		activityNodeEClass = createEClass(ACTIVITY_NODE);
-		createEAttribute(activityNodeEClass, ACTIVITY_NODE__NODE_TYPE);
+		stateEClass = createEClass(STATE);
+		createEAttribute(stateEClass, STATE__NAME);
+		createEAttribute(stateEClass, STATE__KIND);
 
-		taskNodeEClass = createEClass(TASK_NODE);
-		createEAttribute(taskNodeEClass, TASK_NODE__NAME);
-		createEAttribute(taskNodeEClass, TASK_NODE__EXPANDED);
-		createEAttribute(taskNodeEClass, TASK_NODE__DURATION);
-		createEAttribute(taskNodeEClass, TASK_NODE__TASK_TYPE);
-		createEAttribute(taskNodeEClass, TASK_NODE__REFERENCE);
-
-		iconEClass = createEClass(ICON);
-		createEAttribute(iconEClass, ICON__COMMAND_ID);
-
-		weightedEdgeEClass = createEClass(WEIGHTED_EDGE);
-		createEAttribute(weightedEdgeEClass, WEIGHTED_EDGE__PROBABILITY);
+		transitionEClass = createEClass(TRANSITION);
+		createEAttribute(transitionEClass, TRANSITION__TRIGGER);
+		createEAttribute(transitionEClass, TRANSITION__EFFECT);
 	}
 
 	/**
@@ -331,40 +247,22 @@ public class SmGraphPackageImpl extends EPackageImpl implements SmGraphPackage {
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
-		activityNodeEClass.getESuperTypes().add(theGraphPackage.getGNode());
-		taskNodeEClass.getESuperTypes().add(theGraphPackage.getGNode());
-		iconEClass.getESuperTypes().add(theGraphPackage.getGCompartment());
-		weightedEdgeEClass.getESuperTypes().add(theGraphPackage.getGEdge());
+		stateEClass.getESuperTypes().add(theGraphPackage.getGNode());
+		transitionEClass.getESuperTypes().add(theGraphPackage.getGEdge());
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(activityNodeEClass, ActivityNode.class, "ActivityNode", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getActivityNode_NodeType(), ecorePackage.getEString(), "nodeType", null, 0, 1,
-				ActivityNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-
-		initEClass(taskNodeEClass, TaskNode.class, "TaskNode", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTaskNode_Name(), ecorePackage.getEString(), "name", null, 0, 1, TaskNode.class, !IS_TRANSIENT,
+		initEClass(stateEClass, State.class, "State", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getState_Name(), ecorePackage.getEString(), "name", null, 0, 1, State.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTaskNode_Expanded(), ecorePackage.getEBoolean(), "expanded", "false", 1, 1, TaskNode.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTaskNode_Duration(), ecorePackage.getEInt(), "duration", "0", 1, 1, TaskNode.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTaskNode_TaskType(), ecorePackage.getEString(), "taskType", null, 0, 1, TaskNode.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTaskNode_Reference(), ecorePackage.getEString(), "reference", null, 0, 1, TaskNode.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getState_Kind(), ecorePackage.getEString(), "kind", null, 0, 1, State.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(iconEClass, Icon.class, "Icon", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getIcon_CommandId(), ecorePackage.getEString(), "commandId", null, 0, 1, Icon.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(weightedEdgeEClass, WeightedEdge.class, "WeightedEdge", !IS_ABSTRACT, !IS_INTERFACE,
+		initEClass(transitionEClass, Transition.class, "Transition", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getWeightedEdge_Probability(), ecorePackage.getEString(), "probability", null, 0, 1,
-				WeightedEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTransition_Trigger(), ecorePackage.getEString(), "trigger", null, 0, 1, Transition.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTransition_Effect(), ecorePackage.getEString(), "effect", null, 0, 1, Transition.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

@@ -17,10 +17,10 @@ package com.eclipsesource.glsp.example.statemachine.handler;
 
 import com.eclipsesource.glsp.example.statemachine.utils.ModelTypes;
 
-public class CreateAutomatedTaskHandler extends CreateTaskHandler {
+public class CreateFinalStateHandler extends CreateStateHandler {
 
-	public CreateAutomatedTaskHandler() {
-		super(ModelTypes.AUTOMATED_TASK, i -> "AutomatedTask" + i);
+	public CreateFinalStateHandler() {
+		super(ModelTypes.STATE_FINAL, i -> "FinalState" + i);
 	}
 
 }

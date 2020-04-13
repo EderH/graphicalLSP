@@ -15,12 +15,30 @@
  ******************************************************************************/
 package com.eclipsesource.glsp.example.statemachine.handler;
 
+import java.util.Optional;
+
+import com.eclipsesource.glsp.api.model.GraphicalModelState;
 import com.eclipsesource.glsp.example.statemachine.utils.ModelTypes;
+import com.eclipsesource.glsp.example.statemachine.utils.StateMachineBuilder;
+import com.eclipsesource.glsp.graph.GEdge;
+import com.eclipsesource.glsp.graph.GModelElement;
+import com.eclipsesource.glsp.server.operationhandler.CreateConnectionOperationHandler;
 
-public class CreateDecisionNodeHandler extends CreateActivityNodeHandler {
+public class CreateTransitionHandler extends CreateConnectionOperationHandler {
 
-	public CreateDecisionNodeHandler() {
-		super(ModelTypes.DECISION_NODE);
+	public CreateTransitionHandler() {
+		super(ModelTypes.TRANSITION);
+	}
+
+	@Override
+	protected Optional<GEdge> createConnection(GModelElement source, GModelElement target,
+			GraphicalModelState modelState) {
+		return Optional.of(new StateMachineBuilder.TransitionBuilder() //
+				.source(source) //
+				.target(target) //
+				.effect("effect") //
+				.trigger("trigger") //
+				.build());
 	}
 
 }

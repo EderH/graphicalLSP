@@ -5,20 +5,12 @@ org.eclipse.emf.examples.generator.validator plug-in to illustrate how EMF's
 code generator can be extended.
 This can be disabled with -vmargs -Dorg.eclipse.emf.examples.generator.validator=false.
 
-Package smgraph <http://www.eclipsesource.com/glsp/examples/state-machine/graph>
+Package smgraph <http://inria.atlanmod.fr/stateMachine>
 
-  Class ActivityNode -> GNode
-    Attribute nodeType : EString
-
-  Class TaskNode -> GNode
+  Class State -> GNode
     Attribute name : EString
-    Attribute expanded : EBoolean<<1..1>>
-    Attribute duration : EInt<<1..1>>
-    Attribute taskType : EString
-    Attribute reference : EString
+    Attribute kind : EString
 
-  Class Icon -> GCompartment
-    Attribute commandId : EString
-
-  Class WeightedEdge -> GEdge
-    Attribute probability : EString
+  Class Transition -> GEdge
+    Attribute trigger : EString
+    Attribute effect : EString

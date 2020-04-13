@@ -17,19 +17,7 @@ package com.eclipsesource.glsp.example.statemachine;
 
 import static com.eclipsesource.glsp.api.operations.Operation.Kind.CREATE_CONNECTION;
 import static com.eclipsesource.glsp.api.operations.Operation.Kind.CREATE_NODE;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.AUTOMATED_TASK;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.COMP_HEADER;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.DECISION_NODE;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.FORK_NODE;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.ICON;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.JOIN_NODE;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.LABEL_HEADING;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.LABEL_ICON;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.LABEL_TEXT;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.MANUAL_TASK;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.MERGE_NODE;
-import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.WEIGHTED_EDGE;
-import static com.eclipsesource.glsp.graph.DefaultTypes.EDGE;
+import static com.eclipsesource.glsp.example.statemachine.utils.ModelTypes.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,23 +39,20 @@ public class StateMachineDiagramConfiguration implements DiagramConfiguration {
 
 	@Override
 	public String getDiagramType() {
-		return "workflow-diagram";
+		return "state-machine-diagram";
 	}
 
 	@Override
 	public List<Operation> getOperations() {
-		Group nodeGroup = new Group("workflow.nodes", "Nodes");
-		Group edgeGroup = new Group("workflow.edges", "Edges");
-		Operation createAutomatedTask = new Operation("Automated Task", AUTOMATED_TASK, CREATE_NODE, nodeGroup);
-		Operation createManualTask = new Operation("Manual Task", MANUAL_TASK, CREATE_NODE, nodeGroup);
-		Operation createDecisionNode = new Operation("Decision Node", DECISION_NODE, CREATE_NODE, nodeGroup);
-		Operation createMergeNode = new Operation("Merge Node", MERGE_NODE, CREATE_NODE, nodeGroup);
-		Operation createForkNode = new Operation("Fork Node", FORK_NODE, CREATE_NODE, nodeGroup);
-		Operation createJoinNode = new Operation("Join Node", JOIN_NODE, CREATE_NODE, nodeGroup);
-		Operation createWeightedEdge = new Operation("Weighted Edge", WEIGHTED_EDGE, CREATE_CONNECTION, edgeGroup);
-		Operation createEdge = new Operation("Edge", EDGE, CREATE_CONNECTION, edgeGroup);
-		return Arrays.asList(createAutomatedTask, createManualTask, createDecisionNode, createMergeNode, createForkNode,
-				createJoinNode, createWeightedEdge, createEdge);
+		Group nodeGroup = new Group("statemachine.nodes", "Nodes");
+		Group edgeGroup = new Group("statemachine.edges", "Edges");
+		Operation createInitialState = new Operation("Initial State", STATE_INITIAL, CREATE_NODE, nodeGroup);
+		Operation createFinalState= new Operation("Final State", STATE_FINAL, CREATE_NODE, nodeGroup);
+		Operation createState = new Operation("State", STATE_DEFAULT, CREATE_NODE, nodeGroup);
+
+		Operation createTransition = new Operation("Transition", TRANSITION, CREATE_CONNECTION, edgeGroup);
+
+		return Arrays.asList(createInitialState, createFinalState, createState, createTransition);
 	}
 
 	@Override
@@ -77,37 +62,27 @@ public class StateMachineDiagramConfiguration implements DiagramConfiguration {
 		mappings.put(LABEL_TEXT, GraphPackage.Literals.GLABEL);
 		mappings.put(COMP_HEADER, GraphPackage.Literals.GCOMPARTMENT);
 		mappings.put(LABEL_ICON, GraphPackage.Literals.GLABEL);
-		mappings.put(WEIGHTED_EDGE, GraphPackage.Literals.GEDGE);
-		mappings.put(ICON, SmGraphPackage.Literals.ICON);
-		mappings.put(MERGE_NODE, SmGraphPackage.Literals.ACTIVITY_NODE);
-		mappings.put(DECISION_NODE, SmGraphPackage.Literals.ACTIVITY_NODE);
-		mappings.put(FORK_NODE, SmGraphPackage.Literals.ACTIVITY_NODE);
-		mappings.put(JOIN_NODE, SmGraphPackage.Literals.ACTIVITY_NODE);
-		mappings.put(MANUAL_TASK, SmGraphPackage.Literals.TASK_NODE);
-		mappings.put(AUTOMATED_TASK, SmGraphPackage.Literals.TASK_NODE);
+		mappings.put(STATE_FINAL, SmGraphPackage.Literals.STATE);
+		mappings.put(STATE_DEFAULT, SmGraphPackage.Literals.STATE);
+		mappings.put(STATE_INITIAL, SmGraphPackage.Literals.STATE);
+		mappings.put(TRANSITION, SmGraphPackage.Literals.TRANSITION);
 		return mappings;
 	}
 
 	@Override
 	public List<ShapeTypeHint> getNodeTypeHints() {
 		List<ShapeTypeHint> nodeHints = new ArrayList<>();
-		nodeHints.add(new ShapeTypeHint(MANUAL_TASK, true, true, false, false));
-		nodeHints.add(new ShapeTypeHint(AUTOMATED_TASK, true, true, false, false));
-		nodeHints.add(new ShapeTypeHint(FORK_NODE, true, true, false, false));
-		nodeHints.add(createDefaultNodeTypeHint(JOIN_NODE));
-		nodeHints.add(createDefaultNodeTypeHint(DECISION_NODE));
-		nodeHints.add(createDefaultNodeTypeHint(MERGE_NODE));
+		nodeHints.add(new ShapeTypeHint(STATE_DEFAULT, true, true, false, false));
+		nodeHints.add(new ShapeTypeHint(STATE_INITIAL, true, true, false, false));
+		nodeHints.add(new ShapeTypeHint(STATE_FINAL, true, true, false, false));
+
 		return nodeHints;
 	}
 
 	@Override
 	public List<EdgeTypeHint> getEdgeTypeHints() {
 		List<EdgeTypeHint> edgeHints = new ArrayList<EdgeTypeHint>();
-		edgeHints.add(createDefaultEdgeTypeHint(EDGE));
-		EdgeTypeHint weightedEdgeHint = DiagramConfiguration.super.createDefaultEdgeTypeHint(WEIGHTED_EDGE);
-		weightedEdgeHint.setSourceElementTypeIds(Arrays.asList(DECISION_NODE));
-		weightedEdgeHint.setTargetElementTypeIds(Arrays.asList(MANUAL_TASK, AUTOMATED_TASK, FORK_NODE, JOIN_NODE));
-		edgeHints.add(weightedEdgeHint);
+		edgeHints.add(createDefaultEdgeTypeHint(TRANSITION));
 		return edgeHints;
 	}
 
@@ -115,9 +90,9 @@ public class StateMachineDiagramConfiguration implements DiagramConfiguration {
 	public EdgeTypeHint createDefaultEdgeTypeHint(String elementId) {
 		EdgeTypeHint hint = DiagramConfiguration.super.createDefaultEdgeTypeHint(elementId);
 		hint.setSourceElementTypeIds(
-				Arrays.asList(MANUAL_TASK, AUTOMATED_TASK, DECISION_NODE, MERGE_NODE, FORK_NODE, JOIN_NODE));
+				Arrays.asList(STATE_DEFAULT,STATE_INITIAL));
 		hint.setTargetElementTypeIds(
-				Arrays.asList(MANUAL_TASK, AUTOMATED_TASK, DECISION_NODE, MERGE_NODE, FORK_NODE, JOIN_NODE));
+				Arrays.asList(STATE_FINAL,STATE_DEFAULT));
 		return hint;
 	}
 

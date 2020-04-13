@@ -78,15 +78,8 @@ import {
 import executeCommandModule from "@glsp/sprotty-client/lib/features/execute/di.config";
 import { Container, ContainerModule } from "inversify";
 
-import { ActivityNode, GLSPEdge, Icon, TaskNode, WeightedEdge } from "./model";
-import {
-    DecisionOrMergeNodeView,
-    ForkOrJoinNodeView,
-    IconView,
-    TaskNodeView,
-    WeightedEdgeView,
-    WorkflowEdgeView
-} from "./workflow-views";
+import { StateNode, Transition } from "./model";
+import { InitialOrFinalStateNodeView, StateNodeView, TransitionView } from "./views";
 
 const stateMachineDiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
@@ -97,8 +90,9 @@ const stateMachineDiagramModule = new ContainerModule((bind, unbind, isBound, re
     bind(GLSP_TYPES.IContextMenuProvider).to(BreakpointContextMenuItemProvider);
     const context = { bind, unbind, isBound, rebind };
     configureModelElement(context, 'graph', GLSPGraph, SGraphView);
-    configureModelElement(context, 'task:automated', TaskNode, TaskNodeView);
-    configureModelElement(context, 'task:manual', TaskNode, TaskNodeView);
+    configureModelElement(context, 'state:initial', StateNode, InitialOrFinalStateNodeView);
+    configureModelElement(context, 'state:final', StateNode, InitialOrFinalStateNodeView);
+    configureModelElement(context, 'state:default', StateNode, StateNodeView);
     configureModelElement(context, 'label:heading', SLabel, SLabelView, { enable: [editLabelFeature] });
     configureModelElement(context, 'comp:comp', SCompartment, SCompartmentView);
     configureModelElement(context, 'comp:header', SCompartment, SCompartmentView);
@@ -108,13 +102,9 @@ const stateMachineDiagramModule = new ContainerModule((bind, unbind, isBound, re
     configureModelElement(context, 'button:expand', SButton, ExpandButtonView);
     configureModelElement(context, 'routing-point', SRoutingHandle, SRoutingHandleView);
     configureModelElement(context, 'volatile-routing-point', SRoutingHandle, SRoutingHandleView);
-    configureModelElement(context, 'edge', GLSPEdge, WorkflowEdgeView);
-    configureModelElement(context, 'edge:weighted', WeightedEdge, WeightedEdgeView);
-    configureModelElement(context, 'icon', Icon, IconView);
-    configureModelElement(context, 'activityNode:merge', ActivityNode, DecisionOrMergeNodeView);
-    configureModelElement(context, 'activityNode:decision', ActivityNode, DecisionOrMergeNodeView);
-    configureModelElement(context, 'activityNode:fork', ActivityNode, ForkOrJoinNodeView);
-    configureModelElement(context, 'activityNode:join', ActivityNode, ForkOrJoinNodeView);
+    configureModelElement(context, 'transition', Transition, TransitionView);
+
+
 });
 
 export default function createContainer(widgetId: string): Container {

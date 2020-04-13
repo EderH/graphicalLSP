@@ -18,7 +18,6 @@ package com.eclipsesource.glsp.example.statemachine.smgraph.util;
 import com.eclipsesource.glsp.example.statemachine.smgraph.*;
 
 import com.eclipsesource.glsp.graph.GBoundsAware;
-import com.eclipsesource.glsp.graph.GCompartment;
 import com.eclipsesource.glsp.graph.GEdge;
 import com.eclipsesource.glsp.graph.GEdgeLayoutable;
 import com.eclipsesource.glsp.graph.GLayouting;
@@ -89,23 +88,13 @@ public class SmGraphAdapterFactory extends AdapterFactoryImpl {
 	 */
 	protected SmGraphSwitch<Adapter> modelSwitch = new SmGraphSwitch<Adapter>() {
 		@Override
-		public Adapter caseActivityNode(ActivityNode object) {
-			return createActivityNodeAdapter();
+		public Adapter caseState(State object) {
+			return createStateAdapter();
 		}
 
 		@Override
-		public Adapter caseTaskNode(TaskNode object) {
-			return createTaskNodeAdapter();
-		}
-
-		@Override
-		public Adapter caseIcon(Icon object) {
-			return createIconAdapter();
-		}
-
-		@Override
-		public Adapter caseWeightedEdge(WeightedEdge object) {
-			return createWeightedEdgeAdapter();
+		public Adapter caseTransition(Transition object) {
+			return createTransitionAdapter();
 		}
 
 		@Override
@@ -139,11 +128,6 @@ public class SmGraphAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseGCompartment(GCompartment object) {
-			return createGCompartmentAdapter();
-		}
-
-		@Override
 		public Adapter caseGEdge(GEdge object) {
 			return createGEdgeAdapter();
 		}
@@ -168,58 +152,30 @@ public class SmGraphAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link com.eclipsesource.glsp.example.statemachine.smgraph.ActivityNode <em>Activity Node</em>}'.
+	 * Creates a new adapter for an object of class '{@link com.eclipsesource.glsp.example.statemachine.smgraph.State <em>State</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see com.eclipsesource.glsp.example.statemachine.smgraph.ActivityNode
+	 * @see com.eclipsesource.glsp.example.statemachine.smgraph.State
 	 * @generated
 	 */
-	public Adapter createActivityNodeAdapter() {
+	public Adapter createStateAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link com.eclipsesource.glsp.example.statemachine.smgraph.TaskNode <em>Task Node</em>}'.
+	 * Creates a new adapter for an object of class '{@link com.eclipsesource.glsp.example.statemachine.smgraph.Transition <em>Transition</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see com.eclipsesource.glsp.example.statemachine.smgraph.TaskNode
+	 * @see com.eclipsesource.glsp.example.statemachine.smgraph.Transition
 	 * @generated
 	 */
-	public Adapter createTaskNodeAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link com.eclipsesource.glsp.example.statemachine.smgraph.Icon <em>Icon</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see com.eclipsesource.glsp.example.statemachine.smgraph.Icon
-	 * @generated
-	 */
-	public Adapter createIconAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link com.eclipsesource.glsp.example.statemachine.smgraph.WeightedEdge <em>Weighted Edge</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see com.eclipsesource.glsp.example.statemachine.smgraph.WeightedEdge
-	 * @generated
-	 */
-	public Adapter createWeightedEdgeAdapter() {
+	public Adapter createTransitionAdapter() {
 		return null;
 	}
 
@@ -304,20 +260,6 @@ public class SmGraphAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createGNodeAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link com.eclipsesource.glsp.graph.GCompartment <em>GCompartment</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see com.eclipsesource.glsp.graph.GCompartment
-	 * @generated
-	 */
-	public Adapter createGCompartmentAdapter() {
 		return null;
 	}
 

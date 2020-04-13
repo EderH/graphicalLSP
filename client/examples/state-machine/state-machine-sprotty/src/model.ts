@@ -19,7 +19,6 @@ import {
     CommandExecutor,
     connectableFeature,
     deletableFeature,
-    DiamondNode,
     editFeature,
     executeCommandFeature,
     fadeFeature,
@@ -42,18 +41,16 @@ import {
     withEditLabelFeature
 } from "@glsp/sprotty-client/lib";
 
-import { ActivityNodeSchema } from "./model-schema";
+import { StateKindSchema } from "./model-schema";
 
-export class TaskNode extends RectangularNode implements Nameable, WithEditableLabel {
+export class StateNode extends RectangularNode implements Nameable, WithEditableLabel {
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, nameFeature, withEditLabelFeature,
         highlightElementFeature, setBreakpointFeature];
     name: string = "";
-    duration?: number;
-    taskType?: string;
-    reference?: string;
     current: boolean = false;
     breakpoint: boolean = false;
+    kind: string = StateKindSchema.Kind.UNDEFINED;
 
     get editableLabel() {
         const headerComp = this.children.find(element => element.type === 'comp:header');
@@ -67,31 +64,14 @@ export class TaskNode extends RectangularNode implements Nameable, WithEditableL
     }
 }
 
-export class GLSPEdge extends SEdge {
+export class Transition extends SEdge {
     static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
-        hoverFeedbackFeature, highlightElementFeature, setBreakpointFeature];
+        hoverFeedbackFeature, highlightElementFeature, setBreakpointFeature, nameFeature];
+    trigger: string = "";
+    event: string = "";
     current: boolean = false;
     breakpoint: boolean = false;
 }
-
-export class WeightedEdge extends GLSPEdge {
-    probability?: string;
-
-}
-
-export class ActivityNode extends DiamondNode {
-    static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
-        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, highlightElementFeature, setBreakpointFeature];
-    current: boolean = false;
-    breakpoint: boolean = false;
-    nodeType: string = ActivityNodeSchema.Type.UNDEFINED;
-    size = {
-        width: 32,
-        height: 32
-    };
-    strokeWidth = 1;
-}
-
 
 export class Icon extends SShapeElement implements LayoutContainer, CommandExecutor {
     static readonly DEFAULT_FEATURES = [boundsFeature, layoutContainerFeature, layoutableChildFeature, fadeFeature, executeCommandFeature];

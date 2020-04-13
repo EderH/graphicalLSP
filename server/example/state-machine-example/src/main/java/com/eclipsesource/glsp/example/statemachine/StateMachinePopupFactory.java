@@ -23,7 +23,7 @@ import java.util.Optional;
 import com.eclipsesource.glsp.api.action.kind.RequestPopupModelAction;
 import com.eclipsesource.glsp.api.factory.PopupModelFactory;
 import com.eclipsesource.glsp.api.model.GraphicalModelState;
-import com.eclipsesource.glsp.example.statemachine.smgraph.TaskNode;
+import com.eclipsesource.glsp.example.statemachine.smgraph.State;
 import com.eclipsesource.glsp.graph.GBounds;
 import com.eclipsesource.glsp.graph.GHtmlRoot;
 import com.eclipsesource.glsp.graph.GModelElement;
@@ -32,21 +32,20 @@ import com.eclipsesource.glsp.graph.GraphFactory;
 
 public class StateMachinePopupFactory implements PopupModelFactory {
 
-	private String generateTitle(TaskNode task) {
-		return task.getName();
+	private String generateTitle(State state) {
+		return state.getName();
 	}
 
-	private String generateBody(TaskNode task) {
-		return String.format(NL + "Type: %s" + NL + "Duration: %s" + NL + " Reference: %s" + NL, task.getTaskType(),
-				task.getDuration(), task.getReference());
+	private String generateBody(State state) {
+		return String.format(NL + "Kind: %s" + NL, state.getKind());
 	}
 
 	private static final String NL = "<br>";
 
 	@Override
 	public Optional<GHtmlRoot> createPopupModel(GModelElement element, RequestPopupModelAction action, GraphicalModelState modelState) {
-		if (element != null && element instanceof TaskNode) {
-			TaskNode task = (TaskNode) element;
+		if (element != null && element instanceof State) {
+			State state = (State) element;
 			GHtmlRoot root = GraphFactory.eINSTANCE.createGHtmlRoot();
 			GBounds bounds = action.getBounds();
 			root.setCanvasBounds(bounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()));
@@ -55,12 +54,12 @@ public class StateMachinePopupFactory implements PopupModelFactory {
 			GPreRenderedElement p1 = GraphFactory.eINSTANCE.createGPreRenderedElement();
 			p1.setType("pre-rendered");
 			p1.setId("popup-title");
-			p1.setCode("<div class=\"sprotty-popup-title\">" + generateTitle(task) + "</div>");
+			p1.setCode("<div class=\"sprotty-popup-title\">" + generateTitle(state) + "</div>");
 
 			GPreRenderedElement p2 = GraphFactory.eINSTANCE.createGPreRenderedElement();
 			p2.setType("pre-rendered");
 			p2.setId("popup-body");
-			p2.setCode("<div class=\"sprotty-popup-body\">" + generateBody(task) + "</div>");
+			p2.setCode("<div class=\"sprotty-popup-body\">" + generateBody(state) + "</div>");
 			root.getChildren().addAll(Arrays.asList(p1, p2));
 			return Optional.of(root);
 		}
