@@ -18,11 +18,13 @@ package com.eclipsesource.glsp.example.statemachine.utils;
 
 import com.eclipsesource.glsp.example.statemachine.smgraph.*;
 import com.eclipsesource.glsp.graph.GCompartment;
+import com.eclipsesource.glsp.graph.GEdgePlacement;
 import com.eclipsesource.glsp.graph.GLabel;
 import com.eclipsesource.glsp.graph.builder.AbstractGCompartmentBuilder;
 import com.eclipsesource.glsp.graph.builder.AbstractGEdgeBuilder;
 import com.eclipsesource.glsp.graph.builder.AbstractGNodeBuilder;
 import com.eclipsesource.glsp.graph.builder.impl.GCompartmentBuilder;
+import com.eclipsesource.glsp.graph.builder.impl.GEdgePlacementBuilder;
 import com.eclipsesource.glsp.graph.builder.impl.GLabelBuilder;
 import com.eclipsesource.glsp.graph.builder.impl.GLayoutOptionsBuilder;
 import com.eclipsesource.glsp.graph.util.GConstants;
@@ -53,7 +55,7 @@ public final class StateMachineBuilder {
 			super.setProperties(transition);
 			transition.setEffect(effect);
 			transition.setTrigger(trigger);
-			transition.getChildren().add(createCompartment(transition));
+			transition.getChildren().add(createCompartmentTrigger(transition));
 		}
 
 		@Override
@@ -66,21 +68,20 @@ public final class StateMachineBuilder {
 			return this;
 		}
 
-		private GCompartment createCompartment(Transition transition) {
-			return new GCompartmentBuilder(ModelTypes.COMP_HEADER) //
-					.id(transition.getId() + "_header") //
-					.layout(GConstants.Layout.HBOX) //
-					.add(createCompartmentTrigger(transition)) //
-					.build();
-		}
-
 		private GLabel createCompartmentTrigger(Transition transition) {
-			return new GLabelBuilder(ModelTypes.LABEL_HEADING) //
-					.id(transition.getId() + "_classname") //
+			return new GLabelBuilder(ModelTypes.LABEL_TEXT) //
+					.id(transition.getId() + "_label_top") //
 					.text(transition.getTrigger() + " | " + transition.getEffect()) //
+					.edgePlacement(createEdgePlacement()) //
 					.build();
 		}
 
+		private GEdgePlacement createEdgePlacement() {
+			return new GEdgePlacementBuilder() //
+					.side("top") //
+					.position(0.8) //
+					.build();
+		}
 	}
 
 	public static class StateBuilder extends AbstractGNodeBuilder<State, StateBuilder> {
@@ -122,13 +123,18 @@ public final class StateMachineBuilder {
 		}
 
 		private GLabel createCompartmentHeader(State state) {
-			return new GLabelBuilder(ModelTypes.LABEL_HEADING) //
+			if(state.getKind().equals("defaultState")) {
+				return new GLabelBuilder(ModelTypes.LABEL_HEADING) //
+						.id(state.getId() + "_classname") //
+						.text(state.getName()) //
+						.build();
+			}
+			return new GLabelBuilder((ModelTypes.LABEL_HEADING)) //
 					.id(state.getId() + "_classname") //
 					.text(state.getName()) //
+					.alignment(10,10) //
 					.build();
 		}
-
-
 
 	}
 

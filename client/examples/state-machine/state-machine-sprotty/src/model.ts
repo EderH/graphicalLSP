@@ -64,13 +64,21 @@ export class StateNode extends RectangularNode implements Nameable, WithEditable
     }
 }
 
-export class Transition extends SEdge {
+export class Transition extends SEdge implements WithEditableLabel {
     static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
-        hoverFeedbackFeature, highlightElementFeature, setBreakpointFeature, nameFeature];
+        hoverFeedbackFeature, highlightElementFeature, layoutContainerFeature, setBreakpointFeature, nameFeature, withEditLabelFeature];
     trigger: string = "";
     event: string = "";
     current: boolean = false;
     breakpoint: boolean = false;
+
+    get editableLabel() {
+        const label = this.children.find(element => element.type === 'label:text');
+        if (label && isEditableLabel(label)) {
+            return label;
+        }
+        return undefined;
+    }
 }
 
 export class Icon extends SShapeElement implements LayoutContainer, CommandExecutor {

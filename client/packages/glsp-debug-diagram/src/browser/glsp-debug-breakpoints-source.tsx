@@ -20,22 +20,22 @@ import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-mana
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
-import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
+import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { DebugGLSPBreakpoint } from "mock-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 
-import { MockDebugSession } from "./mock-debug-session";
-import { MockEditorManager } from "./mock-editor-manager";
+import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
+import { GLSPDebugSession } from "./glsp-debug-session";
 
 
 @injectable()
-export class MockDebugBreakpointsSource extends TreeSource {
+export class GLSPDebugBreakpointsSource extends TreeSource {
 
-    @inject(MockBreakpointManager)
-    protected readonly breakpoints: MockBreakpointManager;
+    @inject(GLSPBreakpointManager)
+    protected readonly breakpoints: GLSPBreakpointManager;
     @inject(DebugSessionManager)
     protected readonly manager: DebugSessionManager;
-    @inject(MockEditorManager)
-    protected readonly editorManager: MockEditorManager;
+    @inject(GLSPDebugEditorManager)
+    protected readonly editorManager: GLSPDebugEditorManager;
     @inject(LabelProvider)
     protected readonly labelProvider: LabelProvider;
     @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
@@ -59,12 +59,12 @@ export class MockDebugBreakpointsSource extends TreeSource {
         });
     }
 
-    getCurrentSession(): MockDebugSession | undefined {
+    getCurrentSession(): GLSPDebugSession | undefined {
         let currentSession = this.viewModel.currentSession;
         if (!currentSession) {
             currentSession = this.manager.currentSession;
         }
-        if (currentSession && currentSession instanceof MockDebugSession) {
+        if (currentSession && currentSession instanceof GLSPDebugSession) {
             return currentSession;
         }
 

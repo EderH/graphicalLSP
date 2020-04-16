@@ -20,7 +20,7 @@ import { DebugSource } from "@theia/debug/lib/browser/model/debug-source";
 import * as React from "react";
 import { SModelElement } from "sprotty";
 
-import { GLSPBreakpoint } from "../breakpoint/breakpoint-marker";
+import { GLSPBreakpoint } from "../breakpoint/glsp-breakpoint-marker";
 import { DebugBreakpoint, DebugBreakpointDecoration, DebugBreakpointOptions } from "./debug-breakpoint";
 
 
@@ -39,9 +39,9 @@ export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> impleme
             const bp = new Array<SModelElement>();
             bp.push(breakpoint.element);
             if (enabled) {
-                this.breakpoints.enableDiagramBreakpoints(breakpoint.uri, bp);
+                // this.breakpoints.enableDiagramBreakpoints(breakpoint.uri, bp);
             } else {
-                this.breakpoints.disableDiagramBreakpoints(breakpoint.uri, bp);
+                //  this.breakpoints.disableDiagramBreakpoints(breakpoint.uri, bp);
             }
         }
     }

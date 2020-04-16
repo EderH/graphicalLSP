@@ -13,29 +13,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { AbstractVSCodeDebugAdapterContribution } from "@theia/debug/lib/node/vscode/vscode-debug-adapter-contribution";
-import { injectable } from "inversify";
-import * as path from "path";
+import "../../css/index.css";
 
+import { ContainerModule, interfaces } from "inversify";
 
-export const THEIA_MOCK_DEBUG = 'theia-mock-debug';
+import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
 
-@injectable()
-export class TheiaMockDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
-    constructor() {
-        super(
-            'mock-debug',
-            path.join(__dirname, '../../../theia-mock-debug/')
-        );
-    }
-}
+export default new ContainerModule((bind: interfaces.Bind) => {
+    // add your contribution bindings here
 
-@injectable()
-export class StateMachineDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
-    constructor() {
-        super(
-            'statemachine-debug',
-            path.join(__dirname, '../../../theia-statemachine-debug/')
-        );
-    }
-}
+    bind(GLSPBreakpointManager).toSelf().inSingletonScope();
+
+});

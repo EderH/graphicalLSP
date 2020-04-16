@@ -20,9 +20,8 @@ import URI from "@theia/core/lib/common/uri";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugSource } from "@theia/debug/lib/browser/model/debug-source";
 import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
-import { EditorManager } from "@theia/editor/lib/browser";
 
-import { MockEditorManager } from "../mock-editor-manager";
+import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
 
 
 
@@ -34,9 +33,9 @@ export class AnnotateStack {
     private shell: ApplicationShell;
     private currentFrame: DebugStackFrame;
     private session: DebugSession;
-    private editorManager: EditorManager;
+    private editorManager: GLSPDebugEditorManager;
 
-    constructor(session: DebugSession, shell: ApplicationShell, editorManager: MockEditorManager) {
+    constructor(session: DebugSession, shell: ApplicationShell, editorManager: GLSPDebugEditorManager) {
         this.session = session;
         this.shell = shell;
         this.editorManager = editorManager;

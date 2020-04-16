@@ -13,24 +13,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPDiagramManager } from "@glsp/theia-integration/lib/browser";
-import URI from "@theia/core/lib/common/uri";
-import { EditorManager, EditorOpenerOptions } from "@theia/editor/lib/browser";
-import { injectable } from "inversify";
+import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
+import { ContainerModule, interfaces } from "inversify";
+
+import { StateMachineDebugSessionContribution } from "./state-machine-debug-session-contribution";
 
 
-@injectable()
-export class MockEditorManager extends EditorManager {
 
-    protected glspDiagramManager: GLSPDiagramManager;
-
-    async open(uri: URI, options?: EditorOpenerOptions): Promise<any> {
-        const widget = await this.glspDiagramManager.open(uri, options);
-        return widget;
-    }
-
-    set diagramManager(glspDiagramManager: GLSPDiagramManager) {
-        this.glspDiagramManager = glspDiagramManager;
-    }
-
-}
+export default new ContainerModule((bind: interfaces.Bind) => {
+    // add your contribution bindings here
+    bind(DebugSessionContribution).to(StateMachineDebugSessionContribution);
+});

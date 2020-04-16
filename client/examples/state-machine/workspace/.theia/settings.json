@@ -3,11 +3,11 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "type": "mock-debug",
+        "type": "statemachine-debug",
         "request": "launch",
         "name": "Debugging a text file",
         "stopOnEntry": true,
-        "program": "C:/Users/Public/graphicalLSP/graphical-lsp/client/examples/state-machine/workspace/blubb.sm"
+        "program": "C:/Users/Public/graphicalLSP/graphical-lsp/client/examples/state-machine/workspace/BankATM.sm"
       }
     ]
   }

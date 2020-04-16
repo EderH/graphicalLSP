@@ -94,9 +94,9 @@ const stateMachineDiagramModule = new ContainerModule((bind, unbind, isBound, re
     configureModelElement(context, 'state:final', StateNode, InitialOrFinalStateNodeView);
     configureModelElement(context, 'state:default', StateNode, StateNodeView);
     configureModelElement(context, 'label:heading', SLabel, SLabelView, { enable: [editLabelFeature] });
+    configureModelElement(context, 'label:text', SLabel, SLabelView);
     configureModelElement(context, 'comp:comp', SCompartment, SCompartmentView);
     configureModelElement(context, 'comp:header', SCompartment, SCompartmentView);
-    configureModelElement(context, 'label:icon', SLabel, SLabelView);
     configureModelElement(context, 'html', HtmlRoot, HtmlRootView);
     configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView);
     configureModelElement(context, 'button:expand', SButton, ExpandButtonView);

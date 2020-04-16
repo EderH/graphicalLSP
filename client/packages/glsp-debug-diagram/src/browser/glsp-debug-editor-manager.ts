@@ -13,29 +13,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { AbstractVSCodeDebugAdapterContribution } from "@theia/debug/lib/node/vscode/vscode-debug-adapter-contribution";
+import { GLSPDiagramManager } from "@glsp/theia-integration/lib/browser";
+import URI from "@theia/core/lib/common/uri";
+import { EditorManager, EditorOpenerOptions } from "@theia/editor/lib/browser";
 import { injectable } from "inversify";
-import * as path from "path";
 
-
-export const THEIA_MOCK_DEBUG = 'theia-mock-debug';
 
 @injectable()
-export class TheiaMockDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
-    constructor() {
-        super(
-            'mock-debug',
-            path.join(__dirname, '../../../theia-mock-debug/')
-        );
-    }
-}
+export class GLSPDebugEditorManager extends EditorManager {
 
-@injectable()
-export class StateMachineDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
-    constructor() {
-        super(
-            'statemachine-debug',
-            path.join(__dirname, '../../../theia-statemachine-debug/')
-        );
+    protected glspDiagramManager: GLSPDiagramManager;
+
+    async open(uri: URI, options?: EditorOpenerOptions): Promise<any> {
+        const widget = await this.glspDiagramManager.open(uri, options);
+        return widget;
     }
+
+    set diagramManager(glspDiagramManager: GLSPDiagramManager) {
+        this.glspDiagramManager = glspDiagramManager;
+    }
+
 }

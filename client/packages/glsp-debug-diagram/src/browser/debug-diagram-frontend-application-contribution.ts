@@ -17,9 +17,7 @@ import {
     DisableBreakpointAction,
     EnableBreakpointAction,
     RemoveBreakpointAction,
-    SModelElement,
-    SModelRoot,
-    SModelRootListener
+    SModelElement
 } from "@glsp/sprotty-client/lib";
 import { GLSPDiagramWidget } from "@glsp/theia-integration/lib/browser";
 import { CommandContribution, CommandRegistry } from "@theia/core";
@@ -29,22 +27,22 @@ import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-mana
 import { DebugBreakpointsWidget } from "@theia/debug/lib/browser/view/debug-breakpoints-widget";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
-import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
+import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 
-import { MockDebugBreakpointsSource } from "./debug-breakpoints-source";
-import { MockEditorManager } from "./mock-editor-manager";
+import { GLSPDebugBreakpointsSource } from "./glsp-debug-breakpoints-source";
+import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 import { AnnotateStack } from "./stackframe/annotate-stack";
 
 
 @injectable()
-export class DebugDiagramFrontendApplicationContribution implements CommandContribution, SModelRootListener {
+export class DebugDiagramFrontendApplicationContribution implements CommandContribution {
 
 
-    @inject(MockBreakpointManager) protected readonly breakpointManager: MockBreakpointManager;
+    @inject(GLSPBreakpointManager) protected readonly breakpointManager: GLSPBreakpointManager;
     @inject(DebugSessionManager) protected readonly debugManager: DebugSessionManager;
-    @inject(MockEditorManager) protected readonly editorManager: MockEditorManager;
+    @inject(GLSPDebugEditorManager) protected readonly editorManager: GLSPDebugEditorManager;
     @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
-    @inject(MockDebugBreakpointsSource) protected readonly debugSource: MockDebugBreakpointsSource;
+    @inject(GLSPDebugBreakpointsSource) protected readonly debugSource: GLSPDebugBreakpointsSource;
     @inject(ApplicationShell) protected readonly shell: ApplicationShell;
 
     private sessions = new Map<string, AnnotateStack>();
@@ -69,23 +67,7 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
                 const breakpointWidget = widget['sessionWidget']['breakpoints'];
                 breakpointWidget.source = this.debugSource;
             }
-            if (widget instanceof GLSPDiagramWidget) {
-                // this.restorBreakpoints(widget);
-            }
         });
-
-        this.shell.onDidAddWidget(widget => {
-            if (widget instanceof GLSPDiagramWidget) {
-
-            }
-        });
-    }
-
-    modelRootChanged(root: Readonly<SModelRoot>): void {
-        console.log("MODEL CHANGED ASWEELLLLL");
-        if (root && root instanceof GLSPDiagramWidget) {
-            this.restorBreakpoints(root);
-        }
     }
 
     registerCommands(registry: CommandRegistry): void {
@@ -106,16 +88,6 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
             isEnabled: () => this.breakpointManager.hasBreakpoints(),
             isVisible: widget => !(widget instanceof Widget) || (widget instanceof DebugBreakpointsWidget)
         });
-    }
-
-    restorBreakpoints(widget: GLSPDiagramWidget) {
-        const bpMap = this.getAllBreakpointsByDiagram();
-        if (bpMap) {
-            const breakpoints = bpMap.get(widget.uri.path.toString());
-            if (breakpoints) {
-                widget.actionDispatcher.dispatch(new EnableBreakpointAction(breakpoints));
-            }
-        }
     }
 
     getAllBreakpointsByDiagram(): Map<string, SModelElement[]> {

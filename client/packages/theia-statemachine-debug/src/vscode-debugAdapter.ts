@@ -13,14 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { DebugAdapterContribution } from "@theia/debug/lib/common/debug-model";
-import { ContainerModule } from "inversify";
+import { MockDebugSession } from "./vscode-mockDebug";
 
-import { TheiaMockDebugAdapterContribution } from "./theia-mock-debug-configuration-provider";
+MockDebugSession.run(MockDebugSession);
 
-
-
-export default new ContainerModule(bind => {
-    // add your contribution bindings here
-    bind(DebugAdapterContribution).to(TheiaMockDebugAdapterContribution).inSingletonScope();
-});

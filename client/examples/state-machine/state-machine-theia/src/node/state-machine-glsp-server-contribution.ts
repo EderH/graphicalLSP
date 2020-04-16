@@ -22,11 +22,11 @@ import { createSocketConnection } from "vscode-ws-jsonrpc/lib/server";
 import { StateMachineLanguage } from "../common/state-machine-language";
 
 function getPort(): number | undefined {
-    const arg = process.argv.filter(arg => arg.startsWith('--STATE_MACHINE_LSP='))[0];
+    const arg = process.argv.filter(arg => arg.startsWith('--STATEMACHINE_LSP='))[0];
     if (!arg) {
         return undefined;
     } else {
-        return Number.parseInt(arg.substring('--STATE_MACHINE_LSP='.length), 10);
+        return Number.parseInt(arg.substring('--STATEMACHINE_LSP='.length), 10);
     }
 }
 

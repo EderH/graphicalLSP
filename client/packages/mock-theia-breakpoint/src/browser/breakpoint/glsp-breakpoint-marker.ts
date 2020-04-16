@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 EclipseSource and others.
+ * Copyright (C) 2018 TypeFox and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,15 +13,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { SModelRoot, SModelRootListener } from "@glsp/sprotty-client/lib";
-import { injectable } from "inversify";
+import { UUID } from "@phosphor/coreutils";
+import { SModelElement } from "sprotty/lib";
 
+export interface BaseBreakpoint {
+    id: string;
+    enabled: boolean;
+}
 
-
-@injectable()
-export class RestoreBreakpoints implements SModelRootListener {
-    modelRootChanged(root: Readonly<SModelRoot>): void {
-        console.log("MODEL CHANGEd");
+export interface GLSPBreakpoint extends BaseBreakpoint {
+    uri: string;
+    element: SModelElement;
+}
+export namespace GLSPBreakpoint {
+    export function create(uri: string, element: SModelElement, origin?: GLSPBreakpoint): GLSPBreakpoint {
+        return {
+            id: origin ? origin.id : UUID.uuid4(),
+            uri: uri,
+            enabled: origin ? origin.enabled : true,
+            element: element
+        };
     }
-
 }

@@ -21,22 +21,22 @@ import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-c
 import { DebugSessionOptions } from "@theia/debug/lib/browser/debug-session-options";
 import { FileSystem } from "@theia/filesystem/lib/common";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
-import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
+import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { DebugBreakpoint, DebugBreakpointOptions } from "mock-breakpoint/lib/browser/model/debug-breakpoint";
 import { DebugGLSPBreakpoint } from "mock-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { MockEditorManager } from "./mock-editor-manager";
+import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 
-export class MockDebugSession extends DebugSession {
+export class GLSPDebugSession extends DebugSession {
 
     constructor(
         readonly id: string,
         readonly options: DebugSessionOptions,
         protected readonly connection: DebugSessionConnection,
         protected readonly terminalServer: TerminalService,
-        protected readonly editorManager: MockEditorManager,
-        protected readonly breakpoints: MockBreakpointManager,
+        protected readonly editorManager: GLSPDebugEditorManager,
+        protected readonly breakpoints: GLSPBreakpointManager,
         protected readonly labelProvider: LabelProvider,
         protected readonly messages: MessageClient,
         protected readonly fileSystem: FileSystem) {
@@ -52,7 +52,7 @@ export class MockDebugSession extends DebugSession {
         }
         const { uri } = options;
         for (const affectedUri of this.getAffectedUris(uri)) {
-            if (affectedUri.toString() === MockBreakpointManager.GLSP_URI.toString()) {
+            if (affectedUri.toString() === GLSPBreakpointManager.GLSP_URI.toString()) {
                 await this.sendGLSPBreakpoints(affectedUri);
             }
         }
@@ -70,7 +70,7 @@ export class MockDebugSession extends DebugSession {
             for (const uriString of this.breakpoints.getUris()) {
                 yield new URI(uriString);
             }
-            yield MockBreakpointManager.GLSP_URI;
+            yield GLSPBreakpointManager.GLSP_URI;
         }
     }
 
@@ -79,7 +79,7 @@ export class MockDebugSession extends DebugSession {
 
     getGLSPBreakpoints(): DebugGLSPBreakpoint[] {
         const breakpoints = [];
-        for (const breakpoint of this._glspBreakpoints.get(MockBreakpointManager.GLSP_URI.toString()) || []) {
+        for (const breakpoint of this._glspBreakpoints.get(GLSPBreakpointManager.GLSP_URI.toString()) || []) {
             if (breakpoint instanceof DebugGLSPBreakpoint) {
                 breakpoints.push(breakpoint);
             }

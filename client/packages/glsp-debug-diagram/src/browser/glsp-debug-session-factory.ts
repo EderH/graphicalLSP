@@ -18,55 +18,24 @@ import { LabelProvider, WebSocketConnectionProvider } from "@theia/core/lib/brow
 import { DebugPreferences } from "@theia/debug/lib/browser/debug-preferences";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-connection";
-import {
-    DebugSessionContribution,
-    DebugSessionFactory,
-    DefaultDebugSessionFactory
-} from "@theia/debug/lib/browser/debug-session-contribution";
+import { DefaultDebugSessionFactory } from "@theia/debug/lib/browser/debug-session-contribution";
 import { DebugSessionOptions } from "@theia/debug/lib/browser/debug-session-options";
 import { DebugAdapterPath } from "@theia/debug/lib/common/debug-service";
 import { FileSystem } from "@theia/filesystem/lib/common";
 import { OutputChannelManager } from "@theia/output/lib/common/output-channel";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
-import { inject, injectable } from "inversify";
-import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
+import { injectable } from "inversify";
+import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
-import { MockDebugSession } from "./mock-debug-session";
-import { MockEditorManager } from "./mock-editor-manager";
+import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
+import { GLSPDebugSession } from "./glsp-debug-session";
 
-@injectable()
-export class MockDebugSessionContribution implements DebugSessionContribution {
 
-    private _mockDebugSessionFactory: MockDebugSessionFactory;
-
-    constructor(
-        @inject(MockEditorManager) editorManager: MockEditorManager,
-        @inject(TerminalService) terminalService: TerminalService,
-        @inject(WebSocketConnectionProvider) connectionProvider: WebSocketConnectionProvider,
-        @inject(MockBreakpointManager) breakpoints: MockBreakpointManager,
-        @inject(LabelProvider) labelProvider: LabelProvider,
-        @inject(MessageClient) messages: MessageClient,
-        @inject(OutputChannelManager) outputChannelManager: OutputChannelManager,
-        @inject(DebugPreferences) debugPreferences: DebugPreferences,
-        @inject(FileSystem) fileSystem: FileSystem,
-    ) {
-        this._mockDebugSessionFactory = new MockDebugSessionFactory({
-            terminalService, editorManager, breakpoints, labelProvider,
-            messages, outputChannelManager, connectionProvider, debugPreferences, fileSystem
-        });
-    }
-
-    debugType = "mock-debug";
-    debugSessionFactory(): DebugSessionFactory {
-        return this._mockDebugSessionFactory;
-    }
-}
-
-export interface MockDebugSessionFactoryServices {
+export interface GLSPDebugSessionFactoryServices {
     readonly terminalService: TerminalService,
-    readonly editorManager: MockEditorManager,
-    readonly breakpoints: MockBreakpointManager,
+    readonly editorManager: GLSPDebugEditorManager,
+    readonly breakpoints: GLSPBreakpointManager,
     readonly labelProvider: LabelProvider,
     readonly messages: MessageClient,
     readonly outputChannelManager: OutputChannelManager,
@@ -76,11 +45,11 @@ export interface MockDebugSessionFactoryServices {
 }
 
 @injectable()
-export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
+export class GLSPDebugSessionFactory extends DefaultDebugSessionFactory {
 
     readonly terminalService: TerminalService;
-    readonly editorManager: MockEditorManager;
-    readonly breakpoints: MockBreakpointManager;
+    readonly editorManager: GLSPDebugEditorManager;
+    readonly breakpoints: GLSPBreakpointManager;
     readonly labelProvider: LabelProvider;
     readonly messages: MessageClient;
     readonly outputChannelManager: OutputChannelManager;
@@ -89,7 +58,7 @@ export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
     readonly fileSystem: FileSystem;
 
     constructor(
-        services: MockDebugSessionFactoryServices
+        services: GLSPDebugSessionFactoryServices
     ) {
         super();
         Object.assign(this, services);
@@ -105,7 +74,7 @@ export class MockDebugSessionFactory extends DefaultDebugSessionFactory {
             ),
             this.getTraceOutputChannel());
 
-        return new MockDebugSession(
+        return new GLSPDebugSession(
             sessionId,
             options,
             connection,

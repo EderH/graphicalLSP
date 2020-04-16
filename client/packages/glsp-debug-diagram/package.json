@@ -36,7 +36,7 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/glsp-debug-diagram-frontend-module"
+      "frontend": "lib/browser/frontend-module"
     }
   ]
 }

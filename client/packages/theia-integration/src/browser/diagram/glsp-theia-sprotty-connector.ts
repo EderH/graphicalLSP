@@ -17,8 +17,8 @@ import { ActionMessage, ExportSvgAction, isGLSPServerStatusAction, ServerStatusA
 import { MessageService } from "@theia/core";
 import { ApplicationShell, ConfirmDialog, WidgetManager } from "@theia/core/lib/browser";
 import { EditorManager } from "@theia/editor/lib/browser";
-import { GLSPBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/breakpoint-marker";
-import { MockBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/mock-breakpoint-manager";
+import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
+import { GLSPBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-marker";
 import { DiagramManager, DiagramWidget, TheiaDiagramServer, TheiaFileSaver, TheiaSprottyConnector } from "sprotty-theia/lib";
 
 import { GLSPClient } from "../language/glsp-client-services";
@@ -31,7 +31,7 @@ export interface GLSPTheiaSprottyConnectorServices {
     readonly widgetManager: WidgetManager,
     readonly diagramManager: DiagramManager,
     readonly messageService: MessageService,
-    readonly mockBreakpointManager: MockBreakpointManager,
+    readonly breakpointManager: GLSPBreakpointManager,
     readonly shell: ApplicationShell
 }
 
@@ -45,7 +45,7 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
     readonly widgetManager: WidgetManager;
     readonly diagramManager: DiagramManager;
     readonly messageService: MessageService;
-    readonly mockBreakpointManager: MockBreakpointManager;
+    readonly breakpointManager: GLSPBreakpointManager;
     readonly shell: ApplicationShell;
 
     constructor(services: GLSPTheiaSprottyConnectorServices) {
@@ -69,7 +69,7 @@ export class GLSPTheiaSprottyConnector implements TheiaSprottyConnector, GLSPThe
     }
 
     sendBreakpoints(breakpoints: GLSPBreakpoint[]) {
-        this.mockBreakpointManager.setGLSPBreakpoints(breakpoints);
+        this.breakpointManager.setGLSPBreakpoints(breakpoints);
     }
 
     showStatus(widgetId: string, status: ServerStatusAction): void {

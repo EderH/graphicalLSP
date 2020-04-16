@@ -13,29 +13,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { AbstractVSCodeDebugAdapterContribution } from "@theia/debug/lib/node/vscode/vscode-debug-adapter-contribution";
-import { injectable } from "inversify";
-import * as path from "path";
+import { DebugAdapterContribution } from "@theia/debug/lib/common/debug-model";
+import { ContainerModule } from "inversify";
+
+import {
+    StateMachineDebugAdapterContribution,
+    TheiaMockDebugAdapterContribution
+} from "./theia-mock-debug-configuration-provider";
 
 
-export const THEIA_MOCK_DEBUG = 'theia-mock-debug';
-
-@injectable()
-export class TheiaMockDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
-    constructor() {
-        super(
-            'mock-debug',
-            path.join(__dirname, '../../../theia-mock-debug/')
-        );
-    }
-}
-
-@injectable()
-export class StateMachineDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {
-    constructor() {
-        super(
-            'statemachine-debug',
-            path.join(__dirname, '../../../theia-statemachine-debug/')
-        );
-    }
-}
+export default new ContainerModule(bind => {
+    // add your contribution bindings here
+    bind(DebugAdapterContribution).to(TheiaMockDebugAdapterContribution).inSingletonScope();
+    bind(DebugAdapterContribution).to(StateMachineDebugAdapterContribution).inSingletonScope();
+});

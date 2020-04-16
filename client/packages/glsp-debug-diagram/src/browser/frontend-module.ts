@@ -13,19 +13,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import "../../css/index.css";
-
 import { GLSP_TYPES } from "@glsp/sprotty-client/lib";
+import { CommandContribution } from "@theia/core";
+import { OpenHandler } from "@theia/core/lib/browser";
 import { ContainerModule, interfaces } from "inversify";
 
-import { MockBreakpointManager } from "./breakpoint/mock-breakpoint-manager";
-import { RestoreBreakpoints } from "./breakpoint/restore-breakpoints";
+import { DebugDiagramFrontendApplicationContribution } from "./debug-diagram-frontend-application-contribution";
+import { GLSPDebugBreakpointsSource } from "./glsp-debug-breakpoints-source";
+import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
+import { GLSPDebugSessionFactory } from "./glsp-debug-session-factory";
+
+
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here
 
-    bind(MockBreakpointManager).toSelf().inSingletonScope();
-    bind(RestoreBreakpoints).toSelf().inSingletonScope();
-    bind(GLSP_TYPES.SModelRootListener).toService(RestoreBreakpoints);
+    bind(GLSPDebugBreakpointsSource).toSelf().inSingletonScope();
+    bind(GLSPDebugSessionFactory).toSelf().inSingletonScope();
+    bind(DebugDiagramFrontendApplicationContribution).toSelf().inSingletonScope();
+    bind(CommandContribution).to(DebugDiagramFrontendApplicationContribution);
+    bind(GLSP_TYPES.SModelRootListener).to(DebugDiagramFrontendApplicationContribution);
+    bind(GLSPDebugEditorManager).toSelf().inSingletonScope();
+    bind(OpenHandler).toService(GLSPDebugEditorManager);
 
 });
