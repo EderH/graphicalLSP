@@ -13,11 +13,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import "../../css/index.css";
-
 import { ContainerModule, interfaces } from "inversify";
 
 import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
+
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here

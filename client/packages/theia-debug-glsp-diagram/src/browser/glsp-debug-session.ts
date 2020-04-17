@@ -13,6 +13,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
+import { DebugBreakpoint, DebugBreakpointOptions } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-breakpoint";
+import { DebugGLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 import { MessageClient } from "@theia/core";
 import { LabelProvider } from "@theia/core/lib/browser";
 import URI from "@theia/core/lib/common/uri";
@@ -21,11 +24,9 @@ import { DebugSessionConnection } from "@theia/debug/lib/browser/debug-session-c
 import { DebugSessionOptions } from "@theia/debug/lib/browser/debug-session-options";
 import { FileSystem } from "@theia/filesystem/lib/common";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
-import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { DebugBreakpoint, DebugBreakpointOptions } from "mock-breakpoint/lib/browser/model/debug-breakpoint";
-import { DebugGLSPBreakpoint } from "mock-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 import { DebugProtocol } from "vscode-debugprotocol";
 
+import { SelectOptionsDialog } from "./dialog";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 
 export class GLSPDebugSession extends DebugSession {
@@ -41,6 +42,11 @@ export class GLSPDebugSession extends DebugSession {
         protected readonly messages: MessageClient,
         protected readonly fileSystem: FileSystem) {
         super(id, options, connection, terminalServer, editorManager, breakpoints, labelProvider, messages, fileSystem);
+        this.onDidCustomEvent(event => {
+            if (event.event = 'onTrigger') {
+                this.openWindow(event.body);
+            }
+        });
     }
 
     protected async updateBreakpoints(options: {
@@ -127,6 +133,16 @@ export class GLSPDebugSession extends DebugSession {
     protected setGLSPBreakpoints(uri: URI, breakpoints: DebugBreakpoint[]): void {
         this._glspBreakpoints.set(uri.toString(), breakpoints);
         this.fireDidChangeBreakpoints(uri);
+    }
+
+    protected async openWindow(lines: any): Promise<void> {
+        const input = new SelectOptionsDialog({
+            title: 'Select Trigger event',
+            values: lines
+        });
+        const trigger = await input.open();
+        this.sendCustomRequest('setTrigger', { trigger });
+        console.log(trigger);
     }
 
 

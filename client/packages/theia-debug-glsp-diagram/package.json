@@ -1,5 +1,5 @@
 {
-  "name": "glsp-debug",
+  "name": "@glsp/theia-debug-diagram",
   "keywords": [
     "theia-extension"
   ],
@@ -12,7 +12,7 @@
     "@glsp/theia-integration": "0.1.0",
     "@glsp/sprotty-client": "0.1.0",
     "sprotty-theia": "0.7.0",
-    "mock-breakpoint": "0.1.0",
+    "@glsp/theia-debug-breakpoint": "0.1.0",
     "sprotty": "0.7.0",
     "@theia/core": "0.11.0",
     "@theia/filesystem": "0.11.0",

@@ -4,3 +4,8 @@
 client/examples/workflow/workflow-standalone/app/bundle\.js\.map
 
 client/examples/workflow/workflow-standalone/app/bundle\.js
+/client/examples/state-machine/browser-app/src-gen/backend/*.js
+/client/examples/state-machine/browser-app/*.js
+/client/examples/state-machine/browser-app/src-gen/frontend/*.js
+/client/examples/state-machine/browser-app/src-gen/frontend/index.html
+/server/glsp-server/*.iml

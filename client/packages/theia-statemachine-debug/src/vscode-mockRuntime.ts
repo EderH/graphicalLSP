@@ -317,6 +317,10 @@ export class MockRuntime extends EventEmitter {
             this.fillStackTrace(lines, startStackData);
         }
 
+        if (command === 'trigger') {
+            this.sendEvent('stopOnTrigger', lines);
+        }
+
     }
 
     fillVars(lines: string[], startVarsData: number, nbVarsLines: number) {
@@ -536,6 +540,10 @@ export class MockRuntime extends EventEmitter {
         this.verifyBreakpoints(path);
 
         return bp;
+    }
+
+    public setTrigger(trigger: any) {
+        this.sendToServer('setTrigger', trigger);
     }
 
     public setGLSPBreakpoint(breakpoint: any): MockGLSPBreakpoint {

@@ -63,7 +63,6 @@ export class AnnotateStack {
                 await this.clearStackAnnotation();
             }
             this.currentFrame = this.session.currentFrame;
-            setTimeout(() => 2000);
             await this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
         }
     }

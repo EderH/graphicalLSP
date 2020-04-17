@@ -60,6 +60,14 @@ interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
     trace?: boolean;
 }
 
+export declare class TriggerEvent extends Event {
+    body: {
+        reason: string;
+        breakpoint: Breakpoint;
+    };
+    constructor(reason: string, breakpoint: string);
+}
+
 export class MockDebugSession extends LoggingDebugSession {
 
     // we don't support multiple threads, so we can use a hardcoded ID for the default thread
@@ -114,6 +122,10 @@ export class MockDebugSession extends LoggingDebugSession {
         });
         this._runtime.on('end', () => {
             this.sendEvent(new TerminatedEvent());
+        });
+        this._runtime.on('stopOnTrigger', (lines) => {
+            this.sendEvent(new StoppedEvent('trigger', MockDebugSession.THREAD_ID));
+            this.sendEvent(new Event('onTrigger', lines));
         });
     }
 
@@ -223,6 +235,9 @@ export class MockDebugSession extends LoggingDebugSession {
             this._runtime.sendAllBreakpointsToServer();
             this.sendResponse(response);
 
+        } else if (command === 'setTrigger') {
+            console.log("Set TRIGGER");
+            this._runtime.setTrigger(args.trigger);
         }
     }
 

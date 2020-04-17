@@ -13,6 +13,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
+import { DebugGLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 import { LabelProvider, WidgetManager } from "@theia/core/lib/browser";
 import { TreeElement, TreeSource } from "@theia/core/lib/browser/source-tree";
 import { DebugState } from "@theia/debug/lib/browser/debug-session";
@@ -20,11 +22,9 @@ import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-mana
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
-import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { DebugGLSPBreakpoint } from "mock-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 
-import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
-import { GLSPDebugSession } from "./glsp-debug-session";
+import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
+import { GLSPDebugSession } from "../glsp-debug-session";
 
 
 @injectable()

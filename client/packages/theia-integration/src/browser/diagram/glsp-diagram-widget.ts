@@ -28,15 +28,17 @@ import {
     SModelElement,
     TYPES
 } from "@glsp/sprotty-client/lib";
+import { GLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-marker";
 import { Saveable, SaveableSource } from "@theia/core/lib/browser";
 import { Disposable, DisposableCollection, Emitter, Event, MaybePromise } from "@theia/core/lib/common";
 import { EditorPreferences } from "@theia/editor/lib/browser";
 import { Container } from "inversify";
-import { GLSPBreakpoint } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-marker";
 import { DiagramWidget, DiagramWidgetOptions } from "sprotty-theia/lib";
 
 import { GLSPTheiaDiagramServer, NotifyingModelSource } from "./glsp-theia-diagram-server";
 import { GLSPTheiaSprottyConnector } from "./glsp-theia-sprotty-connector";
+
+
 
 export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 

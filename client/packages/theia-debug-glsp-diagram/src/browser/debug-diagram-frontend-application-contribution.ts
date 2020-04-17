@@ -19,6 +19,7 @@ import {
     RemoveBreakpointAction,
     SModelElement
 } from "@glsp/sprotty-client/lib";
+import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { GLSPDiagramWidget } from "@glsp/theia-integration/lib/browser";
 import { CommandContribution, CommandRegistry } from "@theia/core";
 import { ApplicationShell, Widget, WidgetManager } from "@theia/core/lib/browser";
@@ -27,11 +28,10 @@ import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-mana
 import { DebugBreakpointsWidget } from "@theia/debug/lib/browser/view/debug-breakpoints-widget";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
-import { GLSPBreakpointManager } from "mock-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 
-import { GLSPDebugBreakpointsSource } from "./glsp-debug-breakpoints-source";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 import { AnnotateStack } from "./stackframe/annotate-stack";
+import { GLSPDebugBreakpointsSource } from "./view/glsp-debug-breakpoints-source";
 
 
 @injectable()

@@ -13,26 +13,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSP_TYPES } from "@glsp/sprotty-client/lib";
 import { CommandContribution } from "@theia/core";
 import { OpenHandler } from "@theia/core/lib/browser";
 import { ContainerModule, interfaces } from "inversify";
 
 import { DebugDiagramFrontendApplicationContribution } from "./debug-diagram-frontend-application-contribution";
-import { GLSPDebugBreakpointsSource } from "./glsp-debug-breakpoints-source";
+import { SelectOptionsDialogProps } from "./dialog";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 import { GLSPDebugSessionFactory } from "./glsp-debug-session-factory";
-
+import { GLSPDebugBreakpointsSource } from "./view/glsp-debug-breakpoints-source";
 
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     // add your contribution bindings here
 
+
+    bind(SelectOptionsDialogProps).toSelf().inSingletonScope();
     bind(GLSPDebugBreakpointsSource).toSelf().inSingletonScope();
     bind(GLSPDebugSessionFactory).toSelf().inSingletonScope();
     bind(DebugDiagramFrontendApplicationContribution).toSelf().inSingletonScope();
     bind(CommandContribution).to(DebugDiagramFrontendApplicationContribution);
-    bind(GLSP_TYPES.SModelRootListener).to(DebugDiagramFrontendApplicationContribution);
     bind(GLSPDebugEditorManager).toSelf().inSingletonScope();
     bind(OpenHandler).toService(GLSPDebugEditorManager);
 
