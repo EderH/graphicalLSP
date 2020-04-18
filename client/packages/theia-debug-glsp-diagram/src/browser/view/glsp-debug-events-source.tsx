@@ -13,8 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { DebugGLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 import { LabelProvider, WidgetManager } from "@theia/core/lib/browser";
 import { TreeElement, TreeSource } from "@theia/core/lib/browser/source-tree";
 import { DebugState } from "@theia/debug/lib/browser/debug-session";
@@ -22,29 +20,28 @@ import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-mana
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
+import debounce = require("p-debounce");
 
+import { GLSPDebugEvent } from "../debug-glsp-event";
 import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
 import { GLSPDebugSession } from "../glsp-debug-session";
 
 
 @injectable()
-export class GLSPDebugBreakpointsSource extends TreeSource {
+export class GLSPDebugEventsSource extends TreeSource {
 
-    @inject(GLSPBreakpointManager)
-    protected readonly breakpoints: GLSPBreakpointManager;
     @inject(DebugSessionManager)
     protected readonly manager: DebugSessionManager;
     @inject(GLSPDebugEditorManager)
     protected readonly editorManager: GLSPDebugEditorManager;
     @inject(LabelProvider)
     protected readonly labelProvider: LabelProvider;
-    @inject(WidgetManager)
-    protected readonly widgetManager: WidgetManager;
-    protected viewModel: DebugViewModel;
+    @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
+    private viewModel: DebugViewModel;
 
     constructor() {
         super({
-            placeholder: 'No breakpoints'
+            placeholder: 'No events'
         });
     }
 
@@ -54,11 +51,12 @@ export class GLSPDebugBreakpointsSource extends TreeSource {
         this.widgetManager.onDidCreateWidget(({ factoryId, widget }) => {
             if (factoryId === DebugWidget.ID && widget instanceof DebugWidget) {
                 this.viewModel = widget['sessionWidget']['model'];
-                this.toDispose.push(this.viewModel.onDidChangeBreakpoints(() => this.fireDidChange()));
-                this.toDispose.push(this.breakpoints.onDidChangeGLSPBreakpoints(() => this.fireDidChange()));
+                this.toDispose.push(this.viewModel.onDidChange(() => this.refresh()));
             }
         });
     }
+
+    protected readonly refresh = debounce(() => this.fireDidChange(), 100);
 
     getCurrentSession(): GLSPDebugSession | undefined {
         let currentSession = this.viewModel.currentSession;
@@ -72,20 +70,20 @@ export class GLSPDebugBreakpointsSource extends TreeSource {
         return undefined;
     }
 
-    getGLSPBreakpoints(): DebugGLSPBreakpoint[] {
+    getGLSPDebugEventFlow(): GLSPDebugEvent[] | undefined {
         const session = this.getCurrentSession();
         if (session && session.state > DebugState.Initializing) {
-            return session.getGLSPBreakpoints();
+            return session.getGLSPDebugEvents();
         }
-        const { labelProvider, breakpoints, editorManager } = this;
-        return this.breakpoints.getGLSPBreakpoints().map(origin => new DebugGLSPBreakpoint(origin, { labelProvider, breakpoints, editorManager }));
+        return undefined;
     }
 
     *getElements(): IterableIterator<TreeElement> {
-
-        for (const breakpoint of this.getGLSPBreakpoints()) {
-            yield breakpoint;
+        const eventFlow = this.getGLSPDebugEventFlow();
+        if (eventFlow) {
+            for (const event of eventFlow) {
+                yield event;
+            }
         }
-
     }
 }

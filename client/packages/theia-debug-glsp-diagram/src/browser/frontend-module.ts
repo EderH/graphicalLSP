@@ -22,6 +22,7 @@ import { SelectOptionsDialogProps } from "./dialog";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 import { GLSPDebugSessionFactory } from "./glsp-debug-session-factory";
 import { GLSPDebugBreakpointsSource } from "./view/glsp-debug-breakpoints-source";
+import { GLSPDebugEventsWidget } from "./view/glsp-debug-events-widget";
 
 
 export default new ContainerModule((bind: interfaces.Bind) => {
@@ -30,6 +31,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
 
     bind(SelectOptionsDialogProps).toSelf().inSingletonScope();
     bind(GLSPDebugBreakpointsSource).toSelf().inSingletonScope();
+    bind(GLSPDebugEventsWidget).toDynamicValue(({ container }) => GLSPDebugEventsWidget.createWidget(container));
     bind(GLSPDebugSessionFactory).toSelf().inSingletonScope();
     bind(DebugDiagramFrontendApplicationContribution).toSelf().inSingletonScope();
     bind(CommandContribution).to(DebugDiagramFrontendApplicationContribution);

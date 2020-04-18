@@ -49,6 +49,12 @@ export interface StackEntry {
     file: string;
 }
 
+export interface EventEntry {
+    id: number;
+    element: string;
+    event: string;
+}
+
 /**
  * A Mock runtime with minimal debugger functionality.
  */
@@ -62,7 +68,6 @@ export class MockRuntime extends EventEmitter {
     private _serverBase = '';
 
     private _localVariables = new Array<DebugProtocol.Variable>();
-
     public get localVariables() {
         return this._localVariables;
     }
@@ -70,6 +75,11 @@ export class MockRuntime extends EventEmitter {
     private _globalVariables = new Array<DebugProtocol.Variable>();
     public get globalVariables() {
         return this._globalVariables;
+    }
+
+    private _eventFlow = new Array<EventEntry>();
+    public get eventFlow() {
+        return this._eventFlow;
     }
 
     private _connected = false;
@@ -101,6 +111,8 @@ export class MockRuntime extends EventEmitter {
     // private _currentLine = 0;
 
     private _stackTrace = new Array<StackEntry>();
+
+    private _triggers = new Array<string>();
 
     private _queuedCommands = new Array<string>();
 
@@ -243,6 +255,7 @@ export class MockRuntime extends EventEmitter {
         const command = lines[currLine++];
         let startVarsData = 1;
         let startStackData = 1;
+        let startEventFlowData = 1;
 
         /*if (index >= 0) {
             response = (index < data.length - 1 ? data.substring(index + 1) : '').trim();
@@ -269,7 +282,8 @@ export class MockRuntime extends EventEmitter {
             this.fillVars(lines, startVarsData, nbVarsLines);
 
             startStackData = startVarsData + nbVarsLines + 1;
-            this.fillStackTrace(lines, startStackData);
+            const nbStackLines = Number(lines[startStackData]);
+            this.fillStackTrace(lines, startStackData, nbStackLines);
 
             const msg = lines.length < 2 ? '' : lines[1];
             const headerMsg = 'Exception thrown: ' + msg + ' ';
@@ -314,13 +328,49 @@ export class MockRuntime extends EventEmitter {
         }
 
         if (command === 'stack' || command === 'next') {
-            this.fillStackTrace(lines, startStackData);
+            const nbStackLines = Number(lines[startStackData]);
+            this.fillStackTrace(lines, startStackData, nbStackLines);
+            startEventFlowData = startStackData + nbStackLines + 1;
         }
 
-        if (command === 'trigger') {
-            this.sendEvent('stopOnTrigger', lines);
+        if (command === 'eventFlow' || command === 'next') {
+            const nbEventFlowLines = Number(lines[startEventFlowData]);
+            this.fillEventFlow(lines, startEventFlowData, nbEventFlowLines);
         }
 
+        if (command === 'event') {
+            const nbTriggerLines = Number(lines[1]);
+            this.fillTrigger(lines, 1, nbTriggerLines);
+            this.sendEvent('stopOnTrigger', this._triggers);
+        }
+
+    }
+
+    fillTrigger(lines: string[], startTriggerData: number, nbTriggerLines: number) {
+        let counter = 0;
+        this._triggers.length = 0;
+        for (let i = startTriggerData + 1; i < lines.length && counter < nbTriggerLines; i++) {
+            counter++;
+            this._triggers.push(lines[i]);
+        }
+    }
+
+    fillEventFlow(lines: string[], startEventFlowData: number, nbEventFlowLines: number) {
+        let counter = 0;
+        let id = 0;
+        this._eventFlow.length = 0;
+        for (let i = startEventFlowData + 1; i < lines.length && counter < nbEventFlowLines; i++) {
+            counter++;
+            const line = lines[i];
+            const tokens = line.split(':');
+            if (tokens.length < 2) {
+                continue;
+            }
+            const element = tokens[0];
+            const event = tokens[1];
+            const entry = <EventEntry>{ id: ++id, element: element, event: event };
+            this._eventFlow.push(entry);
+        }
     }
 
     fillVars(lines: string[], startVarsData: number, nbVarsLines: number) {
@@ -353,18 +403,21 @@ export class MockRuntime extends EventEmitter {
         }
     }
 
-    fillStackTrace(lines: string[], start = 0): void {
-        let id = 0;
+    fillStackTrace(lines: string[], startStackData: number, nbStackLines: number): void {
+        let counter = 0;
         this._stackTrace.length = 0;
-        for (let i = start; i < lines.length; i += 2) {
-            if (i >= lines.length - 1) {
-                break;
+        let id = 0;
+        for (let i = startStackData + 1; i < lines.length && counter < nbStackLines; i++) {
+            counter++;
+            const line = lines[i];
+            const tokens = line.split(':');
+            if (tokens.length < 2) {
+                continue;
             }
-            const file = this.getLocalPath(lines[i].trim());
-            const line = lines[i + 1].trim();
-            const entry = <StackEntry>{ id: ++id, line: 0, name: line, file: file };
+            const filename = this.getLocalPath(tokens[0].trim());
+            const element = tokens[1].trim();
+            const entry = <StackEntry>{ id: ++id, line: 0, name: element, file: filename };
             this._stackTrace.push(entry);
-
         }
     }
 

@@ -32,6 +32,7 @@ import { inject, injectable, postConstruct } from "inversify";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 import { AnnotateStack } from "./stackframe/annotate-stack";
 import { GLSPDebugBreakpointsSource } from "./view/glsp-debug-breakpoints-source";
+import { GLSPDebugEventsWidget } from "./view/glsp-debug-events-widget";
 
 
 @injectable()
@@ -44,6 +45,7 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
     @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
     @inject(GLSPDebugBreakpointsSource) protected readonly debugSource: GLSPDebugBreakpointsSource;
     @inject(ApplicationShell) protected readonly shell: ApplicationShell;
+    @inject(GLSPDebugEventsWidget) protected readonly eventWidget: GLSPDebugEventsWidget;
 
     private sessions = new Map<string, AnnotateStack>();
 
@@ -66,6 +68,8 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
             if (factoryId === DebugWidget.ID && widget instanceof DebugWidget) {
                 const breakpointWidget = widget['sessionWidget']['breakpoints'];
                 breakpointWidget.source = this.debugSource;
+                const viewContainer = widget['sessionWidget']['viewContainer'];
+                viewContainer.addWidget(this.eventWidget);
             }
         });
     }

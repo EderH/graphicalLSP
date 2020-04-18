@@ -26,6 +26,7 @@ import { FileSystem } from "@theia/filesystem/lib/common";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { DebugProtocol } from "vscode-debugprotocol";
 
+import { GLSPDebugEvent } from "./debug-glsp-event";
 import { SelectOptionsDialog } from "./dialog";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 
@@ -46,6 +47,15 @@ export class GLSPDebugSession extends DebugSession {
             if (event.event = 'onTrigger') {
                 this.openWindow(event.body);
             }
+        });
+        this.on('stopped', async ({ body }) => {
+            // Update thread list
+            await this.updateThreads(body);
+
+            // Update current thread's frames immediately
+            await this.updateFrames();
+
+            await this.updateEventFlow();
         });
     }
 
@@ -143,6 +153,21 @@ export class GLSPDebugSession extends DebugSession {
         const trigger = await input.open();
         this.sendCustomRequest('setTrigger', { trigger });
         console.log(trigger);
+    }
+
+
+    protected readonly _glspDebugEvents = new Array<GLSPDebugEvent>();
+
+    getGLSPDebugEvents(): GLSPDebugEvent[] {
+        return this._glspDebugEvents;
+    }
+
+    protected async updateEventFlow() {
+        this._glspDebugEvents.length = 0;
+        const response = await this.sendCustomRequest('eventFlowRequest');
+        response.body.eventFlow.map((entry: any) => {
+            this._glspDebugEvents.push(new GLSPDebugEvent(entry));
+        });
     }
 
 

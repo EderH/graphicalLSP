@@ -238,6 +238,13 @@ export class MockDebugSession extends LoggingDebugSession {
         } else if (command === 'setTrigger') {
             console.log("Set TRIGGER");
             this._runtime.setTrigger(args.trigger);
+        } else if (command === 'eventFlowRequest') {
+            const eventFlow = this._runtime.eventFlow;
+
+            response.body = {
+                eventFlow: eventFlow
+            };
+            this.sendResponse(response);
         }
     }
 
