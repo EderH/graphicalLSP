@@ -53,6 +53,7 @@ export interface EventEntry {
     id: number;
     element: string;
     event: string;
+    file: string;
 }
 
 /**
@@ -112,7 +113,7 @@ export class MockRuntime extends EventEmitter {
 
     private _stackTrace = new Array<StackEntry>();
 
-    private _triggers = new Array<string>();
+    private _eventOptions = new Array<string>();
 
     private _queuedCommands = new Array<string>();
 
@@ -339,19 +340,19 @@ export class MockRuntime extends EventEmitter {
         }
 
         if (command === 'event') {
-            const nbTriggerLines = Number(lines[1]);
-            this.fillTrigger(lines, 1, nbTriggerLines);
-            this.sendEvent('stopOnTrigger', this._triggers);
+            const nbEventLines = Number(lines[1]);
+            this.fillEventOptions(lines, 1, nbEventLines);
+            this.sendEvent('stopOnEvent', this._eventOptions);
         }
 
     }
 
-    fillTrigger(lines: string[], startTriggerData: number, nbTriggerLines: number) {
+    fillEventOptions(lines: string[], startEventData: number, nbEventLines: number) {
         let counter = 0;
-        this._triggers.length = 0;
-        for (let i = startTriggerData + 1; i < lines.length && counter < nbTriggerLines; i++) {
+        this._eventOptions.length = 0;
+        for (let i = startEventData + 1; i < lines.length && counter < nbEventLines; i++) {
             counter++;
-            this._triggers.push(lines[i]);
+            this._eventOptions.push(lines[i]);
         }
     }
 
@@ -363,12 +364,13 @@ export class MockRuntime extends EventEmitter {
             counter++;
             const line = lines[i];
             const tokens = line.split(':');
-            if (tokens.length < 2) {
+            if (tokens.length < 3) {
                 continue;
             }
-            const element = tokens[0];
-            const event = tokens[1];
-            const entry = <EventEntry>{ id: ++id, element: element, event: event };
+            const file = this.getLocalPath(tokens[0].trim());
+            const element = tokens[1].trim();
+            const event = tokens[2].trim();
+            const entry = <EventEntry>{ id: ++id, element: element, event: event, file: file };
             this._eventFlow.push(entry);
         }
     }
@@ -595,16 +597,14 @@ export class MockRuntime extends EventEmitter {
         return bp;
     }
 
-    public setTrigger(trigger: any) {
-        this.sendToServer('setTrigger', trigger);
+    public setEvent(event: any) {
+        this.sendToServer('setEvent', event);
     }
 
     public setGLSPBreakpoint(breakpoint: any): MockGLSPBreakpoint {
-        console.log("Here");
         const bp = <MockGLSPBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.uri, verified: true };
 
         let path = breakpoint.uri;
-        console.log("URI: " + path);
         const char = path.charAt(2);
         if (char === ':') {
             path = path.substring(1);
@@ -629,8 +629,6 @@ export class MockRuntime extends EventEmitter {
         }
         bpMap.set(breakpoint.name, bp);
         this._breakPointMap.set(lower, bpMap);
-
-        // this.verifyBreakpoints(path);
 
         return bp;
     }

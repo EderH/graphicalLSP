@@ -16,6 +16,7 @@
 import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { DebugBreakpoint, DebugBreakpointOptions } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-breakpoint";
 import { DebugGLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-breakpoint";
+import { DebugEventOptions, GLSPDebugEvent } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-event";
 import { MessageClient } from "@theia/core";
 import { LabelProvider } from "@theia/core/lib/browser";
 import URI from "@theia/core/lib/common/uri";
@@ -26,7 +27,6 @@ import { FileSystem } from "@theia/filesystem/lib/common";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { GLSPDebugEvent } from "./debug-glsp-event";
 import { SelectOptionsDialog } from "./dialog";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 
@@ -44,8 +44,8 @@ export class GLSPDebugSession extends DebugSession {
         protected readonly fileSystem: FileSystem) {
         super(id, options, connection, terminalServer, editorManager, breakpoints, labelProvider, messages, fileSystem);
         this.onDidCustomEvent(event => {
-            if (event.event = 'onTrigger') {
-                this.openWindow(event.body);
+            if (event.event = 'onEvent') {
+                this.openEventDialogWindow(event.body);
             }
         });
         this.on('stopped', async ({ body }) => {
@@ -79,6 +79,11 @@ export class GLSPDebugSession extends DebugSession {
         return { labelProvider, breakpoints, editorManager, session: this };
     }
 
+    protected asDebugEventOptions(): DebugEventOptions {
+        const { labelProvider, editorManager } = this;
+        return { labelProvider, editorManager, session: this };
+    }
+
     protected *getAffectedUris(uri?: URI): IterableIterator<URI> {
         if (uri) {
             yield uri;
@@ -109,7 +114,7 @@ export class GLSPDebugSession extends DebugSession {
         );
         const enabled = all.filter(b => b.enabled);
         try {
-            const response = await this.sendCustomRequest('setGraphicalBreakpoints', {
+            const response = await this.sendCustomRequest('setGLSPBreakpoints', {
                 breakpoints: enabled.map(b => ({
                     uri: b.origin.uri, name: b.origin.element.id
                 }))
@@ -128,7 +133,7 @@ export class GLSPDebugSession extends DebugSession {
                 // handle adapters that send failed DebugProtocol.SetFunctionBreakpoints for invalid breakpoints
                 const genericMessage: string = 'GLSP breakpoint not valid for current debug session';
                 const message: string = error.message ? `${error.message}` : genericMessage;
-                console.warn(`Could not handle function breakpoints: ${message}, disabling...`);
+                console.warn(`Could not handle GLSP breakpoints: ${message}, disabling...`);
                 enabled.forEach(b => b.update({
                     raw: {
                         verified: false,
@@ -145,14 +150,13 @@ export class GLSPDebugSession extends DebugSession {
         this.fireDidChangeBreakpoints(uri);
     }
 
-    protected async openWindow(lines: any): Promise<void> {
+    protected async openEventDialogWindow(lines: any): Promise<void> {
         const input = new SelectOptionsDialog({
             title: 'Select Trigger event',
             values: lines
         });
-        const trigger = await input.open();
-        this.sendCustomRequest('setTrigger', { trigger });
-        console.log(trigger);
+        const event = await input.open();
+        this.sendCustomRequest('setEvent', { event });
     }
 
 
@@ -166,7 +170,7 @@ export class GLSPDebugSession extends DebugSession {
         this._glspDebugEvents.length = 0;
         const response = await this.sendCustomRequest('eventFlowRequest');
         response.body.eventFlow.map((entry: any) => {
-            this._glspDebugEvents.push(new GLSPDebugEvent(entry));
+            this._glspDebugEvents.push(new GLSPDebugEvent(entry, this.asDebugEventOptions()));
         });
     }
 

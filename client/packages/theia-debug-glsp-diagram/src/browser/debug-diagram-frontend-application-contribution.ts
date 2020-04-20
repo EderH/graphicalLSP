@@ -21,7 +21,7 @@ import {
 } from "@glsp/sprotty-client/lib";
 import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { GLSPDiagramWidget } from "@glsp/theia-integration/lib/browser";
-import { CommandContribution, CommandRegistry } from "@theia/core";
+import { CommandRegistry } from "@theia/core";
 import { ApplicationShell, Widget, WidgetManager } from "@theia/core/lib/browser";
 import { DebugCommands } from "@theia/debug/lib/browser/debug-frontend-application-contribution";
 import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-manager";
@@ -34,18 +34,16 @@ import { AnnotateStack } from "./stackframe/annotate-stack";
 import { GLSPDebugBreakpointsSource } from "./view/glsp-debug-breakpoints-source";
 import { GLSPDebugEventsWidget } from "./view/glsp-debug-events-widget";
 
-
 @injectable()
-export class DebugDiagramFrontendApplicationContribution implements CommandContribution {
+export class DebugDiagramFrontendApplicationContribution {
 
-
-    @inject(GLSPBreakpointManager) protected readonly breakpointManager: GLSPBreakpointManager;
     @inject(DebugSessionManager) protected readonly debugManager: DebugSessionManager;
     @inject(GLSPDebugEditorManager) protected readonly editorManager: GLSPDebugEditorManager;
     @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
     @inject(GLSPDebugBreakpointsSource) protected readonly debugSource: GLSPDebugBreakpointsSource;
     @inject(ApplicationShell) protected readonly shell: ApplicationShell;
     @inject(GLSPDebugEventsWidget) protected readonly eventWidget: GLSPDebugEventsWidget;
+    @inject(GLSPBreakpointManager) protected readonly breakpointManager: GLSPBreakpointManager;
 
     private sessions = new Map<string, AnnotateStack>();
 
@@ -75,6 +73,7 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
     }
 
     registerCommands(registry: CommandRegistry): void {
+
         registry.unregisterCommand(DebugCommands.ENABLE_ALL_BREAKPOINTS);
         registry.unregisterCommand(DebugCommands.DISABLE_ALL_BREAKPOINTS);
         registry.unregisterCommand(DebugCommands.REMOVE_ALL_BREAKPOINTS);
@@ -92,6 +91,7 @@ export class DebugDiagramFrontendApplicationContribution implements CommandContr
             isEnabled: () => this.breakpointManager.hasBreakpoints(),
             isVisible: widget => !(widget instanceof Widget) || (widget instanceof DebugBreakpointsWidget)
         });
+
     }
 
     getAllBreakpointsByDiagram(): Map<string, SModelElement[]> {

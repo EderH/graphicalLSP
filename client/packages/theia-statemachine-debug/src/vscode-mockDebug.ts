@@ -60,13 +60,14 @@ interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
     trace?: boolean;
 }
 
-export declare class TriggerEvent extends Event {
-    body: {
-        reason: string;
-        breakpoint: Breakpoint;
-    };
-    constructor(reason: string, breakpoint: string);
+export declare class EventFlowEntry {
+    id: number;
+    source: Source;
+    element: string;
+    event: string;
+    constructor(id: number, element: string, event: string, source: Source);
 }
+
 
 export class MockDebugSession extends LoggingDebugSession {
 
@@ -123,9 +124,9 @@ export class MockDebugSession extends LoggingDebugSession {
         this._runtime.on('end', () => {
             this.sendEvent(new TerminatedEvent());
         });
-        this._runtime.on('stopOnTrigger', (lines) => {
-            this.sendEvent(new StoppedEvent('trigger', MockDebugSession.THREAD_ID));
-            this.sendEvent(new Event('onTrigger', lines));
+        this._runtime.on('stopOnEvent', (lines) => {
+            this.sendEvent(new StoppedEvent('event', MockDebugSession.THREAD_ID));
+            this.sendEvent(new Event('onEvent', lines));
         });
     }
 
@@ -217,35 +218,51 @@ export class MockDebugSession extends LoggingDebugSession {
         this.sendResponse(response);
     }
 
-    protected customRequest(command: string, response: DebugProtocol.Response, args: any, request?: DebugProtocol.Request): void {
-        if (command === 'setGraphicalBreakpoints') {
-            console.log("Set GLSP Breakpoints");
-            this._runtime.clearBreakpoints();
-            // set new GLSP breakpoints
-            const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
-                const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
-                const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
-                bp.id = id;
-                return bp;
-            });
+    protected customRequest(command: string, response: DebugProtocol.Response, args: any): void {
 
-            response.body = {
-                breakpoints: actualBreakpoints
-            };
-            this._runtime.sendAllBreakpointsToServer();
-            this.sendResponse(response);
+        switch (command) {
 
-        } else if (command === 'setTrigger') {
-            console.log("Set TRIGGER");
-            this._runtime.setTrigger(args.trigger);
-        } else if (command === 'eventFlowRequest') {
-            const eventFlow = this._runtime.eventFlow;
+            case 'setGLSPBreakpoints':
+                this.setGLSPBreakpointsRequest(response, args);
+                break;
 
-            response.body = {
-                eventFlow: eventFlow
-            };
-            this.sendResponse(response);
+            case 'setEvent':
+                this._runtime.setEvent(args.event);
+                break;
+
+            case 'eventFlowRequest':
+                this.eventFlowRequest(response, args);
+                break;
+            default:
+                super.customRequest(command, response, args);
         }
+    }
+
+    protected eventFlowRequest(response: DebugProtocol.Response, args: any) {
+        const eventFlow = this._runtime.eventFlow;
+
+        response.body = {
+            eventFlow: eventFlow
+        };
+        this.sendResponse(response);
+    }
+
+    protected setGLSPBreakpointsRequest(response: DebugProtocol.Response, args: any) {
+        console.log("Set GLSP Breakpoints");
+        this._runtime.clearBreakpoints();
+        // set new GLSP breakpoints
+        const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
+            const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
+            const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
+            bp.id = id;
+            return bp;
+        });
+
+        response.body = {
+            breakpoints: actualBreakpoints
+        };
+        this._runtime.sendAllBreakpointsToServer();
+        this.sendResponse(response);
     }
 
     protected setFunctionBreakPointsRequest(response: DebugProtocol.SetFunctionBreakpointsResponse, args: DebugProtocol.SetFunctionBreakpointsArguments): void {

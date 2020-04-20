@@ -146,7 +146,7 @@ polygon.sprotty-node {
 }
 
 .sprotty-node.current {
-    stroke-width: 5;
+    stroke-width: 5 !important;
     stroke: rgb(0, 255, 0) !important;
 }
 
@@ -176,6 +176,11 @@ svg {
     stroke: rgb(255, 0, 0);
 }
 
+.sprotty-node.state {
+    stroke-width: 1px;
+    stroke: black;
+}
+
 .sprotty-node.state.initial {
     fill: black;
 }
@@ -184,9 +189,4 @@ svg {
     fill: white;
     stroke: black;
     stroke-width: 5;
-}
-
-.sprotty-node.state {
-    stroke-width: 1px;
-    stroke: black;
 }

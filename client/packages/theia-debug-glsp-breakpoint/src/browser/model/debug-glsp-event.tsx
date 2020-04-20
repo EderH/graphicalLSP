@@ -13,75 +13,67 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { DISABLED_CLASS, WidgetOpenerOptions } from "@theia/core/lib/browser";
+import { LabelProvider, WidgetOpenerOptions } from "@theia/core/lib/browser";
 import { TreeElement } from "@theia/core/lib/browser/source-tree";
+import URI from "@theia/core/lib/common/uri";
+import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugSource } from "@theia/debug/lib/browser/model/debug-source";
-import { EditorWidget } from "@theia/editor/lib/browser";
+import { EditorManager } from "@theia/editor/lib/browser";
 import * as React from "react";
 
 
-/*export class DebugStackFrameData {
-    readonly raw: DebugProtocol.StackFrame;
-} */
+export class DebugEventOptions {
+    readonly labelProvider: LabelProvider;
+    readonly editorManager: EditorManager;
+    readonly session: DebugSession;
+}
 
-export class GLSPDebugEvent implements TreeElement {
+export class GLSPDebugEvent extends DebugEventOptions implements TreeElement {
 
     readonly id: number;
     readonly element: string;
     readonly event: string;
+    readonly uri: URI;
 
     constructor(
-        entry: any
+        readonly entry: any,
+        readonly options: DebugEventOptions
     ) {
+        super();
+        Object.assign(this, options);
         this.id = entry.id;
         this.element = entry.element;
         this.event = entry.event;
+        this.uri = new URI('/' + entry.file);
     }
-
-    /* get id(): string {
-         return this.session.id + ':' + this.thread.id + ':';
-     } */
 
     protected _source: DebugSource | undefined;
+
     get source(): DebugSource | undefined {
-        return this._source;
+        return this._source = this.uri && this.session.getSourceForUri(this.uri);
     }
-    update(): void {
-        // this._source = this.raw.source && this.session.getSource(this.raw.source);
-    }
+
 
 
     async open(options: WidgetOpenerOptions = {
         mode: 'reveal'
-    }): Promise<EditorWidget | undefined> {
-        if (!this.source) {
-            return undefined;
+    }): Promise<void> {
+        if (this.source) {
+            await this.source.open({
+                ...options
+            });
         }
-        this.source.open({
-            ...options
-        });
     }
 
     render(): React.ReactNode {
-        const classNames = ['theia-debug-event-flow'];
-        if (!this.source || this.source.raw.presentationHint === 'deemphasize') {
-            classNames.push(DISABLED_CLASS);
-        }
+        const classNames = ['theia-debug-stack-frame'];
         return <div className={classNames.join(' ')}>
-            <span className='expression' title={this.element}>{this.element + '.' + this.event}</span>
-
+            <span className='line-info' title={this.labelProvider.getLongName(this.uri)}>
+                <span className='name'>{this.element + '.' + this.event} </span>
+                <span></span>
+                <span className='path'>{this.labelProvider.getLongName(this.uri)} </span>
+            </span>
         </div>;
     }
-    /*protected renderFile(): React.ReactNode {
-        const { source } = this;
-        if (!source) {
-            return undefined;
-        }
-        const origin = source.raw.origin && `\n${source.raw.origin}` || '';
-        return <span className='file' title={source.longName + origin}>
-            <span className='name'>{source.name}</span>
-            <span className='line'>{this.raw.line}:{this.raw.column}</span>
-        </span>;
-    } */
 
 }

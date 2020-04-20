@@ -13,6 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { GLSPDebugEvent } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-event";
 import { LabelProvider, WidgetManager } from "@theia/core/lib/browser";
 import { TreeElement, TreeSource } from "@theia/core/lib/browser/source-tree";
 import { DebugState } from "@theia/debug/lib/browser/debug-session";
@@ -22,7 +23,6 @@ import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
 import debounce = require("p-debounce");
 
-import { GLSPDebugEvent } from "../debug-glsp-event";
 import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
 import { GLSPDebugSession } from "../glsp-debug-session";
 
