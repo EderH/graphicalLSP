@@ -63,7 +63,6 @@ export class GLSPBreakpointManager extends BreakpointManager {
             if (breakpoint.enabled !== enabled) {
                 breakpoint.enabled = enabled;
                 didChangeGLSP = true;
-
             }
         }
         if (didChangeGLSP) {

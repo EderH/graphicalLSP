@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { MessageClient } from "@theia/core";
 import { LabelProvider, WebSocketConnectionProvider } from "@theia/core/lib/browser";
 import { DebugPreferences } from "@theia/debug/lib/browser/debug-preferences";
@@ -28,8 +27,11 @@ import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-servi
 import { injectable } from "inversify";
 import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
+import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
+import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 import { GLSPDebugSession } from "./glsp-debug-session";
+
 
 
 
@@ -37,6 +39,7 @@ export interface GLSPDebugSessionFactoryServices {
     readonly terminalService: TerminalService,
     readonly editorManager: GLSPDebugEditorManager,
     readonly breakpoints: GLSPBreakpointManager,
+    readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager,
     readonly labelProvider: LabelProvider,
     readonly messages: MessageClient,
     readonly outputChannelManager: OutputChannelManager,
@@ -51,6 +54,7 @@ export class GLSPDebugSessionFactory extends DefaultDebugSessionFactory {
     readonly terminalService: TerminalService;
     readonly editorManager: GLSPDebugEditorManager;
     readonly breakpoints: GLSPBreakpointManager;
+    readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager;
     readonly labelProvider: LabelProvider;
     readonly messages: MessageClient;
     readonly outputChannelManager: OutputChannelManager;
@@ -82,6 +86,7 @@ export class GLSPDebugSessionFactory extends DefaultDebugSessionFactory {
             this.terminalService,
             this.editorManager,
             this.breakpoints,
+            this.breakpointsDiagramManager,
             this.labelProvider,
             this.messages,
             this.fileSystem);

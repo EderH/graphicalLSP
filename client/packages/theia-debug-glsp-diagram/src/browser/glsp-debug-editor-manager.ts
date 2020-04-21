@@ -13,23 +13,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPDiagramManager } from "@glsp/theia-integration/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { EditorManager, EditorOpenerOptions } from "@theia/editor/lib/browser";
 import { injectable } from "inversify";
+import { DiagramManager } from "sprotty-theia";
 
 
 @injectable()
 export class GLSPDebugEditorManager extends EditorManager {
 
-    protected glspDiagramManager: GLSPDiagramManager;
+    protected glspDiagramManager: DiagramManager;
 
     async open(uri: URI, options?: EditorOpenerOptions): Promise<any> {
         const widget = await this.glspDiagramManager.open(uri, options);
         return widget;
     }
 
-    set diagramManager(glspDiagramManager: GLSPDiagramManager) {
+    set diagramManager(glspDiagramManager: DiagramManager) {
         this.glspDiagramManager = glspDiagramManager;
     }
 

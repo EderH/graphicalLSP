@@ -28,7 +28,7 @@ import {
     SModelElement,
     TYPES
 } from "@glsp/sprotty-client/lib";
-import { GLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-marker";
+import { GLSPBreakpoint } from "@glsp/theia-debug-diagram/lib/browser/breakpoint/glsp-breakpoint-marker";
 import { Saveable, SaveableSource } from "@theia/core/lib/browser";
 import { Disposable, DisposableCollection, Emitter, Event, MaybePromise } from "@theia/core/lib/common";
 import { EditorPreferences } from "@theia/editor/lib/browser";
@@ -84,7 +84,6 @@ export class GLSPDiagramWidget extends DiagramWidget implements SaveableSource {
 
 export class GLSPBreakpointService {
 
-    private breakpoints: SModelElement[] = [];
     private glspBreakpoints: GLSPBreakpoint[] = [];
     readonly breakpointsChangedEmitter: Emitter<void> = new Emitter<void>();
 
@@ -119,9 +118,8 @@ export class GLSPBreakpointService {
 
     protected addBreakpoint(selectedElements: SModelElement[]) {
         for (const selectedElement of selectedElements) {
-            const breakpoint = this.breakpoints.find(bp => bp.id === selectedElement.id);
+            const breakpoint = this.glspBreakpoints.find(bp => bp.id === selectedElement.id);
             if (!breakpoint) {
-                this.breakpoints.push(selectedElement);
                 const path = this.getCurrentWidgetPath();
                 if (path) {
                     this.glspBreakpoints.push(GLSPBreakpoint.create(path, selectedElement));
@@ -143,7 +141,6 @@ export class GLSPBreakpointService {
 
     protected removeBreakpoint(selectedElements: SModelElement[]) {
         for (const selectedElement of selectedElements) {
-            this.breakpoints = this.breakpoints.filter(bp => bp.id !== selectedElement.id);
             this.glspBreakpoints = this.glspBreakpoints.filter(bp => bp.element.id !== selectedElement.id);
         }
         this.breakpointsChangedEmitter.fire();

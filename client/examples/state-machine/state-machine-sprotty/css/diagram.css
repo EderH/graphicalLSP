@@ -161,7 +161,7 @@ svg {
     margin-left: -5px;
 }
 
-.sprotty-node.breakpoint {
+.sprotty-node.state.breakpoint {
     stroke-width: 5;
     stroke: rgb(255, 0, 0);
 }

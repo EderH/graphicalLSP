@@ -13,10 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { DebugBreakpoint, DebugBreakpointOptions } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-breakpoint";
-import { DebugGLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-breakpoint";
-import { DebugEventOptions, GLSPDebugEvent } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-event";
 import { MessageClient } from "@theia/core";
 import { LabelProvider } from "@theia/core/lib/browser";
 import URI from "@theia/core/lib/common/uri";
@@ -27,8 +23,15 @@ import { FileSystem } from "@theia/filesystem/lib/common";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { SelectOptionsDialog } from "./dialog";
+import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
+import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
+import { DebugBreakpoint, DebugBreakpointOptions } from "./model/debug-breakpoint";
+import { DebugGLSPBreakpoint } from "./model/debug-glsp-breakpoint";
+import { DebugEventOptions, GLSPDebugEvent } from "./model/debug-glsp-event";
+import { SelectOptionsDialog } from "./view/dialog";
+
+
 
 export class GLSPDebugSession extends DebugSession {
 
@@ -39,6 +42,7 @@ export class GLSPDebugSession extends DebugSession {
         protected readonly terminalServer: TerminalService,
         protected readonly editorManager: GLSPDebugEditorManager,
         protected readonly breakpoints: GLSPBreakpointManager,
+        protected readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager,
         protected readonly labelProvider: LabelProvider,
         protected readonly messages: MessageClient,
         protected readonly fileSystem: FileSystem) {
@@ -56,6 +60,7 @@ export class GLSPDebugSession extends DebugSession {
             await this.updateFrames();
 
             await this.updateEventFlow();
+
         });
     }
 
@@ -75,8 +80,8 @@ export class GLSPDebugSession extends DebugSession {
     }
 
     protected asDebugBreakpointOptions(): DebugBreakpointOptions {
-        const { labelProvider, breakpoints, editorManager } = this;
-        return { labelProvider, breakpoints, editorManager, session: this };
+        const { labelProvider, breakpoints, breakpointsDiagramManager, editorManager } = this;
+        return { labelProvider, breakpoints, breakpointsDiagramManager, editorManager, session: this };
     }
 
     protected asDebugEventOptions(): DebugEventOptions {

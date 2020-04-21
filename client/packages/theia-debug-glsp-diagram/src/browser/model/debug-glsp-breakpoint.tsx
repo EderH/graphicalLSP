@@ -39,9 +39,9 @@ export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> impleme
             const bp = new Array<SModelElement>();
             bp.push(breakpoint.element);
             if (enabled) {
-                // this.breakpointsDiagramManager.enableDiagramBreakpoints(breakpoint.uri, bp);
+                this.breakpointsDiagramManager.enableDiagramBreakpoints(breakpoint.uri, bp);
             } else {
-                // this.breakpointsDiagramManager.disableDiagramBreakpoints(breakpoint.uri, bp);
+                this.breakpointsDiagramManager.disableDiagramBreakpoints(breakpoint.uri, bp);
             }
         }
     }

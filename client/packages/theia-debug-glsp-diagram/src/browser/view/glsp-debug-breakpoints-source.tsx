@@ -13,8 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { DebugGLSPBreakpoint } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-breakpoint";
 import { LabelProvider, WidgetManager } from "@theia/core/lib/browser";
 import { TreeElement, TreeSource } from "@theia/core/lib/browser/source-tree";
 import { DebugState } from "@theia/debug/lib/browser/debug-session";
@@ -23,8 +21,12 @@ import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
 
+import { GLSPBreakpointDiagramManager } from "../breakpoint/glsp-breakpoint-diagram-manager";
+import { GLSPBreakpointManager } from "../breakpoint/glsp-breakpoint-manager";
 import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
 import { GLSPDebugSession } from "../glsp-debug-session";
+import { DebugGLSPBreakpoint } from "../model/debug-glsp-breakpoint";
+
 
 
 @injectable()
@@ -32,6 +34,8 @@ export class GLSPDebugBreakpointsSource extends TreeSource {
 
     @inject(GLSPBreakpointManager)
     protected readonly breakpoints: GLSPBreakpointManager;
+    @inject(GLSPBreakpointDiagramManager)
+    protected readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager;
     @inject(DebugSessionManager)
     protected readonly manager: DebugSessionManager;
     @inject(GLSPDebugEditorManager)
@@ -56,6 +60,7 @@ export class GLSPDebugBreakpointsSource extends TreeSource {
                 this.viewModel = widget['sessionWidget']['model'];
                 this.toDispose.push(this.viewModel.onDidChangeBreakpoints(() => this.fireDidChange()));
                 this.toDispose.push(this.breakpoints.onDidChangeGLSPBreakpoints(() => this.fireDidChange()));
+                this.toDispose.push(this.breakpoints.onDidChangeMarkers(() => this.fireDidChange));
             }
         });
     }
@@ -77,8 +82,8 @@ export class GLSPDebugBreakpointsSource extends TreeSource {
         if (session && session.state > DebugState.Initializing) {
             return session.getGLSPBreakpoints();
         }
-        const { labelProvider, breakpoints, editorManager } = this;
-        return this.breakpoints.getGLSPBreakpoints().map(origin => new DebugGLSPBreakpoint(origin, { labelProvider, breakpoints, editorManager }));
+        const { labelProvider, breakpoints, breakpointsDiagramManager, editorManager } = this;
+        return this.breakpoints.getGLSPBreakpoints().map(origin => new DebugGLSPBreakpoint(origin, { labelProvider, breakpoints, breakpointsDiagramManager, editorManager }));
     }
 
     *getElements(): IterableIterator<TreeElement> {

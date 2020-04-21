@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPBreakpointManager } from "@glsp/theia-debug-breakpoint/lib/browser/breakpoint/glsp-breakpoint-manager";
+import { GLSPBreakpointManager } from "@glsp/theia-debug-diagram/lib/browser/breakpoint/glsp-breakpoint-manager";
 import { GLSPDebugEditorManager } from "@glsp/theia-debug-diagram/lib/browser/glsp-debug-editor-manager";
 import { GLSPDiagramManager, GLSPTheiaSprottyConnector } from "@glsp/theia-integration/lib/browser";
 import { MessageService } from "@theia/core";
@@ -24,6 +24,7 @@ import { TheiaFileSaver } from "sprotty-theia/lib";
 
 import { StateMachineLanguage } from "../../common/state-machine-language";
 import { StateMachineGLSPDiagramClient } from "./state-machine-glsp-diagram-client";
+
 
 
 

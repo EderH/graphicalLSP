@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { GLSPDebugEvent } from "@glsp/theia-debug-breakpoint/lib/browser/model/debug-glsp-event";
 import { LabelProvider, WidgetManager } from "@theia/core/lib/browser";
 import { TreeElement, TreeSource } from "@theia/core/lib/browser/source-tree";
 import { DebugState } from "@theia/debug/lib/browser/debug-session";
@@ -25,6 +24,8 @@ import debounce = require("p-debounce");
 
 import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
 import { GLSPDebugSession } from "../glsp-debug-session";
+import { GLSPDebugEvent } from "../model/debug-glsp-event";
+
 
 
 @injectable()
@@ -59,12 +60,14 @@ export class GLSPDebugEventsSource extends TreeSource {
     protected readonly refresh = debounce(() => this.fireDidChange(), 100);
 
     getCurrentSession(): GLSPDebugSession | undefined {
-        let currentSession = this.viewModel.currentSession;
-        if (!currentSession) {
-            currentSession = this.manager.currentSession;
-        }
-        if (currentSession && currentSession instanceof GLSPDebugSession) {
-            return currentSession;
+        if (this.viewModel) {
+            let currentSession = this.viewModel.currentSession;
+            if (!currentSession) {
+                currentSession = this.manager.currentSession;
+            }
+            if (currentSession && currentSession instanceof GLSPDebugSession) {
+                return currentSession;
+            }
         }
 
         return undefined;

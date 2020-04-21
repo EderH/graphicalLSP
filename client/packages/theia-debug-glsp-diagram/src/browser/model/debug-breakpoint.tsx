@@ -21,6 +21,7 @@ import { EditorManager } from "@theia/editor/lib/browser";
 import * as React from "react";
 import { DebugProtocol } from "vscode-debugprotocol/lib/debugProtocol";
 
+import { GLSPBreakpointDiagramManager } from "../breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "../breakpoint/glsp-breakpoint-manager";
 import { BaseBreakpoint } from "../breakpoint/glsp-breakpoint-marker";
 
@@ -32,6 +33,7 @@ export class DebugBreakpointData {
 export class DebugBreakpointOptions {
     readonly labelProvider: LabelProvider;
     readonly breakpoints: GLSPBreakpointManager;
+    readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager;
     readonly editorManager: EditorManager;
     readonly session?: DebugSession;
 }
