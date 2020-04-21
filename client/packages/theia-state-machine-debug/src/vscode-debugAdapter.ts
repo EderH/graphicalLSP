@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { MockDebugSession } from "./vscode-mockDebug";
+import { StateMachineDebugSession } from "./vscode-mockDebug";
 
-MockDebugSession.run(MockDebugSession);
+StateMachineDebugSession.run(StateMachineDebugSession);
 

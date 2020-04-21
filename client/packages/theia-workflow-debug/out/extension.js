@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /********************************************************************************
  * Copyright (c) 2019 EclipseSource and others.
  *
@@ -13,44 +15,37 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import * as vscode from "vscode";
-import { WorkspaceFolder, DebugConfiguration, ProviderResult, CancellationToken } from 'vscode';
-
-export function activate(context: vscode.ExtensionContext) {
-
-    // register a configuration provider for 'statemachine' debug type
-    const provider = new StateMachineConfigurationProvider();
-    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('statemachine-debug', provider));
-
+const vscode = require("vscode");
+function activate(context) {
+    // register a configuration provider for 'mock' debug type
+    const provider = new MockConfigurationProvider();
+    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('workflow-debug', provider));
 }
-
-export function deactivate() {
+exports.activate = activate;
+function deactivate() {
     // nothing to do
 }
-
-class StateMachineConfigurationProvider implements vscode.DebugConfigurationProvider {
-
+exports.deactivate = deactivate;
+class MockConfigurationProvider {
     /**
      * Massage a debug configuration just before a debug session is being launched,
      * e.g. add all missing attributes to the debug configuration.
      */
-    resolveDebugConfiguration(folder: WorkspaceFolder | undefined, config: DebugConfiguration, token?: CancellationToken): ProviderResult<DebugConfiguration> {
-
+    resolveDebugConfiguration(folder, config, token) {
         // if launch.json is missing or empty
         if (!config.type && !config.request && !config.name) {
-            config.type = 'statemachine-debug';
+            config.type = 'workflow-debug';
             config.name = 'Launch';
             config.request = 'launch';
             config.program = '${file}';
             config.stopOnEntry = true;
         }
-
         if (!config.program) {
             return vscode.window.showInformationMessage("Cannot find a program to debug").then(_ => {
-                return undefined;	// abort launch
+                return undefined; // abort launch
             });
         }
-
         return config;
     }
 }
+//# sourceMappingURL=extension.js.map

@@ -18,9 +18,9 @@ import { WorkspaceFolder, DebugConfiguration, ProviderResult, CancellationToken 
 
 export function activate(context: vscode.ExtensionContext) {
 
-    // register a configuration provider for 'mock' debug type
-    const provider = new MockConfigurationProvider();
-    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('mock-debug', provider));
+    // register a configuration provider for 'statemachine' debug type
+    const provider = new StateMachineConfigurationProvider();
+    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('state-machine-debug', provider));
 
 }
 
@@ -28,7 +28,7 @@ export function deactivate() {
     // nothing to do
 }
 
-class MockConfigurationProvider implements vscode.DebugConfigurationProvider {
+class StateMachineConfigurationProvider implements vscode.DebugConfigurationProvider {
 
     /**
      * Massage a debug configuration just before a debug session is being launched,
@@ -38,7 +38,7 @@ class MockConfigurationProvider implements vscode.DebugConfigurationProvider {
 
         // if launch.json is missing or empty
         if (!config.type && !config.request && !config.name) {
-            config.type = 'mock-debug';
+            config.type = 'state-machine-debug';
             config.name = 'Launch';
             config.request = 'launch';
             config.program = '${file}';

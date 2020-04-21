@@ -37,7 +37,6 @@ import { MockFunctionBreakpoint, MockRuntime } from "./vscode-mockRuntime";
 
 
 
-
 const { Subject } = require('await-notify');
 
 
@@ -60,15 +59,6 @@ interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
     trace?: boolean;
 }
 
-export declare class EventFlowEntry {
-    id: number;
-    source: Source;
-    element: string;
-    event: string;
-    constructor(id: number, element: string, event: string, source: Source);
-}
-
-
 export class MockDebugSession extends LoggingDebugSession {
 
     // we don't support multiple threads, so we can use a hardcoded ID for the default thread
@@ -88,7 +78,7 @@ export class MockDebugSession extends LoggingDebugSession {
      * We configure the default implementation of a debug adapter here.
      */
     public constructor() {
-        super("statemachine-debug.txt");
+        super("workflow-debug.txt");
 
         // this debugger uses zero-based lines and columns
         this.setDebuggerLinesStartAt1(false);
@@ -123,10 +113,6 @@ export class MockDebugSession extends LoggingDebugSession {
         });
         this._runtime.on('end', () => {
             this.sendEvent(new TerminatedEvent());
-        });
-        this._runtime.on('stopOnEvent', (lines) => {
-            this.sendEvent(new StoppedEvent('event', MockDebugSession.THREAD_ID));
-            this.sendEvent(new Event('onEvent', lines));
         });
     }
 
@@ -186,7 +172,7 @@ export class MockDebugSession extends LoggingDebugSession {
 
         const connectType = args.connectType ? args.connectType : "sockets";
         const host = args.serverHost ? args.serverHost : "127.0.0.1";
-        const port = args.serverPort ? args.serverPort : 5057;
+        const port = args.serverPort ? args.serverPort : 5056;
         const base = args.serverBase ? args.serverBase : "";
 
         // start the program in the runtime
@@ -218,51 +204,25 @@ export class MockDebugSession extends LoggingDebugSession {
         this.sendResponse(response);
     }
 
-    protected customRequest(command: string, response: DebugProtocol.Response, args: any): void {
+    protected customRequest(command: string, response: DebugProtocol.Response, args: any, request?: DebugProtocol.Request): void {
+        if (command === 'setGraphicalBreakpoints') {
+            console.log("Set GLSP Breakpoints");
+            this._runtime.clearBreakpoints();
+            // set new GLSP breakpoints
+            const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
+                const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
+                const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
+                bp.id = id;
+                return bp;
+            });
 
-        switch (command) {
+            response.body = {
+                breakpoints: actualBreakpoints
+            };
+            this._runtime.sendAllBreakpointsToServer();
+            this.sendResponse(response);
 
-            case 'setGLSPBreakpoints':
-                this.setGLSPBreakpointsRequest(response, args);
-                break;
-
-            case 'setEvent':
-                this._runtime.setEvent(args.event);
-                break;
-
-            case 'eventFlowRequest':
-                this.eventFlowRequest(response, args);
-                break;
-            default:
-                super.customRequest(command, response, args);
         }
-    }
-
-    protected eventFlowRequest(response: DebugProtocol.Response, args: any) {
-        const eventFlow = this._runtime.eventFlow;
-
-        response.body = {
-            eventFlow: eventFlow
-        };
-        this.sendResponse(response);
-    }
-
-    protected setGLSPBreakpointsRequest(response: DebugProtocol.Response, args: any) {
-        console.log("Set GLSP Breakpoints");
-        this._runtime.clearBreakpoints();
-        // set new GLSP breakpoints
-        const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
-            const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
-            const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
-            bp.id = id;
-            return bp;
-        });
-
-        response.body = {
-            breakpoints: actualBreakpoints
-        };
-        this._runtime.sendAllBreakpointsToServer();
-        this.sendResponse(response);
     }
 
     protected setFunctionBreakPointsRequest(response: DebugProtocol.SetFunctionBreakpointsResponse, args: DebugProtocol.SetFunctionBreakpointsArguments): void {

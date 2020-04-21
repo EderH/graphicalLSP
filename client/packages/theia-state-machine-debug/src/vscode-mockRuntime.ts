@@ -22,23 +22,12 @@ import { DebugProtocol } from "vscode-debugprotocol";
 const Net = require("net");
 const Path = require('path');
 
-export interface MockFunctionBreakpoint {
+
+
+export interface GLSPBreakpoint {
     id: number;
     name: string;
     path: string;
-    verified: boolean;
-}
-
-export interface MockGLSPBreakpoint {
-    id: number;
-    name: string;
-    path: string;
-    verified: boolean;
-}
-
-export interface MockBreakpoint {
-    id: number;
-    line: number;
     verified: boolean;
 }
 
@@ -59,7 +48,7 @@ export interface EventEntry {
 /**
  * A Mock runtime with minimal debugger functionality.
  */
-export class MockRuntime extends EventEmitter {
+export class StateMachineRuntime extends EventEmitter {
 
 
     private debugger = new Net.Socket();
@@ -105,24 +94,14 @@ export class MockRuntime extends EventEmitter {
         return this._sourceFile;
     }
 
-    // the contents (= lines) of the one and only file
-    private _sourceLines: string[] = [];
-
-    // This is the next line that will be 'executed'
-    // private _currentLine = 0;
-
     private _stackTrace = new Array<StackEntry>();
 
     private _eventOptions = new Array<string>();
 
     private _queuedCommands = new Array<string>();
 
-    // maps from sourceFile to array of Mock breakpoints
-    private _breakPoints = new Map<string, MockBreakpoint[]>();
-    private _functionBreakpoints = new Map<string, MockFunctionBreakpoint[]>();
-
-    private _glspBreakpoints = new Map<string, MockFunctionBreakpoint[]>();
-    private _breakPointMap = new Map<string, Map<string, MockGLSPBreakpoint>>();
+    private _glspBreakpoints = new Map<string, GLSPBreakpoint[]>();
+    private _breakPointMap = new Map<string, Map<string, GLSPBreakpoint>>();
 
     // since we want to send breakpoint events, we will assign an id to every event
     // so that the frontend can match events with breakpoints.
@@ -149,10 +128,7 @@ export class MockRuntime extends EventEmitter {
             this._serverBase = "";
         }
 
-        // this.loadSource(program);
-        // this._currentLine = -1;
         this._sourceFile = program;
-        // this.verifyBreakpoints(this._sourceFile);
 
         this.connectToDebugger();
 
@@ -249,8 +225,7 @@ export class MockRuntime extends EventEmitter {
         if (!this.isValid()) {
             return;
         }
-        // this.sendEvent('output', data.toString().trim(), "", -1, '\n');
-        // const index = data.indexOf('|');
+
         const lines = data.split('\n');
         let currLine = 0;
         const command = lines[currLine++];
@@ -258,12 +233,7 @@ export class MockRuntime extends EventEmitter {
         let startStackData = 1;
         let startEventFlowData = 1;
 
-        /*if (index >= 0) {
-            response = (index < data.length - 1 ? data.substring(index + 1) : '').trim();
-            command = data.substring(0, index).trim();
-        }*/
         console.log("command: " + command + "   response: " + lines.toString());
-
 
         if (command === 'end') {
             this.disconnectFromDebugger();
@@ -553,7 +523,6 @@ export class MockRuntime extends EventEmitter {
             const entry = bps[i].name;
             data += "|" + entry;
         }
-        console.log("SetBP: " + data);
         this.sendToServer('setbp', data);
     }
 
@@ -562,12 +531,10 @@ export class MockRuntime extends EventEmitter {
             return;
         }
 
-        console.log("Set Empty BP");
         this.sendToServer('setbp', "");
     }
 
     sendAllBreakpointsToServer() {
-        console.log("SEND");
         const keys = Array.from(this._glspBreakpoints.keys());
         if (keys.length === 0) {
             this.sendEmptyBreakpointsToServer();
@@ -579,30 +546,12 @@ export class MockRuntime extends EventEmitter {
         }
     }
 
-    /*
-	 * Set breakpoint in file with given line.
-	 */
-    public setBreakPoint(path: string, line: number): MockBreakpoint {
-
-        const bp = <MockBreakpoint>{ verified: false, line, id: this._breakpointId++ };
-        let bps = this._breakPoints.get(path);
-        if (!bps) {
-            bps = new Array<MockBreakpoint>();
-            this._breakPoints.set(path, bps);
-        }
-        bps.push(bp);
-
-        this.verifyBreakpoints(path);
-
-        return bp;
-    }
-
     public setEvent(event: any) {
         this.sendToServer('setEvent', event);
     }
 
-    public setGLSPBreakpoint(breakpoint: any): MockGLSPBreakpoint {
-        const bp = <MockGLSPBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.uri, verified: true };
+    public setGLSPBreakpoint(breakpoint: any): GLSPBreakpoint {
+        const bp = <GLSPBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, path: breakpoint.uri, verified: true };
 
         let path = breakpoint.uri;
         const char = path.charAt(2);
@@ -617,7 +566,7 @@ export class MockRuntime extends EventEmitter {
         bp.path = lower;
         let bps = this._glspBreakpoints.get(lower);
         if (!bps) {
-            bps = new Array<MockGLSPBreakpoint>();
+            bps = new Array<GLSPBreakpoint>();
             this._glspBreakpoints.set(lower, bps);
         }
         bps.push(bp);
@@ -625,7 +574,7 @@ export class MockRuntime extends EventEmitter {
 
         let bpMap = this._breakPointMap.get(lower);
         if (!bpMap) {
-            bpMap = new Map<string, MockGLSPBreakpoint>();
+            bpMap = new Map<string, GLSPBreakpoint>();
         }
         bpMap.set(breakpoint.name, bp);
         this._breakPointMap.set(lower, bpMap);
@@ -633,47 +582,7 @@ export class MockRuntime extends EventEmitter {
         return bp;
     }
 
-    /*
-     * Set breakpoint in file with given line.
-     */
-    public setFunctionBreakpoint(breakpoint: DebugProtocol.FunctionBreakpoint): MockFunctionBreakpoint {
-        console.log("Here");
-        const bp = <MockFunctionBreakpoint>{ id: this._breakpointId++, name: breakpoint.name, verified: false };
-
-        if (breakpoint.condition) {
-            let path = breakpoint.condition;
-            const char = path.charAt(2);
-            if (char === ':') {
-                path = path.substring(1);
-            }
-            path = Path.resolve(path);
-            this.cacheFilename(path);
-
-            const lower = path.toLowerCase();
-
-            bp.path = lower;
-            let bps = this._functionBreakpoints.get(lower);
-            if (!bps) {
-                bps = new Array<MockFunctionBreakpoint>();
-                this._functionBreakpoints.set(lower, bps);
-            }
-            bps.push(bp);
-
-
-            let bpMap = this._breakPointMap.get(lower);
-            if (!bpMap) {
-                bpMap = new Map<string, MockFunctionBreakpoint>();
-            }
-            bpMap.set(breakpoint.name, bp);
-            this._breakPointMap.set(lower, bpMap);
-        }
-
-        // this.verifyBreakpoints(path);
-
-        return bp;
-    }
-
-    public getBreakpoint(element: string): MockGLSPBreakpoint | undefined {
+    public getBreakpoint(element: string): GLSPBreakpoint | undefined {
 
         const pathname = Path.resolve(this._sourceFile);
         const lower = pathname.toLowerCase();
@@ -687,28 +596,6 @@ export class MockRuntime extends EventEmitter {
         return bp;
     }
 
-    /*
-	 * Clear breakpoint in file with given line.
-	 */
-    public clearBreakPoint(path: string, line: number): MockBreakpoint | undefined {
-        /* let pathname = Path.resolve(path);
-                let lower = pathname.toLowerCase();
-                let bpMap = this._breakPointMap.get(lower);
-                if (bpMap) {
-                    bpMap.delete(line);
-                }
-
-                let bps = this._breakPoints.get(lower);
-                if (bps) {
-                    const index = bps.findIndex(bp => bp.line === line);
-                    if (index >= 0) {
-                        const bp = bps[index];
-                        bps.splice(index, 1);
-                        return bp;
-                    }
-                } */
-        return undefined;
-    }
 
     /*
      * Clear all breakpoints for file.
@@ -726,6 +613,7 @@ export class MockRuntime extends EventEmitter {
         }
         this._filenamesMap.set(lower, filename);
     }
+
     getActualFilename(filename: string): string {
         // filename = Path.normalize(filename);
         const pathname = Path.resolve(filename);
@@ -801,64 +689,6 @@ export class MockRuntime extends EventEmitter {
         this.fireEventsForElement(this._currentElement, stepEvent);
     }
 
-    /**
-     * Run through the file.
-     * If stepEvent is specified only run a single step and emit the stepEvent.
-     */
-    /*private run(reverse = false, stepEvent?: string) {
-        if (reverse) {
-            for (let ln = this._currentLine - 1; ln >= 0; ln--) {
-                if (this.fireEventsForLine(ln, stepEvent)) {
-                    this._currentLine = ln;
-                    return;
-                }
-            }
-            // no more lines: stop at first line
-            this._currentLine = 0;
-            this.sendEvent('stopOnEntry');
-        } else {
-            for (let ln = this._currentLine + 1; ln < this._sourceLines.length; ln++) {
-                if (this.fireEventsForLine(ln, stepEvent)) {
-                    this._currentLine = ln;
-                    return true;
-                }
-            }
-            // no more lines: run to end
-            this.sendEvent('end');
-        }
-    } */
-
-    private verifyBreakpoints(path: string): void {
-        const bps = this._breakPoints.get(path);
-        if (bps) {
-            this.loadSource(path);
-            bps.forEach(bp => {
-                if (!bp.verified && bp.line < this._sourceLines.length) {
-                    const srcLine = this._sourceLines[bp.line].trim();
-
-                    // if a line is empty or starts with '+' we don't allow to set a breakpoint but move the breakpoint down
-                    if (srcLine.length === 0 || srcLine.indexOf('+') === 0) {
-                        bp.line++;
-                    }
-                    // if a line starts with '-' we don't allow to set a breakpoint but move the breakpoint up
-                    if (srcLine.indexOf('-') === 0) {
-                        bp.line--;
-                    }
-                    // don't set 'verified' to true if the line contains the word 'lazy'
-                    // in this case the breakpoint will be verified 'lazy' after hitting it once.
-                    if (srcLine.indexOf('lazy') < 0) {
-                        bp.verified = true;
-                        this.sendEvent('breakpointValidated', bp);
-                    }
-                }
-            });
-        }
-    }
-
-    /**
-     * Fire events if line has a breakpoint or the word 'exception' is found.
-     * Returns true is execution needs to stop.
-     */
     private fireEventsForElement(currentElement: string, stepEvent?: string): boolean {
 
         // is there a breakpoint?

@@ -16,7 +16,6 @@
 import { basename } from "path";
 import {
     Breakpoint,
-    BreakpointEvent,
     Event,
     Handles,
     InitializedEvent,
@@ -33,7 +32,8 @@ import {
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { MockFunctionBreakpoint, MockRuntime } from "./vscode-mockRuntime";
+import { StateMachineRuntime } from "./vscode-mockRuntime";
+
 
 
 
@@ -59,13 +59,22 @@ interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
     trace?: boolean;
 }
 
-export class MockDebugSession extends LoggingDebugSession {
+export declare class EventFlowEntry {
+    id: number;
+    source: Source;
+    element: string;
+    event: string;
+    constructor(id: number, element: string, event: string, source: Source);
+}
+
+
+export class StateMachineDebugSession extends LoggingDebugSession {
 
     // we don't support multiple threads, so we can use a hardcoded ID for the default thread
     private static THREAD_ID = 1;
 
     // a Mock runtime (or debugger)
-    private _runtime: MockRuntime;
+    private _runtime: StateMachineRuntime;
 
     private _variableHandles = new Handles<string>();
 
@@ -78,29 +87,26 @@ export class MockDebugSession extends LoggingDebugSession {
      * We configure the default implementation of a debug adapter here.
      */
     public constructor() {
-        super("mock-debug.txt");
+        super("state-machine-debug.txt");
 
         // this debugger uses zero-based lines and columns
         this.setDebuggerLinesStartAt1(false);
         this.setDebuggerColumnsStartAt1(false);
 
-        this._runtime = new MockRuntime();
+        this._runtime = new StateMachineRuntime();
 
         // setup event handlers
         this._runtime.on('stopOnEntry', () => {
-            this.sendEvent(new StoppedEvent('entry', MockDebugSession.THREAD_ID));
+            this.sendEvent(new StoppedEvent('entry', StateMachineDebugSession.THREAD_ID));
         });
         this._runtime.on('stopOnStep', () => {
-            this.sendEvent(new StoppedEvent('step', MockDebugSession.THREAD_ID));
+            this.sendEvent(new StoppedEvent('step', StateMachineDebugSession.THREAD_ID));
         });
         this._runtime.on('stopOnBreakpoint', () => {
-            this.sendEvent(new StoppedEvent('breakpoint', MockDebugSession.THREAD_ID));
+            this.sendEvent(new StoppedEvent('breakpoint', StateMachineDebugSession.THREAD_ID));
         });
         this._runtime.on('stopOnException', () => {
-            this.sendEvent(new StoppedEvent('exception', MockDebugSession.THREAD_ID));
-        });
-        this._runtime.on('breakpointValidated', (bp: MockFunctionBreakpoint) => {
-            this.sendEvent(new BreakpointEvent('changed', <DebugProtocol.Breakpoint>{ verified: bp.verified, id: bp.id }));
+            this.sendEvent(new StoppedEvent('exception', StateMachineDebugSession.THREAD_ID));
         });
         this._runtime.on('output', (category, text, filePath) => {
             const e: DebugProtocol.OutputEvent = new OutputEvent(`${text}\n`);
@@ -113,6 +119,10 @@ export class MockDebugSession extends LoggingDebugSession {
         });
         this._runtime.on('end', () => {
             this.sendEvent(new TerminatedEvent());
+        });
+        this._runtime.on('stopOnEvent', (lines) => {
+            this.sendEvent(new StoppedEvent('event', StateMachineDebugSession.THREAD_ID));
+            this.sendEvent(new Event('onEvent', lines));
         });
     }
 
@@ -172,7 +182,7 @@ export class MockDebugSession extends LoggingDebugSession {
 
         const connectType = args.connectType ? args.connectType : "sockets";
         const host = args.serverHost ? args.serverHost : "127.0.0.1";
-        const port = args.serverPort ? args.serverPort : 5056;
+        const port = args.serverPort ? args.serverPort : 5057;
         const base = args.serverBase ? args.serverBase : "";
 
         // start the program in the runtime
@@ -181,57 +191,41 @@ export class MockDebugSession extends LoggingDebugSession {
         this.sendResponse(response);
     }
 
-    protected setBreakPointsRequest(response: DebugProtocol.SetBreakpointsResponse, args: DebugProtocol.SetBreakpointsArguments): void {
+    protected customRequest(command: string, response: DebugProtocol.Response, args: any): void {
 
-        const path = <string>args.source.path;
-        const clientLines = args.lines || [];
+        switch (command) {
 
-        // clear all breakpoints for this file
-        // this._runtime.clearBreakpoints();
+            case 'setGLSPBreakpoints':
+                this.setGLSPBreakpointsRequest(response, args);
+                break;
 
-        // set and verify breakpoint locations
-        const actualBreakpoints = clientLines.map(l => {
-            const { verified, line, id } = this._runtime.setBreakPoint(path, this.convertClientLineToDebugger(l));
-            const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified, this.convertDebuggerLineToClient(line));
-            bp.id = id;
-            return bp;
-        });
+            case 'setEvent':
+                this._runtime.setEvent(args.event);
+                break;
 
-        // send back the actual breakpoint positions
+            case 'eventFlowRequest':
+                this.eventFlowRequest(response, args);
+                break;
+            default:
+                super.customRequest(command, response, args);
+        }
+    }
+
+    protected eventFlowRequest(response: DebugProtocol.Response, args: any) {
+        const eventFlow = this._runtime.eventFlow;
+
         response.body = {
-            breakpoints: actualBreakpoints
+            eventFlow: eventFlow
         };
         this.sendResponse(response);
     }
 
-    protected customRequest(command: string, response: DebugProtocol.Response, args: any, request?: DebugProtocol.Request): void {
-        if (command === 'setGraphicalBreakpoints') {
-            console.log("Set GLSP Breakpoints");
-            this._runtime.clearBreakpoints();
-            // set new GLSP breakpoints
-            const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
-                const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
-                const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
-                bp.id = id;
-                return bp;
-            });
-
-            response.body = {
-                breakpoints: actualBreakpoints
-            };
-            this._runtime.sendAllBreakpointsToServer();
-            this.sendResponse(response);
-
-        }
-    }
-
-    protected setFunctionBreakPointsRequest(response: DebugProtocol.SetFunctionBreakpointsResponse, args: DebugProtocol.SetFunctionBreakpointsArguments): void {
-
-        // clear all existing function breakpoints
+    protected setGLSPBreakpointsRequest(response: DebugProtocol.Response, args: any) {
+        console.log("Set GLSP Breakpoints");
         this._runtime.clearBreakpoints();
-        // set new function breakpoints
-        const actualBreakpoints = args.breakpoints.map(functionBreakpoint => {
-            const { id, verified } = this._runtime.setFunctionBreakpoint(functionBreakpoint);
+        // set new GLSP breakpoints
+        const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
+            const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
             const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
             bp.id = id;
             return bp;
@@ -242,7 +236,6 @@ export class MockDebugSession extends LoggingDebugSession {
         };
         this._runtime.sendAllBreakpointsToServer();
         this.sendResponse(response);
-
     }
 
     protected threadsRequest(response: DebugProtocol.ThreadsResponse): void {
@@ -250,7 +243,7 @@ export class MockDebugSession extends LoggingDebugSession {
         // runtime supports now threads so just return a default thread.
         response.body = {
             threads: [
-                new Thread(MockDebugSession.THREAD_ID, "thread 1")
+                new Thread(StateMachineDebugSession.THREAD_ID, "thread 1")
             ]
         };
         this.sendResponse(response);
@@ -328,40 +321,6 @@ export class MockDebugSession extends LoggingDebugSession {
 
     protected disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments): void {
         this._runtime.disconnectFromDebugger();
-        this.sendResponse(response);
-    }
-
-    protected evaluateRequest(response: DebugProtocol.EvaluateResponse, args: DebugProtocol.EvaluateArguments): void {
-
-        let reply: string | undefined = undefined;
-
-        if (args.context === 'repl') {
-            // 'evaluate' supports to create and delete breakpoints from the 'repl':
-            const matches = /new +([0-9]+)/.exec(args.expression);
-            if (matches && matches.length === 2) {
-                const mbp = this._runtime.setBreakPoint(this._runtime.sourceFile, this.convertClientLineToDebugger(parseInt(matches[1])));
-                const bp = <DebugProtocol.Breakpoint>new Breakpoint(mbp.verified, this.convertDebuggerLineToClient(mbp.line), undefined, this.createSource(this._runtime.sourceFile));
-                bp.id = mbp.id;
-                this.sendEvent(new BreakpointEvent('new', bp));
-                reply = `breakpoint created`;
-            } else {
-                const matches = /del +([0-9]+)/.exec(args.expression);
-                if (matches && matches.length === 2) {
-                    const mbp = this._runtime.clearBreakPoint(this._runtime.sourceFile, this.convertClientLineToDebugger(parseInt(matches[1])));
-                    if (mbp) {
-                        const bp = <DebugProtocol.Breakpoint>new Breakpoint(false);
-                        bp.id = mbp.id;
-                        this.sendEvent(new BreakpointEvent('removed', bp));
-                        reply = `breakpoint deleted`;
-                    }
-                }
-            }
-        }
-
-        response.body = {
-            result: reply ? reply : `evaluate(context: '${args.context}', '${args.expression}')`,
-            variablesReference: 0
-        };
         this.sendResponse(response);
     }
 

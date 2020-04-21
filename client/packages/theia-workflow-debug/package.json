@@ -1,5 +1,5 @@
 {
-  "name": "theia-statemachine-debug",
+  "name": "theia-workflow-debug",
   "keywords": [
     "theia-extension"
   ],
@@ -32,8 +32,8 @@
   "contributes": {
     "debuggers": [
       {
-        "type": "statemachine-debug",
-        "label": "Theia StateMachine Debug",
+        "type": "workflow-debug",
+        "label": "Theia Worflow Debug",
         "program": "./out/vscode-debugAdapter.js",
         "runtime": "node",
         "configurationAttributes": {
@@ -60,7 +60,7 @@
               "serverPort": {
                 "type": "number",
                 "description": "Number of the server port to connect to.",
-                "default": 5057
+                "default": 5056
               },
               "serverHost": {
                 "type": "string",
@@ -82,7 +82,7 @@
         },
         "initialConfigurations": [
           {
-            "type": "statemachine-debug",
+            "type": "workflow-debug",
             "request": "launch",
             "name": "Debugging a text file",
             "program": "${file}",
@@ -91,10 +91,10 @@
         ],
         "configurationSnippets": [
           {
-            "label": "Theia StateMachine Debug: Launch",
-            "description": "A new configuration for launching a Theia statemachine debug program",
+            "label": "Theia Workflow Debug: Launch",
+            "description": "A new configuration for launching a Theia workflow debug program",
             "body": {
-              "type": "statemachine-debug",
+              "type": "workflow-debug",
               "request": "launch",
               "name": "Debugging a text file",
               "stopOnEntry": true,

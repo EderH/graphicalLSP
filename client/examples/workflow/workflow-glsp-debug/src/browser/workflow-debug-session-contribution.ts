@@ -28,14 +28,13 @@ import { OutputChannelManager } from "@theia/output/lib/common/output-channel";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { inject, injectable } from "inversify";
 
-import { StateMachineDebugger } from "../common/state-machine-debugger";
-
+import { WorkflowDebugger } from "../common/workflow-debugger";
 
 
 @injectable()
-export class StateMachineDebugSessionContribution implements DebugSessionContribution {
+export class WorkflowDebugSessionContribution implements DebugSessionContribution {
 
-    private _stateMachineDebugSessionFactory: GLSPDebugSessionFactory;
+    private _workflowDebugSessionFactory: GLSPDebugSessionFactory;
 
 
     constructor(
@@ -50,14 +49,14 @@ export class StateMachineDebugSessionContribution implements DebugSessionContrib
         @inject(DebugPreferences) debugPreferences: DebugPreferences,
         @inject(FileSystem) fileSystem: FileSystem,
     ) {
-        this._stateMachineDebugSessionFactory = new GLSPDebugSessionFactory({
+        this._workflowDebugSessionFactory = new GLSPDebugSessionFactory({
             terminalService, editorManager, breakpoints, breakpointsDiagramManager, labelProvider,
             messages, outputChannelManager, connectionProvider, debugPreferences, fileSystem
         });
     }
 
-    debugType = StateMachineDebugger.DebugType;
+    debugType = WorkflowDebugger.DebugType;
     debugSessionFactory(): DebugSessionFactory {
-        return this._stateMachineDebugSessionFactory;
+        return this._workflowDebugSessionFactory;
     }
 }

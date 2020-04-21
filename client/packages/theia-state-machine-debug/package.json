@@ -1,5 +1,5 @@
 {
-  "name": "theia-mock-debug",
+  "name": "theia-state-machine-debug",
   "keywords": [
     "theia-extension"
   ],
@@ -32,8 +32,8 @@
   "contributes": {
     "debuggers": [
       {
-        "type": "mock-debug",
-        "label": "Theia Mock Debug",
+        "type": "state-machine-debug",
+        "label": "Theia State Machine Debug",
         "program": "./out/vscode-debugAdapter.js",
         "runtime": "node",
         "configurationAttributes": {
@@ -60,7 +60,7 @@
               "serverPort": {
                 "type": "number",
                 "description": "Number of the server port to connect to.",
-                "default": 5056
+                "default": 5057
               },
               "serverHost": {
                 "type": "string",
@@ -82,7 +82,7 @@
         },
         "initialConfigurations": [
           {
-            "type": "mock-debug",
+            "type": "state-machine-debug",
             "request": "launch",
             "name": "Debugging a text file",
             "program": "${file}",
@@ -91,10 +91,10 @@
         ],
         "configurationSnippets": [
           {
-            "label": "Theia Mock Debug: Launch",
-            "description": "A new configuration for launching a Theia mock debug program",
+            "label": "Theia State Machine Debug: Launch",
+            "description": "A new configuration for launching a Theia state machine debug program",
             "body": {
-              "type": "mock-debug",
+              "type": "state-machine-debug",
               "request": "launch",
               "name": "Debugging a text file",
               "stopOnEntry": true,
