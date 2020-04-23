@@ -33,7 +33,7 @@ import {
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { WorkflowDebugger } from "./workflow-debugger";
+import { WorkflowDebugAdapter } from "./workflow-debug-adapter";
 import { GLSPBreakpoint, WorkflowRuntime } from "./workflow-runtime";
 
 
@@ -300,7 +300,7 @@ export class WorkflowDebugSession extends LoggingDebugSession {
     // ---- helpers
 
     private createSource(filePath: string): Source {
-        return new Source(basename(filePath), this.convertDebuggerPathToClient(filePath), undefined, undefined, WorkflowDebugger.SourceData);
+        return new Source(basename(filePath), this.convertDebuggerPathToClient(filePath), undefined, undefined, WorkflowDebugAdapter.SourceData);
     }
 }
 

@@ -17,8 +17,7 @@ import "reflect-metadata";
 
 import { EventEmitter } from "events";
 import { DebugProtocol } from "vscode-debugprotocol";
-
-import { StateMachineDebugger } from "./state-machine-debugger";
+import { StateMachineDebugAdapter } from "./state-machine-debug-adapter";
 
 
 const Net = require("net");
@@ -478,7 +477,7 @@ export class StateMachineRuntime extends EventEmitter {
     public verifyDebug(file: string): boolean {
         return this.verifyException() && file !== null &&
             typeof file !== 'undefined' &&
-            (file.endsWith(StateMachineDebugger.FileExtension));
+            (file.endsWith(StateMachineDebugAdapter.FileExtension));
     }
 
 

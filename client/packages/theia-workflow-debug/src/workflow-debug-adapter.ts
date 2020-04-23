@@ -13,8 +13,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-export namespace StateMachineDebugger {
-    export const DebugType: string = 'state-machine-debug';
-    export const FileExtension: string = 'sm';
-    export const SourceData: string = 'state-machine-adapter-data';
+export namespace WorkflowDebugAdapter {
+    export const DebugType: string = 'workflow-debug';
+    export const FileExtension: string = 'wf';
+    export const SourceData: string = 'workflow-adapter-data';
 }

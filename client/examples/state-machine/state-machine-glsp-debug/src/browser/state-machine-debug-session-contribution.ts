@@ -30,8 +30,6 @@ import { inject, injectable } from "inversify";
 
 import { StateMachineDebugger } from "../common/state-machine-debugger";
 
-
-
 @injectable()
 export class StateMachineDebugSessionContribution implements DebugSessionContribution {
 

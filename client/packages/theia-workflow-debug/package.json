@@ -5,7 +5,7 @@
   ],
   "version": "0.0.0",
   "files": [
-    "lib",
+    "out",
     "src"
   ],
   "dependencies": {
@@ -28,13 +28,13 @@
   "activationEvents": [
     "onDebug"
   ],
-  "main": "./lib/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
     "debuggers": [
       {
         "type": "workflow-debug",
         "label": "Theia Worflow Debug",
-        "program": "./out/vscode-debugAdapter.js",
+        "program": "./out/workflow-debug.js",
         "runtime": "node",
         "configurationAttributes": {
           "launch": {

@@ -15,12 +15,13 @@
  ********************************************************************************/
 import * as vscode from "vscode";
 import { WorkspaceFolder, DebugConfiguration, ProviderResult, CancellationToken } from 'vscode';
+import { WorkflowDebugAdapter } from "./workflow-debug-adapter";
 
 export function activate(context: vscode.ExtensionContext) {
 
     // register a configuration provider for 'mock' debug type
-    const provider = new MockConfigurationProvider();
-    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('workflow-debug', provider));
+    const provider = new ConfigurationProvider();
+    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(WorkflowDebugAdapter.DebugType, provider));
 
 }
 
@@ -28,7 +29,7 @@ export function deactivate() {
     // nothing to do
 }
 
-class MockConfigurationProvider implements vscode.DebugConfigurationProvider {
+class ConfigurationProvider implements vscode.DebugConfigurationProvider {
 
     /**
      * Massage a debug configuration just before a debug session is being launched,
@@ -38,7 +39,7 @@ class MockConfigurationProvider implements vscode.DebugConfigurationProvider {
 
         // if launch.json is missing or empty
         if (!config.type && !config.request && !config.name) {
-            config.type = 'workflow-debug';
+            config.type = WorkflowDebugAdapter.DebugType;
             config.name = 'Launch';
             config.request = 'launch';
             config.program = '${file}';

@@ -42,7 +42,6 @@ export class AnnotateStackFrame {
 
 
     private async sendAction(action: Action): Promise<void> {
-
         const widgets = this.shell.getWidgets("main");
         if (widgets) {
             for (const currentDiagram of widgets)

@@ -33,8 +33,8 @@ import {
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { StateMachineDebugger } from "./state-machine-debugger";
 import { GLSPBreakpoint, StateMachineRuntime } from "./state-machine-runtime";
+import { StateMachineDebugAdapter } from "./state-machine-debug-adapter";
 
 
 
@@ -88,7 +88,7 @@ export class StateMachineDebugSession extends LoggingDebugSession {
      * We configure the default implementation of a debug adapter here.
      */
     public constructor() {
-        super(StateMachineDebugger.DebugType + ".txt");
+        super(StateMachineDebugAdapter.DebugType + ".txt");
 
         // this debugger uses zero-based lines and columns
         this.setDebuggerLinesStartAt1(false);
@@ -328,7 +328,7 @@ export class StateMachineDebugSession extends LoggingDebugSession {
     // ---- helpers
 
     private createSource(filePath: string): Source {
-        return new Source(basename(filePath), this.convertDebuggerPathToClient(filePath), undefined, undefined, StateMachineDebugger.SourceData);
+        return new Source(basename(filePath), this.convertDebuggerPathToClient(filePath), undefined, undefined, StateMachineDebugAdapter.SourceData);
     }
 }
 

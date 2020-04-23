@@ -18,7 +18,7 @@ import "reflect-metadata";
 import { EventEmitter } from "events";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { WorkflowDebugger } from "./workflow-debugger";
+import { WorkflowDebugAdapter } from "./workflow-debug-adapter";
 
 
 const Net = require("net");
@@ -427,7 +427,7 @@ export class WorkflowRuntime extends EventEmitter {
     public verifyDebug(file: string): boolean {
         return this.verifyException() && file !== null &&
             typeof file !== 'undefined' &&
-            (file.endsWith(WorkflowDebugger.FileExtension));
+            (file.endsWith(WorkflowDebugAdapter.FileExtension));
     }
 
 
