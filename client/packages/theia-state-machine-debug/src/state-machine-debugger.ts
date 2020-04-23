@@ -13,7 +13,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { StateMachineDebugSession } from "./vscode-mockDebug";
-
-StateMachineDebugSession.run(StateMachineDebugSession);
-
+export namespace StateMachineDebugger {
+    export const DebugType: string = 'state-machine-debug';
+    export const FileExtension: string = 'sm';
+    export const SourceData: string = 'state-machine-adapter-data';
+}

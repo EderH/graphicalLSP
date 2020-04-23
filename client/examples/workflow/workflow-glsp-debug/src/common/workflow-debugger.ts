@@ -15,5 +15,5 @@
  ********************************************************************************/
 export namespace WorkflowDebugger {
     export const DebugType: string = "workflow-debug";
-    export const PackageName: string = "theia-worklfow-debug";
+    export const PackageName: string = "theia-workflow-debug";
 }

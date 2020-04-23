@@ -16,7 +16,8 @@
 import { AbstractVSCodeDebugAdapterContribution } from "@theia/debug/lib/node/vscode/vscode-debug-adapter-contribution";
 import { injectable } from "inversify";
 import * as path from "path";
-import { WorkflowDebugger } from "src/common/workflow-debugger";
+
+import { WorkflowDebugger } from "../common/workflow-debugger";
 
 @injectable()
 export class WorkflowDebugAdapterContribution extends AbstractVSCodeDebugAdapterContribution {

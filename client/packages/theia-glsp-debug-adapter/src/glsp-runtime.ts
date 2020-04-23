@@ -18,7 +18,6 @@ import "reflect-metadata";
 import { EventEmitter } from "events";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-
 const Net = require("net");
 const Path = require('path');
 
@@ -48,7 +47,7 @@ export interface EventEntry {
 /**
  * A Mock runtime with minimal debugger functionality.
  */
-export class StateMachineRuntime extends EventEmitter {
+export class GLSPRuntime extends EventEmitter {
 
 
     private debugger = new Net.Socket();
@@ -56,6 +55,8 @@ export class StateMachineRuntime extends EventEmitter {
     private _port = 5057;
     private _connectType = 'sockets';
     private _serverBase = '';
+
+    private _fileExtension: string;
 
     private _localVariables = new Array<DebugProtocol.Variable>();
     public get localVariables() {
@@ -117,12 +118,15 @@ export class StateMachineRuntime extends EventEmitter {
      * Start executing the given program.
      */
     public start(program: string, stopOnEntry: boolean, connectType: string,
-        host: string, port: number, serverBase = "") {
+        host: string, port: number, serverBase = "", fileExtension: string) {
 
         this._connectType = connectType;
         this._host = host;
         this._port = port;
         this._serverBase = serverBase;
+
+        this._fileExtension = fileExtension;
+        console.log("extension" + this._fileExtension);
 
         if (host === "127.0.0.1") {
             this._serverBase = "";
@@ -146,7 +150,7 @@ export class StateMachineRuntime extends EventEmitter {
         if (this._connected) {
             return;
         }
-
+        console.log("HALLLLLLLLLLLLOOOOOOOOOOOOOO");
         if (this._connectType === "sockets") {
             const timeout = this._host === '127.0.0.1' || this._host === 'localhost' || this._host === '' ? 3.5 : 10;
             this.debugger.setTimeout(timeout * 1000);
@@ -155,6 +159,7 @@ export class StateMachineRuntime extends EventEmitter {
                 this._connected = true;
                 this.debugger.setEncoding('utf8');
                 console.log("Connected to " + this._host + ":" + this._port);
+
 
                 this._init = false;
                 if (this._sourceFile !== '') {
@@ -457,6 +462,7 @@ export class StateMachineRuntime extends EventEmitter {
         this._continue = false;
         this.sendToServer('stepin');
     }
+
     public stepOut(event = 'stopOnStep') {
         if (!this.verifyDebug(this._sourceFile)) {
             return;
@@ -474,9 +480,10 @@ export class StateMachineRuntime extends EventEmitter {
     }
 
     public verifyDebug(file: string): boolean {
+        console.log(this._fileExtension);
         return this.verifyException() && file !== null &&
             typeof file !== 'undefined' &&
-            (file.endsWith('sm'));
+            (file.endsWith('wf'));
     }
 
 

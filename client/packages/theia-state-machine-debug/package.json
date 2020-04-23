@@ -34,7 +34,7 @@
       {
         "type": "state-machine-debug",
         "label": "Theia State Machine Debug",
-        "program": "./out/vscode-debugAdapter.js",
+        "program": "./out/state-machine-debug.js",
         "runtime": "node",
         "configurationAttributes": {
           "launch": {

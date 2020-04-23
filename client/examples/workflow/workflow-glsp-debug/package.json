@@ -4,7 +4,7 @@
   "keywords": [
     "theia-extension"
   ],
-  "description": "Theia debug extension for the state machine GLSP example",
+  "description": "Theia debug extension for the workflow GLSP example",
   "license": "(EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0)",
   "files": [
     "lib",
@@ -37,7 +37,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/frontend-module"
+      "frontend": "lib/browser/frontend-module",
+      "backend": "lib/node/backend-module"
     }
   ]
 }

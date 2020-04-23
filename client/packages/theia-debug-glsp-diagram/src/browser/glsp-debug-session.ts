@@ -58,7 +58,7 @@ export class GLSPDebugSession extends DebugSession {
 
             // Update current thread's frames immediately
             await this.updateFrames();
-
+            console.log("test");
             await this.updateEventFlow();
 
         });

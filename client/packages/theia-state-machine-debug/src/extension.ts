@@ -15,12 +15,13 @@
  ********************************************************************************/
 import * as vscode from "vscode";
 import { WorkspaceFolder, DebugConfiguration, ProviderResult, CancellationToken } from 'vscode';
+import { StateMachineDebugger } from "./state-machine-debugger";
 
 export function activate(context: vscode.ExtensionContext) {
 
     // register a configuration provider for 'statemachine' debug type
     const provider = new StateMachineConfigurationProvider();
-    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('state-machine-debug', provider));
+    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(StateMachineDebugger.DebugType, provider));
 
 }
 

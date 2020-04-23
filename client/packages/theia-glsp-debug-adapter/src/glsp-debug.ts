@@ -16,7 +16,7 @@
 import { basename } from "path";
 import {
     Breakpoint,
-    Event,
+    BreakpointEvent,
     Handles,
     InitializedEvent,
     Logger,
@@ -32,13 +32,10 @@ import {
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { StateMachineRuntime } from "./vscode-mockRuntime";
-
-
+import { GLSPBreakpoint, GLSPRuntime } from "./glsp-runtime";
 
 
 const { Subject } = require('await-notify');
-
 
 /**
  * This interface describes the mock-debug specific launch attributes
@@ -49,32 +46,29 @@ const { Subject } = require('await-notify');
 interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
     /** An absolute path to the "program" to debug. */
     program: string;
+
+    fileExtension: string;
+
+    sourceData: string;
+
     /** Automatically stop target after launch. If not specified, target does not stop. */
     stopOnEntry?: boolean;
     connectType?: string;
     serverPort?: number;
     serverHost?: string;
     serverBase?: string;
+
     /** enable logging the Debug Adapter Protocol */
     trace?: boolean;
 }
 
-export declare class EventFlowEntry {
-    id: number;
-    source: Source;
-    element: string;
-    event: string;
-    constructor(id: number, element: string, event: string, source: Source);
-}
-
-
-export class StateMachineDebugSession extends LoggingDebugSession {
+export abstract class GLSPDebugSession extends LoggingDebugSession {
 
     // we don't support multiple threads, so we can use a hardcoded ID for the default thread
-    private static THREAD_ID = 1;
+    public static THREAD_ID = 1;
 
     // a Mock runtime (or debugger)
-    private _runtime: StateMachineRuntime;
+    public _runtime = new GLSPRuntime();
 
     private _variableHandles = new Handles<string>();
 
@@ -82,31 +76,33 @@ export class StateMachineDebugSession extends LoggingDebugSession {
 
     private _localScope = 0;
 
+    public _sourceData: string;
+
     /**
      * Creates a new debug adapter that is used for one debug session.
      * We configure the default implementation of a debug adapter here.
      */
     public constructor() {
-        super("state-machine-debug.txt");
-
+        super('mock-debug.txt');
         // this debugger uses zero-based lines and columns
         this.setDebuggerLinesStartAt1(false);
         this.setDebuggerColumnsStartAt1(false);
 
-        this._runtime = new StateMachineRuntime();
-
         // setup event handlers
         this._runtime.on('stopOnEntry', () => {
-            this.sendEvent(new StoppedEvent('entry', StateMachineDebugSession.THREAD_ID));
+            this.sendEvent(new StoppedEvent('entry', GLSPDebugSession.THREAD_ID));
         });
         this._runtime.on('stopOnStep', () => {
-            this.sendEvent(new StoppedEvent('step', StateMachineDebugSession.THREAD_ID));
+            this.sendEvent(new StoppedEvent('step', GLSPDebugSession.THREAD_ID));
         });
         this._runtime.on('stopOnBreakpoint', () => {
-            this.sendEvent(new StoppedEvent('breakpoint', StateMachineDebugSession.THREAD_ID));
+            this.sendEvent(new StoppedEvent('breakpoint', GLSPDebugSession.THREAD_ID));
+        });
+        this._runtime.on('breakpointValidated', (bp: GLSPBreakpoint) => {
+            this.sendEvent(new BreakpointEvent('changed', <DebugProtocol.Breakpoint>{ verified: bp.verified, id: bp.id }));
         });
         this._runtime.on('stopOnException', () => {
-            this.sendEvent(new StoppedEvent('exception', StateMachineDebugSession.THREAD_ID));
+            this.sendEvent(new StoppedEvent('exception', GLSPDebugSession.THREAD_ID));
         });
         this._runtime.on('output', (category, text, filePath) => {
             const e: DebugProtocol.OutputEvent = new OutputEvent(`${text}\n`);
@@ -114,15 +110,8 @@ export class StateMachineDebugSession extends LoggingDebugSession {
             e.body.source = this.createSource(filePath);
             this.sendEvent(e);
         });
-        this._runtime.on('onDebuggerMessage', () => {
-            this.sendEvent(new Event('onDebuggerMessage'));
-        });
         this._runtime.on('end', () => {
             this.sendEvent(new TerminatedEvent());
-        });
-        this._runtime.on('stopOnEvent', (lines) => {
-            this.sendEvent(new StoppedEvent('event', StateMachineDebugSession.THREAD_ID));
-            this.sendEvent(new Event('onEvent', lines));
         });
     }
 
@@ -179,14 +168,19 @@ export class StateMachineDebugSession extends LoggingDebugSession {
 
         // wait until configuration has finished (and configurationDoneRequest has been called)
         await this._configurationDone.wait(1000);
-
+        console.log('connectionType' + args.connectType);
         const connectType = args.connectType ? args.connectType : "sockets";
         const host = args.serverHost ? args.serverHost : "127.0.0.1";
         const port = args.serverPort ? args.serverPort : 5057;
         const base = args.serverBase ? args.serverBase : "";
 
+        const fileExtension = args.fileExtension;
+        console.log("extension" + args.fileExtension);
+
+        this._sourceData = args.sourceData;
+
         // start the program in the runtime
-        this._runtime.start(args.program, !!args.stopOnEntry, connectType, host, port, base);
+        this._runtime.start(args.program, !!args.stopOnEntry, connectType, host, port, base, fileExtension);
 
         this.sendResponse(response);
     }
@@ -198,33 +192,15 @@ export class StateMachineDebugSession extends LoggingDebugSession {
             case 'setGLSPBreakpoints':
                 this.setGLSPBreakpointsRequest(response, args);
                 break;
-
-            case 'setEvent':
-                this._runtime.setEvent(args.event);
-                break;
-
-            case 'eventFlowRequest':
-                this.eventFlowRequest(response, args);
-                break;
             default:
                 super.customRequest(command, response, args);
         }
     }
 
-    protected eventFlowRequest(response: DebugProtocol.Response, args: any) {
-        const eventFlow = this._runtime.eventFlow;
-
-        response.body = {
-            eventFlow: eventFlow
-        };
-        this.sendResponse(response);
-    }
-
     protected setGLSPBreakpointsRequest(response: DebugProtocol.Response, args: any) {
-        console.log("Set GLSP Breakpoints");
         this._runtime.clearBreakpoints();
         // set new GLSP breakpoints
-        const actualBreakpoints = args.breakpoints.map(glspBreakpoint => {
+        const actualBreakpoints = args.breakpoints.map((glspBreakpoint: GLSPBreakpoint) => {
             const { id, verified } = this._runtime.setGLSPBreakpoint(glspBreakpoint);
             const bp = <DebugProtocol.Breakpoint>new Breakpoint(verified);
             bp.id = id;
@@ -243,7 +219,7 @@ export class StateMachineDebugSession extends LoggingDebugSession {
         // runtime supports now threads so just return a default thread.
         response.body = {
             threads: [
-                new Thread(StateMachineDebugSession.THREAD_ID, "thread 1")
+                new Thread(GLSPDebugSession.THREAD_ID, "thread 1")
             ]
         };
         this.sendResponse(response);
@@ -258,6 +234,7 @@ export class StateMachineDebugSession extends LoggingDebugSession {
         const stk = this._runtime.stack(startFrame, endFrame);
 
         response.body = {
+            // tslint:disable-next-line: max-line-length
             stackFrames: stk.frames.map((f: { index: number; name: string; file: string; line: number; }) => new StackFrame(f.index, f.name, this.createSource(f.file), this.convertDebuggerLineToClient(f.line))),
             totalFrames: stk.count
         };
@@ -327,6 +304,6 @@ export class StateMachineDebugSession extends LoggingDebugSession {
     // ---- helpers
 
     private createSource(filePath: string): Source {
-        return new Source(basename(filePath), this.convertDebuggerPathToClient(filePath), undefined, undefined, 'mock-adapter-data');
+        return new Source(basename(filePath), this.convertDebuggerPathToClient(filePath), undefined, undefined, this._sourceData);
     }
 }
