@@ -19,7 +19,6 @@ import { ContainerModule, interfaces } from "inversify";
 
 import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
-import { GLSPEventFlowDiagramManager } from "./event-flow/glsp-event-flow-diagram-manager";
 import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
 import { GLSPDebugFrontendContribution } from "./glsp-debug-frontend-contribution";
 import { GLSPDebugSessionFactory } from "./glsp-debug-session-factory";
@@ -37,7 +36,6 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(SelectOptionsDialogProps).toSelf().inSingletonScope();
 
     bind(GLSPDebugEventsWidget).toDynamicValue(({ container }) => GLSPDebugEventsWidget.createWidget(container));
-    bind(GLSPEventFlowDiagramManager).toSelf().inSingletonScope();
 
     bind(GLSPDebugSessionFactory).toSelf().inSingletonScope();
 

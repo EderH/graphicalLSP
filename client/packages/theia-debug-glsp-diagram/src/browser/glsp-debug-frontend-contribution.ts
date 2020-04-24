@@ -22,7 +22,6 @@ import { inject, injectable, postConstruct } from "inversify";
 
 import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
-import { GLSPEventFlowDiagramManager } from "./event-flow/glsp-event-flow-diagram-manager";
 import { GLSPStackFrameDiagramManager } from "./stackframe/glsp-stackframe-diagram-manager";
 import { GLSPDebugBreakpointsSource } from "./view/glsp-debug-breakpoints-source";
 import { GLSPDebugEventsWidget } from "./view/glsp-debug-events-widget";
@@ -34,7 +33,6 @@ export class GLSPDebugFrontendContribution implements CommandContribution {
 
     @inject(GLSPBreakpointManager) protected readonly breakpointManager: GLSPBreakpointManager;
     @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
-    @inject(GLSPEventFlowDiagramManager) eventFlowDiagramManager: GLSPEventFlowDiagramManager;
     @inject(GLSPBreakpointDiagramManager) protected readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager;
     @inject(GLSPStackFrameDiagramManager) protected readonly stackFrameDiagramManager: GLSPStackFrameDiagramManager;
     @inject(GLSPDebugBreakpointsSource) protected readonly debugSource: GLSPDebugBreakpointsSource;
