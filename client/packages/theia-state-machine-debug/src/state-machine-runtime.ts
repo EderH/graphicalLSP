@@ -17,6 +17,7 @@ import "reflect-metadata";
 
 import { EventEmitter } from "events";
 import { DebugProtocol } from "vscode-debugprotocol";
+
 import { StateMachineDebugAdapter } from "./state-machine-debug-adapter";
 
 
@@ -87,9 +88,6 @@ export class StateMachineRuntime extends EventEmitter {
     // the initial (and one and only) file we are 'debugging'
     private _sourceFile!: string;
     private _localBase = '';
-
-    private _filenamesMap = new Map<string, string>();
-
 
     public get sourceFile() {
         return this._sourceFile;
@@ -256,6 +254,10 @@ export class StateMachineRuntime extends EventEmitter {
             startStackData = startVarsData + nbVarsLines + 1;
             const nbStackLines = Number(lines[startStackData]);
             this.fillStackTrace(lines, startStackData, nbStackLines);
+
+            startEventFlowData = startStackData + nbStackLines + 1;
+            const nbEventFlowLines = Number(lines[startEventFlowData]);
+            this.fillEventFlow(lines, startEventFlowData, nbEventFlowLines);
 
             const msg = lines.length < 2 ? '' : lines[1];
             const headerMsg = 'Exception thrown: ' + msg + ' ';
@@ -527,19 +529,9 @@ export class StateMachineRuntime extends EventEmitter {
         this.sendToServer('setbp', data);
     }
 
-    public sendEmptyBreakpointsToServer() {
-        if (!this._connected) {
-            return;
-        }
-
-        this.sendToServer('setbp', "");
-    }
-
     sendAllBreakpointsToServer() {
         const keys = Array.from(this._glspBreakpoints.keys());
-        if (keys.length === 0) {
-            this.sendEmptyBreakpointsToServer();
-        } else {
+        if (keys.length !== 0) {
             for (let i = 0; i < keys.length; i++) {
                 const path = keys[i];
                 this.sendBreakpointsToServer(path);
@@ -560,7 +552,6 @@ export class StateMachineRuntime extends EventEmitter {
             path = path.substring(1);
         }
         path = Path.resolve(path);
-        this.cacheFilename(path);
 
         const lower = path.toLowerCase();
 
@@ -571,7 +562,6 @@ export class StateMachineRuntime extends EventEmitter {
             this._glspBreakpoints.set(lower, bps);
         }
         bps.push(bp);
-
 
         let bpMap = this._breakPointMap.get(lower);
         if (!bpMap) {
@@ -584,12 +574,10 @@ export class StateMachineRuntime extends EventEmitter {
     }
 
     public getBreakpoint(element: string): GLSPBreakpoint | undefined {
-
         const pathname = Path.resolve(this._sourceFile);
         const lower = pathname.toLowerCase();
         const bpMap = this._breakPointMap.get(lower);
-        console.log(this._breakPointMap);
-        console.log(bpMap);
+
         if (!bpMap) {
             return undefined;
         }
@@ -606,26 +594,6 @@ export class StateMachineRuntime extends EventEmitter {
         this._breakPointMap.clear();
     }
 
-    cacheFilename(filename: string) {
-        filename = Path.resolve(filename);
-        const lower = filename.toLowerCase();
-        if (lower === filename) {
-            return;
-        }
-        this._filenamesMap.set(lower, filename);
-    }
-
-    getActualFilename(filename: string): string {
-        // filename = Path.normalize(filename);
-        const pathname = Path.resolve(filename);
-        const lower = pathname.toLowerCase();
-        const result = this._filenamesMap.get(lower);
-        if (result === undefined || result === null) {
-            return filename;
-        }
-        return result;
-    }
-
     private loadSource(filename: string) {
         if (filename === null || filename === undefined) {
             return;
@@ -636,7 +604,6 @@ export class StateMachineRuntime extends EventEmitter {
             return;
         }
         if (this.verifyDebug(filename)) {
-            // this.cacheFilename(filename);
             this._sourceFile = filename;
         }
     }
@@ -645,12 +612,9 @@ export class StateMachineRuntime extends EventEmitter {
         if (this._serverBase === "") {
             return pathname;
         }
-
-
         pathname = pathname.normalize();
 
         this.setLocalBasePath(pathname);
-
 
         const filename = Path.basename(pathname);
         let serverPath = Path.join(this._serverBase, filename);
@@ -659,7 +623,6 @@ export class StateMachineRuntime extends EventEmitter {
     }
 
     setLocalBasePath(pathname: string) {
-
         if (this._localBase !== undefined && this._localBase !== null && this._localBase !== '') {
             return;
         }

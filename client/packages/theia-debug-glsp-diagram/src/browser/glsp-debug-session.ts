@@ -52,13 +52,7 @@ export class GLSPDebugSession extends DebugSession {
                 this.openEventDialogWindow(event.body);
             }
         });
-        this.on('stopped', async ({ body }) => {
-            // Update thread list
-            await this.updateThreads(body);
-
-            // Update current thread's frames immediately
-            await this.updateFrames();
-
+        this.on('stopped', async () => {
             await this.updateEventFlow();
 
         });
