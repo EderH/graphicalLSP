@@ -13,12 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import {
-    GLSPBreakpointDiagramManager
-} from "@glsp/theia-debug-diagram/lib/browser/breakpoint/glsp-breakpoint-diagram-manager";
-import { GLSPBreakpointManager } from "@glsp/theia-debug-diagram/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { DebugGLSPEditorManager } from "@glsp/theia-debug-diagram/lib/browser/debug-glsp-editor-manager";
-import { GLSPDebugSessionFactory } from "@glsp/theia-debug-diagram/lib/browser/glsp-debug-session-factory";
 import { MessageClient } from "@theia/core";
 import { LabelProvider, WebSocketConnectionProvider } from "@theia/core/lib/browser";
 import { DebugPreferences } from "@theia/debug/lib/browser/debug-preferences";
@@ -28,13 +22,17 @@ import { OutputChannelManager } from "@theia/output/lib/common/output-channel";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { inject, injectable } from "inversify";
 
-import { StateMachineDebugger } from "../common/state-machine-debugger";
+import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
+import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
+import { DebugGLSPEditorManager } from "./debug-glsp-editor-manager";
+import { GLSPDebugSessionFactory } from "./glsp-debug-session-factory";
+
 
 @injectable()
-export class StateMachineDebugSessionContribution implements DebugSessionContribution {
+export class GLSPDebugSessionContribution implements DebugSessionContribution {
 
-    private _stateMachineDebugSessionFactory: GLSPDebugSessionFactory;
-
+    private _glspDebugSessionFactory: GLSPDebugSessionFactory;
+    debugType: string;
 
     constructor(
         @inject(DebugGLSPEditorManager) editorManager: DebugGLSPEditorManager,
@@ -48,14 +46,13 @@ export class StateMachineDebugSessionContribution implements DebugSessionContrib
         @inject(DebugPreferences) debugPreferences: DebugPreferences,
         @inject(FileSystem) fileSystem: FileSystem,
     ) {
-        this._stateMachineDebugSessionFactory = new GLSPDebugSessionFactory({
+        this._glspDebugSessionFactory = new GLSPDebugSessionFactory({
             terminalService, editorManager, breakpoints, breakpointsDiagramManager, labelProvider,
             messages, outputChannelManager, connectionProvider, debugPreferences, fileSystem
         });
     }
 
-    debugType = StateMachineDebugger.DebugType;
     debugSessionFactory(): DebugSessionFactory {
-        return this._stateMachineDebugSessionFactory;
+        return this._glspDebugSessionFactory;
     }
 }

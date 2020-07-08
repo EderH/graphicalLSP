@@ -13,13 +13,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { DebugAdapterContribution } from "@theia/debug/lib/common/debug-model";
-import { ContainerModule } from "inversify";
+import { GLSPDebugSessionContribution } from "@glsp/theia-debug-diagram/lib/browser/glsp-debug-session-contribution";
+import { injectable } from "inversify";
 
-import { StateMachineDebugAdapterContribution } from "./state-machine-debug-configuration-provider";
+import { StateMachineDebugger } from "../../common/state-machine-debugger";
 
-
-export default new ContainerModule(bind => {
-    // add your contribution bindings here
-    bind(DebugAdapterContribution).to(StateMachineDebugAdapterContribution).inSingletonScope();
-});
+@injectable()
+export class StateMachineDebugSessionContribution extends GLSPDebugSessionContribution {
+    debugType = StateMachineDebugger.DebugType;
+}

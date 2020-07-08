@@ -15,9 +15,11 @@
  ********************************************************************************/
 import { GLSPClientContribution } from "@glsp/theia-integration/lib/browser";
 import { FrontendApplicationContribution, OpenHandler, WidgetFactory } from "@theia/core/lib/browser";
+import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule, interfaces } from "inversify";
 import { DiagramConfiguration, DiagramManager, DiagramManagerProvider } from "sprotty-theia/lib";
 
+import { WorkflowDebugSessionContribution } from "./debugger/workflow-debug-session-contribution";
 import { WorkflowDiagramConfiguration } from "./diagram/workflow-diagram-configuration";
 import { WorkflowDiagramManager } from "./diagram/workflow-diagram-manager";
 import { WorkflowGLSPDiagramClient } from "./diagram/workflow-glsp-diagram-client";
@@ -28,6 +30,8 @@ import { WorkflowGLSPClientContribution } from "./language/workflow-glsp-client-
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind) => {
     bind(WorkflowGLSPClientContribution).toSelf().inSingletonScope();
     bind(GLSPClientContribution).toService(WorkflowGLSPClientContribution);
+
+    bind(DebugSessionContribution).to(WorkflowDebugSessionContribution);
 
     bind(WorkflowGLSPDiagramClient).toSelf().inSingletonScope();
 

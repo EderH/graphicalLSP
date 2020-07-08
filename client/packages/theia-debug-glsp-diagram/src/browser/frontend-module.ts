@@ -15,12 +15,14 @@
  ********************************************************************************/
 import { CommandContribution } from "@theia/core";
 import { OpenHandler } from "@theia/core/lib/browser";
+import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule, interfaces } from "inversify";
 
 import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
 import { DebugGLSPEditorManager } from "./debug-glsp-editor-manager";
 import { GLSPDebugFrontendContribution } from "./glsp-debug-frontend-contribution";
+import { GLSPDebugSessionContribution } from "./glsp-debug-session-contribution";
 import { GLSPDebugSessionFactory } from "./glsp-debug-session-factory";
 import { GLSPStackFrameDiagramManager } from "./stackframe/glsp-stackframe-diagram-manager";
 import { DebugGLSPBreakpointsSource } from "./view/debug-glsp-breakpoints-source";
@@ -49,5 +51,7 @@ export default new ContainerModule((bind: interfaces.Bind) => {
 
     bind(GLSPDebugFrontendContribution).toSelf().inSingletonScope();
     bind(CommandContribution).to(GLSPDebugFrontendContribution);
+
+    bind(DebugSessionContribution).to(GLSPDebugSessionContribution);
 
 });

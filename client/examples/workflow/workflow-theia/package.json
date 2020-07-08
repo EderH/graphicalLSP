@@ -17,12 +17,12 @@
     "@glsp-examples/workflow-sprotty": "0.1.0",
     "@glsp/theia-integration": "0.1.0",
     "@glsp/theia-debug-diagram": "0.1.0",
-    "@glsp-examples/workflow-glsp-debug": "0.1.0",
     "@theia/core": "0.11.0",
     "@theia/editor": "0.11.0",
     "@theia/filesystem": "0.11.0",
     "@theia/languages": "0.11.0",
     "@theia/monaco": "0.11.0",
+    "@theia/debug": "0.11.0",
     "@types/node": "^8.0.14"
   },
   "devDependencies": {

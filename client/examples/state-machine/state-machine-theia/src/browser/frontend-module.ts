@@ -15,19 +15,21 @@
  ********************************************************************************/
 import { GLSPClientContribution } from "@glsp/theia-integration/lib/browser";
 import { FrontendApplicationContribution, OpenHandler, WidgetFactory } from "@theia/core/lib/browser";
+import { DebugSessionContribution } from "@theia/debug/lib/browser/debug-session-contribution";
 import { ContainerModule, interfaces } from "inversify";
 import { DiagramConfiguration, DiagramManager, DiagramManagerProvider } from "sprotty-theia/lib";
 
+import { StateMachineDebugSessionContribution } from "./debugger/state-machine-debug-session-contribution";
 import { StateMachineDiagramConfiguration } from "./diagram/state-machine-diagram-configuration";
 import { StateMachineDiagramManager } from "./diagram/state-machine-diagram-manager";
 import { StateMachineGLSPDiagramClient } from "./diagram/state-machine-glsp-diagram-client";
 import { StateMachineGLSPClientContribution } from "./language/state-machine-glsp-client-contribution";
 
-
-
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind) => {
     bind(StateMachineGLSPClientContribution).toSelf().inSingletonScope();
     bind(GLSPClientContribution).toService(StateMachineGLSPClientContribution);
+
+    bind(DebugSessionContribution).to(StateMachineDebugSessionContribution);
 
     bind(StateMachineGLSPDiagramClient).toSelf().inSingletonScope();
 

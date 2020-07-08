@@ -13,11 +13,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
+import { DebugAdapterContribution } from "@theia/debug/lib/common/debug-model";
 import { LanguageServerContribution } from "@theia/languages/lib/node";
 import { ContainerModule } from "inversify";
 
+import { StateMachineDebugAdapterContribution } from "./state-machine-debug-adapter-contribution";
 import { StateMachineGLServerContribution } from "./state-machine-glsp-server-contribution";
+
+
 
 export default new ContainerModule(bind => {
     bind(LanguageServerContribution).to(StateMachineGLServerContribution).inSingletonScope();
+    bind(DebugAdapterContribution).to(StateMachineDebugAdapterContribution).inSingletonScope();
 });
