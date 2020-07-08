@@ -17,15 +17,15 @@ import { injectable } from "inversify";
 import { Point, SModelRoot } from "sprotty";
 
 import { isSelected } from "../../utils/smodel-util";
-import { hasBreakpoint } from "../mock-debug/model";
-import { AddBreakpointAction, RemoveBreakpointAction } from "../mock-debug/set-breakpoint";
+import { AddBreakpointAction, RemoveBreakpointAction } from "../glsp-debug/add-breakpoint";
+import { hasBreakpointFeature } from "../glsp-debug/model";
 import { MenuItem } from "./context-menu-service";
 import { IContextMenuItemProvider } from "./menu-providers";
 
 @injectable()
 export class BreakpointContextMenuItemProvider implements IContextMenuItemProvider {
     getItems(root: Readonly<SModelRoot>, lastMousePosition?: Point): Promise<MenuItem[]> {
-        const selectedElements = Array.from(root.index.all().filter(isSelected).filter(hasBreakpoint));
+        const selectedElements = Array.from(root.index.all().filter(isSelected).filter(hasBreakpointFeature));
         return Promise.resolve([
             {
                 id: "addBreakpoint",

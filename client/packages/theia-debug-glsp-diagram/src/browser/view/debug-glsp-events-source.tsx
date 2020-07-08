@@ -20,35 +20,29 @@ import { DebugSessionManager } from "@theia/debug/lib/browser/debug-session-mana
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { inject, injectable, postConstruct } from "inversify";
+import debounce = require("p-debounce");
 
-import { GLSPBreakpointDiagramManager } from "../breakpoint/glsp-breakpoint-diagram-manager";
-import { GLSPBreakpointManager } from "../breakpoint/glsp-breakpoint-manager";
-import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
+import { DebugGLSPEditorManager } from "../debug-glsp-editor-manager";
 import { GLSPDebugSession } from "../glsp-debug-session";
-import { DebugGLSPBreakpoint } from "../model/debug-glsp-breakpoint";
+import { DebugGLSPEvent } from "../model/debug-glsp-event";
 
 
 
 @injectable()
-export class GLSPDebugBreakpointsSource extends TreeSource {
+export class DebugGLSPEventsSource extends TreeSource {
 
-    @inject(GLSPBreakpointManager)
-    protected readonly breakpoints: GLSPBreakpointManager;
-    @inject(GLSPBreakpointDiagramManager)
-    protected readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager;
     @inject(DebugSessionManager)
     protected readonly manager: DebugSessionManager;
-    @inject(GLSPDebugEditorManager)
-    protected readonly editorManager: GLSPDebugEditorManager;
+    @inject(DebugGLSPEditorManager)
+    protected readonly editorManager: DebugGLSPEditorManager;
     @inject(LabelProvider)
     protected readonly labelProvider: LabelProvider;
-    @inject(WidgetManager)
-    protected readonly widgetManager: WidgetManager;
-    protected viewModel: DebugViewModel;
+    @inject(WidgetManager) protected readonly widgetManager: WidgetManager;
+    private viewModel: DebugViewModel;
 
     constructor() {
         super({
-            placeholder: 'No breakpoints'
+            placeholder: 'No events'
         });
     }
 
@@ -58,39 +52,41 @@ export class GLSPDebugBreakpointsSource extends TreeSource {
         this.widgetManager.onDidCreateWidget(({ factoryId, widget }) => {
             if (factoryId === DebugWidget.ID && widget instanceof DebugWidget) {
                 this.viewModel = widget['sessionWidget']['model'];
-                this.toDispose.push(this.viewModel.onDidChangeBreakpoints(() => this.fireDidChange()));
-                this.toDispose.push(this.breakpoints.onDidChangeGLSPBreakpoints(() => this.fireDidChange()));
-                this.toDispose.push(this.breakpoints.onDidChangeMarkers(() => this.fireDidChange));
+                this.toDispose.push(this.viewModel.onDidChange(() => this.refresh()));
             }
         });
     }
 
+    protected readonly refresh = debounce(() => this.fireDidChange(), 100);
+
     getCurrentSession(): GLSPDebugSession | undefined {
-        let currentSession = this.viewModel.currentSession;
-        if (!currentSession) {
-            currentSession = this.manager.currentSession;
-        }
-        if (currentSession && currentSession instanceof GLSPDebugSession) {
-            return currentSession;
+        if (this.viewModel) {
+            let currentSession = this.viewModel.currentSession;
+            if (!currentSession) {
+                currentSession = this.manager.currentSession;
+            }
+            if (currentSession && currentSession instanceof GLSPDebugSession) {
+                return currentSession;
+            }
         }
 
         return undefined;
     }
 
-    getGLSPBreakpoints(): DebugGLSPBreakpoint[] {
+    getGLSPDebugEventFlow(): DebugGLSPEvent[] | undefined {
         const session = this.getCurrentSession();
         if (session && session.state > DebugState.Initializing) {
-            return session.getGLSPBreakpoints();
+            return session.getGLSPDebugEvents();
         }
-        const { labelProvider, breakpoints, breakpointsDiagramManager, editorManager } = this;
-        return this.breakpoints.getGLSPBreakpoints().map(origin => new DebugGLSPBreakpoint(origin, { labelProvider, breakpoints, breakpointsDiagramManager, editorManager }));
+        return undefined;
     }
 
     *getElements(): IterableIterator<TreeElement> {
-
-        for (const breakpoint of this.getGLSPBreakpoints()) {
-            yield breakpoint;
+        const eventFlow = this.getGLSPDebugEventFlow();
+        if (eventFlow) {
+            for (const event of eventFlow) {
+                yield event;
+            }
         }
-
     }
 }

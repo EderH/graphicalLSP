@@ -4,13 +4,13 @@
     {
       "name": "InitialState0",
       "kind": "initialState",
-      "id": "23b831da-3991-4f1c-b3e5-2466d5ed346b",
+      "id": "InitialState",
       "children": [
         {
-          "id": "23b831da-3991-4f1c-b3e5-2466d5ed346b_header",
+          "id": "InitialState_header",
           "children": [
             {
-              "id": "23b831da-3991-4f1c-b3e5-2466d5ed346b_classname",
+              "id": "InitialState_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -53,13 +53,13 @@
     {
       "name": "State1",
       "kind": "defaultState",
-      "id": "ae131fac-79c9-4a73-bf30-61a273d94611",
+      "id": "CustomerAuthentication",
       "children": [
         {
-          "id": "ae131fac-79c9-4a73-bf30-61a273d94611_header",
+          "id": "CustomerAuthentication_header",
           "children": [
             {
-              "id": "ae131fac-79c9-4a73-bf30-61a273d94611_classname",
+              "id": "CustomerAuthentication_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -200,13 +200,13 @@
     {
       "name": "FinalState4",
       "kind": "finalState",
-      "id": "c88b5750-80d7-44dd-9c41-3ace64ecd161",
+      "id": "FinalState",
       "children": [
         {
-          "id": "c88b5750-80d7-44dd-9c41-3ace64ecd161_header",
+          "id": "FinalState_header",
           "children": [
             {
-              "id": "c88b5750-80d7-44dd-9c41-3ace64ecd161_classname",
+              "id": "FinalState_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -272,7 +272,7 @@
         }
       ],
       "type": "transition",
-      "sourceId": "ae131fac-79c9-4a73-bf30-61a273d94611",
+      "sourceId": "CustomerAuthentication",
       "targetId": "716829a1-b294-4fda-a236-48659ff274b7"
     },
     {
@@ -331,7 +331,7 @@
       ],
       "type": "transition",
       "sourceId": "5fbbd659-05a7-4b5d-b87f-7bfac2fbc844",
-      "targetId": "c88b5750-80d7-44dd-9c41-3ace64ecd161"
+      "targetId": "FinalState"
     },
     {
       "trigger": "",
@@ -359,8 +359,8 @@
         }
       ],
       "type": "transition",
-      "sourceId": "23b831da-3991-4f1c-b3e5-2466d5ed346b",
-      "targetId": "ae131fac-79c9-4a73-bf30-61a273d94611"
+      "sourceId": "InitialState",
+      "targetId": "CustomerAuthentication"
     }
   ],
   "type": "graph"

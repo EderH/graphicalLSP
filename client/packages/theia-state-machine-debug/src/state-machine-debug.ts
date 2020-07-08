@@ -33,8 +33,8 @@ import {
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 
-import { GLSPBreakpoint, StateMachineRuntime } from "./state-machine-runtime";
 import { StateMachineDebugAdapter } from "./state-machine-debug-adapter";
+import { GLSPBreakpoint, StateMachineRuntime } from "./state-machine-runtime";
 
 
 
@@ -121,9 +121,9 @@ export class StateMachineDebugSession extends LoggingDebugSession {
         this._runtime.on('end', () => {
             this.sendEvent(new TerminatedEvent());
         });
-        this._runtime.on('stopOnEvent', (lines) => {
+        this._runtime.on('stopOnEvent', (glspEvent) => {
             this.sendEvent(new StoppedEvent('event', StateMachineDebugSession.THREAD_ID));
-            this.sendEvent(new Event('onEvent', lines));
+            this.sendEvent(new Event('onEvent', glspEvent));
         });
     }
 
@@ -201,7 +201,7 @@ export class StateMachineDebugSession extends LoggingDebugSession {
                 break;
 
             case 'setEvent':
-                this._runtime.setEvent(args.event);
+                this.setGLSPEventRequest(response, args);
                 break;
 
             case 'eventFlowRequest':
@@ -210,6 +210,11 @@ export class StateMachineDebugSession extends LoggingDebugSession {
             default:
                 super.customRequest(command, response, args);
         }
+    }
+
+    protected setGLSPEventRequest(response: DebugProtocol.Response, args: any) {
+        this._runtime.setEvent(args.glspEvent);
+        this.sendResponse(response);
     }
 
     protected eventFlowRequest(response: DebugProtocol.Response, args: any) {
@@ -259,7 +264,7 @@ export class StateMachineDebugSession extends LoggingDebugSession {
         const stk = this._runtime.stack(startFrame, endFrame);
 
         response.body = {
-            stackFrames: stk.frames.map((f: { index: number; name: string; file: string; line: number; }) => new StackFrame(f.index, f.name, this.createSource(f.file), this.convertDebuggerLineToClient(f.line))),
+            stackFrames: stk.frames.map((f: { index: number; name: string; file: string; line: number; }) => new StackFrame(f.index, f.name, this.createSource(f.file))),
             totalFrames: stk.count
         };
         this.sendResponse(response);

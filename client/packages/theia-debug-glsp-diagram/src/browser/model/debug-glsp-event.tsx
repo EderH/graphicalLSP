@@ -28,11 +28,11 @@ export class DebugEventOptions {
     readonly session: DebugSession;
 }
 
-export class GLSPDebugEvent extends DebugEventOptions implements TreeElement {
+export class DebugGLSPEvent extends DebugEventOptions implements TreeElement {
 
     readonly id: number;
-    readonly element: string;
-    readonly event: string;
+    readonly name: string;
+    readonly elementID: string;
     readonly uri: URI;
 
     constructor(
@@ -42,8 +42,8 @@ export class GLSPDebugEvent extends DebugEventOptions implements TreeElement {
         super();
         Object.assign(this, options);
         this.id = entry.id;
-        this.element = entry.element;
-        this.event = entry.event;
+        this.elementID = entry.elementID;
+        this.name = entry.name;
         this.uri = new URI('/' + entry.file);
     }
 
@@ -66,14 +66,33 @@ export class GLSPDebugEvent extends DebugEventOptions implements TreeElement {
     }
 
     render(): React.ReactNode {
-        const classNames = ['theia-debug-stack-frame'];
+        const classNames = ['theia-source-breakpoint'];
         return <div className={classNames.join(' ')}>
-            <span className='line-info' title={this.labelProvider.getLongName(this.uri)}>
-                <span className='name'>{this.element + '.' + this.event} </span>
-                <span></span>
-                <span className='path'>{this.labelProvider.getLongName(this.uri)} </span>
-            </span>
+            {this.doRender()}
         </div>;
     }
+
+    doRender(): React.ReactNode {
+        return <React.Fragment>
+            <span className='line-info' title={this.labelProvider.getLongName(this.uri)}>
+                <span className='name'>{this.elementID + "-" + this.name} </span>
+                <span className='path'>{this.labelProvider.getLongName(this.uri)} </span>
+            </span>
+        </React.Fragment>;
+    }
+
+    /*render(): React.ReactNode {
+        return <React.Fragment>
+            <span className='line-info' title={this.labelProvider.getLongName(this.uri)}>
+                <span className='name'>{this.event} </span>
+                <span className='path'>{this.labelProvider.getLongName(this.uri)} </span>
+            </span>
+        </React.Fragment>;
+        /*return <div>
+            <span className='name'>{this.element + '.' + this.event} </span>
+            {' '}
+            <span className='path'>{this.labelProvider.getLongName(this.uri)} </span>
+        </div>;
+    }*/
 
 }

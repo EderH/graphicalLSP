@@ -17,11 +17,13 @@ import { MaybePromise } from "@theia/core";
 import { AbstractDialog, DialogError, DialogMode, DialogProps, Message } from "@theia/core/lib/browser";
 import { inject, injectable } from "inversify";
 
+import { DebugGLSPEvent } from "../model/debug-glsp-event";
+
 
 @injectable()
 export class SelectOptionsDialogProps extends DialogProps {
     readonly confirmButtonLabel?: string;
-    readonly values?: string[];
+    readonly glspEvents: DebugGLSPEvent[];
 
     readonly validate?: (input: string, mode: DialogMode) => MaybePromise<DialogError>;
 }
@@ -40,12 +42,12 @@ export class SelectOptionsDialog extends AbstractDialog<string> {
         this.dropDownMenu = document.createElement('select');
 
         this.options = this.dropDownMenu.options;
-        if (props.values) {
-            props.values.forEach(element => {
+        if (props.glspEvents) {
+            props.glspEvents.forEach(glspEvent => {
                 this.option = document.createElement('option');
                 this.option.style.backgroundColor = '#2e2e2e';
-                this.option.value = element;
-                this.option.text = element;
+                this.option.value = glspEvent.name;
+                this.option.text = glspEvent.elementID + "-" + glspEvent.name;
                 this.options.add(this.option);
             });
         }

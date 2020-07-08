@@ -40,10 +40,10 @@ export interface StackEntry {
     file: string;
 }
 
-export interface EventEntry {
+export interface GLSPEvent {
     id: number;
-    element: string;
-    event: string;
+    elementID: string;
+    name: string;
     file: string;
 }
 
@@ -69,7 +69,7 @@ export class StateMachineRuntime extends EventEmitter {
         return this._globalVariables;
     }
 
-    private _eventFlow = new Array<EventEntry>();
+    private _eventFlow = new Array<GLSPEvent>();
     public get eventFlow() {
         return this._eventFlow;
     }
@@ -95,7 +95,7 @@ export class StateMachineRuntime extends EventEmitter {
 
     private _stackTrace = new Array<StackEntry>();
 
-    private _eventOptions = new Array<string>();
+    private _eventOptions = new Array<GLSPEvent>();
 
     private _queuedCommands = new Array<string>();
 
@@ -322,10 +322,21 @@ export class StateMachineRuntime extends EventEmitter {
 
     fillEventOptions(lines: string[], startEventData: number, nbEventLines: number) {
         let counter = 0;
+        let id = 0;
         this._eventOptions.length = 0;
         for (let i = startEventData + 1; i < lines.length && counter < nbEventLines; i++) {
             counter++;
-            this._eventOptions.push(lines[i]);
+            const line = lines[i];
+            const tokens = line.split(':');
+            if (tokens.length < 3) {
+                continue;
+            }
+            const file = this.getLocalPath(tokens[0].trim());
+            const element = tokens[1].trim();
+            const name = tokens[2].trim();
+            const entry = <GLSPEvent>{ id: ++id, elementID: element, name: name, file: file };
+            console.log("Entry:" + entry.elementID + "," + entry.name);
+            this._eventOptions.push(entry);
         }
     }
 
@@ -342,8 +353,8 @@ export class StateMachineRuntime extends EventEmitter {
             }
             const file = this.getLocalPath(tokens[0].trim());
             const element = tokens[1].trim();
-            const event = tokens[2].trim();
-            const entry = <EventEntry>{ id: ++id, element: element, event: event, file: file };
+            const name = tokens[2].trim();
+            const entry = <GLSPEvent>{ id: ++id, elementID: element, name: name, file: file };
             this._eventFlow.push(entry);
         }
     }
@@ -539,8 +550,8 @@ export class StateMachineRuntime extends EventEmitter {
         }
     }
 
-    public setEvent(event: any) {
-        this.sendToServer('setEvent', event);
+    public setEvent(glspEvent: any) {
+        this.sendToServer('setEvent', glspEvent);
     }
 
     public setGLSPBreakpoint(breakpoint: any): GLSPBreakpoint {

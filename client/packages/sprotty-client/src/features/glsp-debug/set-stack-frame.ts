@@ -26,7 +26,7 @@ import {
     TYPES
 } from "sprotty/lib";
 
-import { HighlightableElement, isHighlightable } from "./model";
+import { hasStackFrameFeature, StackFrameElement } from "./model";
 
 
 export class AnnotateStackAction implements Action {
@@ -42,7 +42,7 @@ export class ClearStackAnnotationAction implements Action {
 }
 
 export class ResolvedAnnotateStack {
-    element: HighlightableElement;
+    element: StackFrameElement;
 }
 
 @injectable()
@@ -61,7 +61,7 @@ export class AnnotateStackCommand extends SystemCommand {
     execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         const element = index.getById(this.action.elementID);
-        if (element && isHighlightable(element)) {
+        if (element && hasStackFrameFeature(element)) {
             element.current = true;
             this.resolvedAnnotateStack = { element };
         }
@@ -97,7 +97,7 @@ export class ClearStackAnnotationCommand extends SystemCommand {
     execute(context: CommandExecutionContext): CommandReturn {
         const index = context.root.index;
         const element = index.getById(this.action.elementID);
-        if (element && isHighlightable(element)) {
+        if (element && hasStackFrameFeature(element)) {
             element.current = false;
             this.resolvedSetStackFrame = { element };
         }
@@ -118,10 +118,10 @@ export class ClearStackAnnotationCommand extends SystemCommand {
 }
 
 @injectable()
-export class ElementHighlighter implements IVNodePostprocessor {
+export class StackFrameDecorator implements IVNodePostprocessor {
 
     decorate(vnode: VNode, element: SModelElement): VNode {
-        if (isHighlightable(element) && element.current) {
+        if (hasStackFrameFeature(element) && element.current) {
             setClass(vnode, 'current', true);
         }
         return vnode;

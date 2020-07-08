@@ -19,13 +19,13 @@ import { ContainerModule, interfaces } from "inversify";
 
 import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
-import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
+import { DebugGLSPEditorManager } from "./debug-glsp-editor-manager";
 import { GLSPDebugFrontendContribution } from "./glsp-debug-frontend-contribution";
 import { GLSPDebugSessionFactory } from "./glsp-debug-session-factory";
 import { GLSPStackFrameDiagramManager } from "./stackframe/glsp-stackframe-diagram-manager";
+import { DebugGLSPBreakpointsSource } from "./view/debug-glsp-breakpoints-source";
+import { DebugGLSPEventsWidget } from "./view/debug-glsp-events-widget";
 import { SelectOptionsDialogProps } from "./view/dialog";
-import { GLSPDebugBreakpointsSource } from "./view/glsp-debug-breakpoints-source";
-import { GLSPDebugEventsWidget } from "./view/glsp-debug-events-widget";
 
 
 export default new ContainerModule((bind: interfaces.Bind) => {
@@ -35,17 +35,17 @@ export default new ContainerModule((bind: interfaces.Bind) => {
 
     bind(SelectOptionsDialogProps).toSelf().inSingletonScope();
 
-    bind(GLSPDebugEventsWidget).toDynamicValue(({ container }) => GLSPDebugEventsWidget.createWidget(container));
+    bind(DebugGLSPEventsWidget).toDynamicValue(({ container }) => DebugGLSPEventsWidget.createWidget(container));
 
     bind(GLSPDebugSessionFactory).toSelf().inSingletonScope();
 
-    bind(GLSPDebugEditorManager).toSelf().inSingletonScope();
-    bind(OpenHandler).toService(GLSPDebugEditorManager);
+    bind(DebugGLSPEditorManager).toSelf().inSingletonScope();
+    bind(OpenHandler).toService(DebugGLSPEditorManager);
 
     bind(GLSPBreakpointManager).toSelf().inSingletonScope();
     bind(GLSPBreakpointDiagramManager).toSelf().inSingletonScope();
 
-    bind(GLSPDebugBreakpointsSource).toSelf().inSingletonScope();
+    bind(DebugGLSPBreakpointsSource).toSelf().inSingletonScope();
 
     bind(GLSPDebugFrontendContribution).toSelf().inSingletonScope();
     bind(CommandContribution).to(GLSPDebugFrontendContribution);

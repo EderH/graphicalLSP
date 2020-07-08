@@ -37,9 +37,9 @@ import {
     GLSP_TYPES,
     glspCommandPaletteModule,
     glspContextMenuModule,
+    glspDebugModule,
     glspEditLabelValidationModule,
     GLSPGraph,
-    glspMockDebugModule,
     glspMouseToolModule,
     glspSelectModule,
     hoverModule,
@@ -124,7 +124,7 @@ export default function createContainer(widgetId: string): Container {
         hoverModule, fadeModule, exportModule, expandModule, openModule, buttonModule, modelSourceModule, labelEditModule, labelEditUiModule, glspEditLabelValidationModule,
         workflowDiagramModule, saveModule, executeCommandModule, toolFeedbackModule, modelHintsModule, glspContextMenuModule,
         commandPaletteModule, glspCommandPaletteModule, paletteModule, requestResponseModule, routingModule, edgeLayoutModule,
-        layoutCommandsModule, zorderModule, glspMockDebugModule);
+        layoutCommandsModule, zorderModule, glspDebugModule);
 
     overrideViewerOptions(container, {
         baseDiv: widgetId,

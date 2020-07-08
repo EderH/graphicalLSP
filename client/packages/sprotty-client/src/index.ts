@@ -18,9 +18,9 @@ import glspCommandPaletteModule from "./features/command-palette/di.config";
 import glspContextMenuModule from "./features/context-menu/di.config";
 import glspEditLabelValidationModule from "./features/edit-label-validation/di.config";
 import executeModule from "./features/execute/di.config";
+import glspDebugModule from "./features/glsp-debug/di.config";
 import modelHintsModule from "./features/hints/di.config";
 import layoutCommandsModule from "./features/layout/di.config";
-import glspMockDebugModule from "./features/mock-debug/di.config";
 import glspMouseToolModule from "./features/mouse-tool/di.config";
 import requestResponseModule from "./features/request-response/di.config";
 import saveModule from "./features/save/di.config";
@@ -84,15 +84,14 @@ export * from './utils/viewpoint-util';
 export * from './model-source/websocket-diagram-server';
 export * from "./model-source/glsp-server-status";
 
-export * from "./features/mock-debug/model";
-export * from "./features/mock-debug/set-stack-frame";
-export * from "./features/mock-debug/set-breakpoint";
-export * from "./features/mock-debug/add-breakpoint-view";
-export * from "./features/mock-debug/enable-breakpoint";
+export * from "./features/glsp-debug/model";
+export * from "./features/glsp-debug/set-stack-frame";
+export * from "./features/glsp-debug/add-breakpoint";
+export * from "./features/glsp-debug/enable-breakpoint";
 
 export {
     validationModule, saveModule, executeModule, paletteModule, toolFeedbackModule, defaultGLSPModule, modelHintsModule, glspCommandPaletteModule, requestResponseModule, //
-    glspContextMenuModule, glspSelectModule, glspMouseToolModule, layoutCommandsModule, glspEditLabelValidationModule, glspMockDebugModule
+    glspContextMenuModule, glspSelectModule, glspMouseToolModule, layoutCommandsModule, glspEditLabelValidationModule, glspDebugModule
 };
 
 

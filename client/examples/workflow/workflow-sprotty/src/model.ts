@@ -16,6 +16,7 @@
 import {
     Bounds,
     boundsFeature,
+    breakpointFeature,
     CommandExecutor,
     connectableFeature,
     deletableFeature,
@@ -23,7 +24,6 @@ import {
     editFeature,
     executeCommandFeature,
     fadeFeature,
-    highlightElementFeature,
     hoverFeedbackFeature,
     isEditableLabel,
     layoutableChildFeature,
@@ -36,8 +36,8 @@ import {
     RectangularNode,
     SEdge,
     selectFeature,
-    setBreakpointFeature,
     SShapeElement,
+    stackFrameFeature,
     WithEditableLabel,
     withEditLabelFeature
 } from "@glsp/sprotty-client/lib";
@@ -47,7 +47,7 @@ import { ActivityNodeSchema } from "./model-schema";
 export class TaskNode extends RectangularNode implements Nameable, WithEditableLabel {
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, nameFeature, withEditLabelFeature,
-        highlightElementFeature, setBreakpointFeature];
+        stackFrameFeature, breakpointFeature];
     name: string = "";
     duration?: number;
     taskType?: string;
@@ -69,7 +69,7 @@ export class TaskNode extends RectangularNode implements Nameable, WithEditableL
 
 export class GLSPEdge extends SEdge {
     static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
-        hoverFeedbackFeature, highlightElementFeature, setBreakpointFeature];
+        hoverFeedbackFeature, stackFrameFeature, breakpointFeature];
     current: boolean = false;
     breakpoint: boolean = false;
 }
@@ -81,7 +81,7 @@ export class WeightedEdge extends GLSPEdge {
 
 export class ActivityNode extends DiamondNode {
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
-        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, highlightElementFeature, setBreakpointFeature];
+        moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, stackFrameFeature, breakpointFeature];
     current: boolean = false;
     breakpoint: boolean = false;
     nodeType: string = ActivityNodeSchema.Type.UNDEFINED;

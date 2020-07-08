@@ -251,7 +251,7 @@
       "type": "task:manual",
       "position": {
         "x": 1171.7537289786048,
-        "y": 145.22426696037306
+        "y": 180.7209401515853
       },
       "size": {
         "width": 115.21875,
@@ -824,98 +824,6 @@
       "type": "edge",
       "sourceId": "activityNode4",
       "targetId": "task4"
-    },
-    {
-      "name": "AutomatedTask10",
-      "taskType": "automated",
-      "id": "63009c1d-dc84-4935-930e-4a7f5601bd25",
-      "children": [
-        {
-          "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_header",
-          "children": [
-            {
-              "commandId": "simulate-command",
-              "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_icon",
-              "children": [
-                {
-                  "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_ticon",
-                  "type": "label:icon",
-                  "position": {
-                    "x": 8.7890625,
-                    "y": 4.796875
-                  },
-                  "size": {
-                    "width": 14.421875,
-                    "height": 22.40625
-                  },
-                  "text": "A",
-                  "alignment": {
-                    "x": 7.484375,
-                    "y": 18.40625
-                  }
-                }
-              ],
-              "type": "icon",
-              "position": {
-                "x": 5.0,
-                "y": 5.0
-              },
-              "size": {
-                "width": 32.0,
-                "height": 32.0
-              },
-              "layout": "stack",
-              "layoutOptions": {
-                "resizeContainer": false,
-                "hAlign": "center"
-              }
-            },
-            {
-              "id": "63009c1d-dc84-4935-930e-4a7f5601bd25_classname",
-              "type": "label:heading",
-              "position": {
-                "x": 38.0,
-                "y": 9.796875
-              },
-              "size": {
-                "width": 171.6875,
-                "height": 22.40625
-              },
-              "text": "AutomatedTask10",
-              "alignment": {
-                "x": 86.203125,
-                "y": 18.40625
-              }
-            }
-          ],
-          "type": "comp:header",
-          "position": {
-            "x": 5.0,
-            "y": 5.0
-          },
-          "size": {
-            "width": 214.6875,
-            "height": 42.0
-          },
-          "layout": "hbox"
-        }
-      ],
-      "type": "task:automated",
-      "position": {
-        "x": 1925.9041669641224,
-        "y": 181.83842916080408
-      },
-      "size": {
-        "width": 224.6875,
-        "height": 52.0
-      },
-      "layout": "vbox"
-    },
-    {
-      "id": "8d7c26af-fbf5-4f0f-9f1e-805aaa9d65cf",
-      "type": "edge",
-      "sourceId": "task4",
-      "targetId": "63009c1d-dc84-4935-930e-4a7f5601bd25"
     },
     {
       "id": "a2383963-7919-450e-b488-366c603c13e4",

@@ -20,31 +20,31 @@ import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
 import { Container, inject, injectable, interfaces, postConstruct } from "inversify";
 
-import { GLSPDebugEventsSource } from "./glsp-debug-events-source";
+import { DebugGLSPEventsSource } from "./debug-glsp-events-source";
 
 
 @injectable()
-export class GLSPDebugEventsWidget extends SourceTreeWidget {
+export class DebugGLSPEventsWidget extends SourceTreeWidget {
 
     static CONTEXT_MENU: MenuPath = ['debug-event-context-menu'];
     static createContainer(parent: interfaces.Container): Container {
         const child = SourceTreeWidget.createContainer(parent, {
-            contextMenuPath: GLSPDebugEventsWidget.CONTEXT_MENU,
+            contextMenuPath: DebugGLSPEventsWidget.CONTEXT_MENU,
             virtualized: false,
             scrollIfActive: true
         });
-        child.bind(GLSPDebugEventsSource).toSelf();
+        child.bind(DebugGLSPEventsSource).toSelf();
         child.unbind(SourceTreeWidget);
-        child.bind(GLSPDebugEventsWidget).toSelf();
+        child.bind(DebugGLSPEventsWidget).toSelf();
         return child;
     }
-    static createWidget(parent: interfaces.Container): GLSPDebugEventsWidget {
-        return GLSPDebugEventsWidget.createContainer(parent).get(GLSPDebugEventsWidget);
+    static createWidget(parent: interfaces.Container): DebugGLSPEventsWidget {
+        return DebugGLSPEventsWidget.createContainer(parent).get(DebugGLSPEventsWidget);
     }
 
 
-    @inject(GLSPDebugEventsSource)
-    protected readonly eventsSource: GLSPDebugEventsSource;
+    @inject(DebugGLSPEventsSource)
+    protected readonly eventsSource: DebugGLSPEventsSource;
     @inject(WidgetManager)
     protected readonly widgetManager: WidgetManager;
     protected viewModel: DebugViewModel;

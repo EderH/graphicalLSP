@@ -4,13 +4,13 @@
     {
       "name": "InitialState0",
       "kind": "initialState",
-      "id": "5a32593d-6467-4c34-8240-d631ed234a91",
+      "id": "InitialState",
       "children": [
         {
-          "id": "5a32593d-6467-4c34-8240-d631ed234a91_header",
+          "id": "InitialState_header",
           "children": [
             {
-              "id": "5a32593d-6467-4c34-8240-d631ed234a91_classname",
+              "id": "InitialState_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -41,8 +41,8 @@
       ],
       "type": "state:initial",
       "position": {
-        "x": 20.23981872365222,
-        "y": 67.24647234122776
+        "x": 149.45650419718822,
+        "y": 69.24647234122776
       },
       "size": {
         "width": 42.40625,
@@ -53,13 +53,13 @@
     {
       "name": "State2",
       "kind": "defaultState",
-      "id": "742a8511-8f35-4fd5-a37a-cdad87e47b53",
+      "id": "Off",
       "children": [
         {
-          "id": "742a8511-8f35-4fd5-a37a-cdad87e47b53_header",
+          "id": "Off_header",
           "children": [
             {
-              "id": "742a8511-8f35-4fd5-a37a-cdad87e47b53_classname",
+              "id": "Off_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -102,13 +102,13 @@
     {
       "name": "State3",
       "kind": "defaultState",
-      "id": "d7bc36f2-965a-4adb-95f7-274ddf3b226d",
+      "id": "SelfTest",
       "children": [
         {
-          "id": "d7bc36f2-965a-4adb-95f7-274ddf3b226d_header",
+          "id": "SelfTest_header",
           "children": [
             {
-              "id": "d7bc36f2-965a-4adb-95f7-274ddf3b226d_classname",
+              "id": "SelfTest_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -118,7 +118,7 @@
                 "width": 82.421875,
                 "height": 22.40625
               },
-              "text": "Self Test",
+              "text": "SelfTest",
               "alignment": {
                 "x": 40.9375,
                 "y": 18.40625
@@ -151,13 +151,13 @@
     {
       "name": "State4",
       "kind": "defaultState",
-      "id": "d178e3e2-0b8b-4fcf-8e78-b15b88e5b046",
+      "id": "Maintenance",
       "children": [
         {
-          "id": "d178e3e2-0b8b-4fcf-8e78-b15b88e5b046_header",
+          "id": "Maintenance_header",
           "children": [
             {
-              "id": "d178e3e2-0b8b-4fcf-8e78-b15b88e5b046_classname",
+              "id": "Maintenance_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -200,13 +200,13 @@
     {
       "name": "State5",
       "kind": "defaultState",
-      "id": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689",
+      "id": "Idle",
       "children": [
         {
-          "id": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689_header",
+          "id": "Idle_header",
           "children": [
             {
-              "id": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689_classname",
+              "id": "Idle_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -249,13 +249,13 @@
     {
       "name": "State6",
       "kind": "defaultState",
-      "id": "114dabc4-aa27-4631-bc05-2cc128c7904f",
+      "id": "OutOfService",
       "children": [
         {
-          "id": "114dabc4-aa27-4631-bc05-2cc128c7904f_header",
+          "id": "OutOfService_header",
           "children": [
             {
-              "id": "114dabc4-aa27-4631-bc05-2cc128c7904f_classname",
+              "id": "OutOfService_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -298,13 +298,13 @@
     {
       "name": "State7",
       "kind": "defaultState",
-      "id": "3267ffb5-a841-448a-8b8c-a77e1e0a91a3",
+      "id": "ServingCustomer",
       "children": [
         {
-          "id": "3267ffb5-a841-448a-8b8c-a77e1e0a91a3_header",
+          "id": "ServingCustomer_header",
           "children": [
             {
-              "id": "3267ffb5-a841-448a-8b8c-a77e1e0a91a3_classname",
+              "id": "ServingCustomer_classname",
               "type": "label:heading",
               "position": {
                 "x": 5.0,
@@ -345,35 +345,6 @@
       "layout": "vbox"
     },
     {
-      "trigger": "turnOff",
-      "effect": "shutDown",
-      "id": "8f25923d-b1e5-438e-b54d-241b6da0c42b",
-      "children": [
-        {
-          "edgePlacement": {
-            "position": 0.5,
-            "offset": 0.0,
-            "side": "top",
-            "rotate": true
-          },
-          "id": "8f25923d-b1e5-438e-b54d-241b6da0c42b_label_top",
-          "type": "label:text",
-          "size": {
-            "width": 163.84375,
-            "height": 22.40625
-          },
-          "text": "turn off | shutdown",
-          "alignment": {
-            "x": 81.921875,
-            "y": 18.40625
-          }
-        }
-      ],
-      "type": "transition",
-      "sourceId": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689",
-      "targetId": "742a8511-8f35-4fd5-a37a-cdad87e47b53"
-    },
-    {
       "trigger": "",
       "effect": "",
       "id": "c74b74dc-04f6-4074-862e-d15254e2c2a2",
@@ -399,8 +370,8 @@
         }
       ],
       "type": "transition",
-      "sourceId": "d178e3e2-0b8b-4fcf-8e78-b15b88e5b046",
-      "targetId": "d7bc36f2-965a-4adb-95f7-274ddf3b226d"
+      "sourceId": "Maintenance",
+      "targetId": "SelfTest"
     },
     {
       "trigger": "failure",
@@ -434,8 +405,8 @@
           "y": 202.8183466607868
         }
       ],
-      "sourceId": "d7bc36f2-965a-4adb-95f7-274ddf3b226d",
-      "targetId": "114dabc4-aa27-4631-bc05-2cc128c7904f"
+      "sourceId": "SelfTest",
+      "targetId": "OutOfService"
     },
     {
       "trigger": "turnOff",
@@ -469,8 +440,8 @@
           "y": 87.75340725950332
         }
       ],
-      "sourceId": "114dabc4-aa27-4631-bc05-2cc128c7904f",
-      "targetId": "742a8511-8f35-4fd5-a37a-cdad87e47b53"
+      "sourceId": "OutOfService",
+      "targetId": "Off"
     },
     {
       "trigger": "service",
@@ -512,8 +483,8 @@
           "y": 277.2258661362639
         }
       ],
-      "sourceId": "114dabc4-aa27-4631-bc05-2cc128c7904f",
-      "targetId": "d178e3e2-0b8b-4fcf-8e78-b15b88e5b046"
+      "sourceId": "OutOfService",
+      "targetId": "Maintenance"
     },
     {
       "trigger": "failure",
@@ -555,8 +526,8 @@
           "y": 409.0305536362639
         }
       ],
-      "sourceId": "d178e3e2-0b8b-4fcf-8e78-b15b88e5b046",
-      "targetId": "114dabc4-aa27-4631-bc05-2cc128c7904f"
+      "sourceId": "Maintenance",
+      "targetId": "OutOfService"
     },
     {
       "trigger": "failure",
@@ -590,8 +561,8 @@
           "y": 469.703125
         }
       ],
-      "sourceId": "3267ffb5-a841-448a-8b8c-a77e1e0a91a3",
-      "targetId": "114dabc4-aa27-4631-bc05-2cc128c7904f"
+      "sourceId": "ServingCustomer",
+      "targetId": "OutOfService"
     },
     {
       "trigger": "",
@@ -619,8 +590,8 @@
         }
       ],
       "type": "transition",
-      "sourceId": "d7bc36f2-965a-4adb-95f7-274ddf3b226d",
-      "targetId": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689"
+      "sourceId": "SelfTest",
+      "targetId": "Idle"
     },
     {
       "trigger": "cardInserted",
@@ -654,8 +625,8 @@
           "y": 468.28696941806584
         }
       ],
-      "sourceId": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689",
-      "targetId": "3267ffb5-a841-448a-8b8c-a77e1e0a91a3"
+      "sourceId": "Idle",
+      "targetId": "ServingCustomer"
     },
     {
       "trigger": "cancel",
@@ -689,11 +660,11 @@
           "y": 387.6822315457688
         }
       ],
-      "sourceId": "3267ffb5-a841-448a-8b8c-a77e1e0a91a3",
-      "targetId": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689"
+      "sourceId": "ServingCustomer",
+      "targetId": "Idle"
     },
     {
-      "trigger": "",
+      "trigger": "default",
       "effect": "",
       "id": "7588aa9a-8df2-46b5-a686-7eb6484bb509",
       "children": [
@@ -718,8 +689,8 @@
         }
       ],
       "type": "transition",
-      "sourceId": "5a32593d-6467-4c34-8240-d631ed234a91",
-      "targetId": "742a8511-8f35-4fd5-a37a-cdad87e47b53"
+      "sourceId": "InitialState",
+      "targetId": "Off"
     },
     {
       "trigger": "turnOn",
@@ -747,8 +718,8 @@
         }
       ],
       "type": "transition",
-      "sourceId": "742a8511-8f35-4fd5-a37a-cdad87e47b53",
-      "targetId": "d7bc36f2-965a-4adb-95f7-274ddf3b226d"
+      "sourceId": "Off",
+      "targetId": "SelfTest"
     },
     {
       "trigger": "service",
@@ -776,11 +747,11 @@
         }
       ],
       "type": "transition",
-      "sourceId": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689",
-      "targetId": "d178e3e2-0b8b-4fcf-8e78-b15b88e5b046"
+      "sourceId": "Idle",
+      "targetId": "Maintenance"
     },
     {
-      "trigger": "",
+      "trigger": "default",
       "effect": "",
       "id": "f00b7da1-cbff-4a70-a0fe-44c95ab940dc",
       "children": [
@@ -794,8 +765,8 @@
           "id": "f00b7da1-cbff-4a70-a0fe-44c95ab940dc_label_top",
           "type": "label:text",
           "size": {
-            "width": 122.40625,
-            "height": 22.40625
+            "width": 0.0,
+            "height": 0.0
           },
           "text": "",
           "alignment": {
@@ -808,19 +779,48 @@
       "routingPoints": [
         {
           "x": 605.0379431220022,
-          "y": 541.1453489634112
+          "y": 523.4817218222844
         },
         {
-          "x": 179.92640798246754,
-          "y": 541.0118745093114
+          "x": 198.46166941098653,
+          "y": 523.4187702252226
         },
         {
-          "x": 177.03845922261536,
+          "x": 196.03845922261536,
           "y": 327.89836090793824
         }
       ],
-      "sourceId": "3267ffb5-a841-448a-8b8c-a77e1e0a91a3",
-      "targetId": "68db3dcd-e821-4ea0-8e39-46fd6f9ea689"
+      "sourceId": "ServingCustomer",
+      "targetId": "Idle"
+    },
+    {
+      "trigger": "turnOff",
+      "effect": "shutdown",
+      "id": "eab26f54-e55c-45c1-b89c-1ac46d6ec18e",
+      "children": [
+        {
+          "edgePlacement": {
+            "position": 0.9,
+            "offset": 0.0,
+            "side": "top",
+            "rotate": true
+          },
+          "id": "eab26f54-e55c-45c1-b89c-1ac46d6ec18e_label_top",
+          "type": "label:text",
+          "size": {
+            "width": 122.40625,
+            "height": 22.40625
+          },
+          "text": "turn off | shutdown",
+          "alignment": {
+            "x": 60.78125,
+            "y": 18.40625
+          }
+        }
+      ],
+      "type": "transition",
+      "sourceId": "Idle",
+      "targetId": "Off"
     }
   ],
   "type": "graph"

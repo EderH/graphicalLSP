@@ -16,32 +16,22 @@
 import "../../../css/glsp-sprotty.css";
 
 import { ContainerModule } from "inversify";
-import { configureCommand, configureView, TYPES } from "sprotty/lib";
+import { configureCommand, TYPES } from "sprotty/lib";
 
-import { GLSP_TYPES } from "../../types";
-import { AddBreakpointViewCommand, RemoveBreakpointViewCommand } from "./add-breakpoint-view";
-import { DisableBreakpointCommand, EnableBreakpointCommand, RestoreBreakpoints } from "./enable-breakpoint";
-import { Breakpoint } from "./model";
-import { AddBreakpointCommand, ElementBreakpoint, RemoveBreakpointCommand } from "./set-breakpoint";
-import { AnnotateStackCommand, ClearStackAnnotationCommand, ElementHighlighter } from "./set-stack-frame";
-import { BreakpointView } from "./view";
+import { AddBreakpointCommand, BreakpointDecorator, RemoveBreakpointCommand } from "./add-breakpoint";
+import { DisableBreakpointCommand, EnableBreakpointCommand } from "./enable-breakpoint";
+import { AnnotateStackCommand, ClearStackAnnotationCommand, StackFrameDecorator } from "./set-stack-frame";
 
 
-const glspMockDebugModule = new ContainerModule((bind, _unbind, isBound) => {
+const glspDebugModule = new ContainerModule((bind, _unbind, isBound) => {
     configureCommand({ bind, isBound }, AnnotateStackCommand);
     configureCommand({ bind, isBound }, ClearStackAnnotationCommand);
     configureCommand({ bind, isBound }, AddBreakpointCommand);
     configureCommand({ bind, isBound }, RemoveBreakpointCommand);
-    configureCommand({ bind, isBound }, AddBreakpointViewCommand);
-    configureCommand({ bind, isBound }, RemoveBreakpointViewCommand);
     configureCommand({ bind, isBound }, EnableBreakpointCommand);
     configureCommand({ bind, isBound }, DisableBreakpointCommand);
-    // bind(TYPES.MouseListener).to(SetBreakpointMouseListener);
-    bind(TYPES.IVNodePostprocessor).to(ElementHighlighter).inSingletonScope();
-    bind(TYPES.IVNodePostprocessor).to(ElementBreakpoint).inSingletonScope();
-    bind(RestoreBreakpoints).toSelf().inSingletonScope();
-    bind(GLSP_TYPES.SModelRootListener).toService(RestoreBreakpoints);
-    configureView({ bind, isBound }, Breakpoint.TYPE, BreakpointView);
+    bind(TYPES.IVNodePostprocessor).to(StackFrameDecorator).inSingletonScope();
+    bind(TYPES.IVNodePostprocessor).to(BreakpointDecorator).inSingletonScope();
 });
 
-export default glspMockDebugModule;
+export default glspDebugModule;

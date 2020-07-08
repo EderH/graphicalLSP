@@ -13,29 +13,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { injectable } from "inversify";
-import * as snabbdom from "snabbdom-jsx";
-import { VNode } from "snabbdom/vnode";
-import { IView, RenderingContext } from "sprotty/lib";
+import { SModelElement, SModelExtension, SParentElement } from "sprotty/lib";
 
-import { Breakpoint } from "./model";
+export const stackFrameFeature = Symbol('stackFrameFeature');
 
-
-const JSX = { createElement: snabbdom.svg };
-
-@injectable()
-export class BreakpointView implements IView {
-    render(breakpoint: Breakpoint, context: RenderingContext): VNode {
-        const radius = this.getRadius();
-        return <g>
-            <circle class-sprotty-checkbox={true}
-                class-checked={breakpoint.checked}
-                r={radius} cx={radius} cy={radius}
-            ></circle>
-        </g>;
-    }
-
-    getRadius() {
-        return 6;
-    }
+export interface StackFrameElement extends SModelExtension {
+    current: boolean;
 }
+
+export function hasStackFrameFeature<T extends SModelElement>(element: T): element is T & StackFrameElement {
+    return element.hasFeature(stackFrameFeature);
+}
+
+export const breakpointFeature = Symbol('breakpointFeature');
+
+export interface BreakpointElement extends SModelExtension {
+    breakpoint: boolean;
+}
+
+export function hasBreakpointFeature(element: SModelElement): element is SParentElement & BreakpointElement {
+    return element instanceof SParentElement && element.hasFeature(breakpointFeature);
+}
+
+
+

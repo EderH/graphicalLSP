@@ -20,7 +20,7 @@ import { DiagramManager } from "sprotty-theia";
 
 
 @injectable()
-export class GLSPDebugEditorManager extends EditorManager {
+export class DebugGLSPEditorManager extends EditorManager {
 
     protected glspDiagramManager: DiagramManager;
 

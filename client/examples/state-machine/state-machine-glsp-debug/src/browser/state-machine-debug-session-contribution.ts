@@ -17,7 +17,7 @@ import {
     GLSPBreakpointDiagramManager
 } from "@glsp/theia-debug-diagram/lib/browser/breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "@glsp/theia-debug-diagram/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { GLSPDebugEditorManager } from "@glsp/theia-debug-diagram/lib/browser/glsp-debug-editor-manager";
+import { DebugGLSPEditorManager } from "@glsp/theia-debug-diagram/lib/browser/debug-glsp-editor-manager";
 import { GLSPDebugSessionFactory } from "@glsp/theia-debug-diagram/lib/browser/glsp-debug-session-factory";
 import { MessageClient } from "@theia/core";
 import { LabelProvider, WebSocketConnectionProvider } from "@theia/core/lib/browser";
@@ -37,7 +37,7 @@ export class StateMachineDebugSessionContribution implements DebugSessionContrib
 
 
     constructor(
-        @inject(GLSPDebugEditorManager) editorManager: GLSPDebugEditorManager,
+        @inject(DebugGLSPEditorManager) editorManager: DebugGLSPEditorManager,
         @inject(TerminalService) terminalService: TerminalService,
         @inject(WebSocketConnectionProvider) connectionProvider: WebSocketConnectionProvider,
         @inject(GLSPBreakpointManager) breakpoints: GLSPBreakpointManager,

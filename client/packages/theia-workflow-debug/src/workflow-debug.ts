@@ -231,7 +231,7 @@ export class WorkflowDebugSession extends LoggingDebugSession {
         const stk = this._runtime.stack(startFrame, endFrame);
 
         response.body = {
-            stackFrames: stk.frames.map((f: { index: number; name: string; file: string; line: number; }) => new StackFrame(f.index, f.name, this.createSource(f.file), this.convertDebuggerLineToClient(f.line))),
+            stackFrames: stk.frames.map((f: { index: number; name: string; file: string; line: number; }) => new StackFrame(f.index, f.name, this.createSource(f.file))),
             totalFrames: stk.count
         };
         this.sendResponse(response);

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { GLSPBreakpointManager } from "@glsp/theia-debug-diagram/lib/browser/breakpoint/glsp-breakpoint-manager";
-import { GLSPDebugEditorManager } from "@glsp/theia-debug-diagram/lib/browser/glsp-debug-editor-manager";
+import { DebugGLSPEditorManager } from "@glsp/theia-debug-diagram/lib/browser/debug-glsp-editor-manager";
 import { GLSPDiagramManager, GLSPTheiaSprottyConnector } from "@glsp/theia-integration/lib/browser";
 import { MessageService } from "@theia/core";
 import { ApplicationShell, WidgetManager } from "@theia/core/lib/browser";
@@ -37,7 +37,7 @@ export class StateMachineDiagramManager extends GLSPDiagramManager {
     private _diagramConnector: GLSPTheiaSprottyConnector;
 
     constructor(
-        @inject(GLSPDebugEditorManager) glspDebugEditorManager: GLSPDebugEditorManager,
+        @inject(DebugGLSPEditorManager) debugGLSPEditorManager: DebugGLSPEditorManager,
         @inject(StateMachineGLSPDiagramClient) diagramClient: StateMachineGLSPDiagramClient,
         @inject(TheiaFileSaver) fileSaver: TheiaFileSaver,
         @inject(WidgetManager) widgetManager: WidgetManager,
@@ -48,7 +48,7 @@ export class StateMachineDiagramManager extends GLSPDiagramManager {
         super();
         // tslint:disable-next-line: max-line-length
         this._diagramConnector = new GLSPTheiaSprottyConnector({ diagramClient, fileSaver, editorManager, widgetManager, diagramManager: this, messageService, breakpointManager, shell });
-        glspDebugEditorManager.diagramManager = this;
+        debugGLSPEditorManager.diagramManager = this;
     }
 
     get fileExtensions() {

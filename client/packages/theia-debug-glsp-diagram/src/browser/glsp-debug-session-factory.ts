@@ -29,7 +29,7 @@ import { IWebSocket } from "vscode-ws-jsonrpc/lib/socket/socket";
 
 import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
-import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
+import { DebugGLSPEditorManager } from "./debug-glsp-editor-manager";
 import { GLSPDebugSession } from "./glsp-debug-session";
 
 
@@ -37,7 +37,7 @@ import { GLSPDebugSession } from "./glsp-debug-session";
 
 export interface GLSPDebugSessionFactoryServices {
     readonly terminalService: TerminalService,
-    readonly editorManager: GLSPDebugEditorManager,
+    readonly editorManager: DebugGLSPEditorManager,
     readonly breakpoints: GLSPBreakpointManager,
     readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager,
     readonly labelProvider: LabelProvider,
@@ -52,7 +52,7 @@ export interface GLSPDebugSessionFactoryServices {
 export class GLSPDebugSessionFactory extends DefaultDebugSessionFactory {
 
     readonly terminalService: TerminalService;
-    readonly editorManager: GLSPDebugEditorManager;
+    readonly editorManager: DebugGLSPEditorManager;
     readonly breakpoints: GLSPBreakpointManager;
     readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager;
     readonly labelProvider: LabelProvider;

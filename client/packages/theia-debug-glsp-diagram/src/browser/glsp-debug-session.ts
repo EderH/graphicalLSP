@@ -25,10 +25,10 @@ import { DebugProtocol } from "vscode-debugprotocol";
 
 import { GLSPBreakpointDiagramManager } from "./breakpoint/glsp-breakpoint-diagram-manager";
 import { GLSPBreakpointManager } from "./breakpoint/glsp-breakpoint-manager";
-import { GLSPDebugEditorManager } from "./glsp-debug-editor-manager";
+import { DebugGLSPEditorManager } from "./debug-glsp-editor-manager";
 import { DebugBreakpoint, DebugBreakpointOptions } from "./model/debug-breakpoint";
 import { DebugGLSPBreakpoint } from "./model/debug-glsp-breakpoint";
-import { DebugEventOptions, GLSPDebugEvent } from "./model/debug-glsp-event";
+import { DebugEventOptions, DebugGLSPEvent } from "./model/debug-glsp-event";
 import { SelectOptionsDialog } from "./view/dialog";
 
 
@@ -40,7 +40,7 @@ export class GLSPDebugSession extends DebugSession {
         readonly options: DebugSessionOptions,
         protected readonly connection: DebugSessionConnection,
         protected readonly terminalServer: TerminalService,
-        protected readonly editorManager: GLSPDebugEditorManager,
+        protected readonly editorManager: DebugGLSPEditorManager,
         protected readonly breakpoints: GLSPBreakpointManager,
         protected readonly breakpointsDiagramManager: GLSPBreakpointDiagramManager,
         protected readonly labelProvider: LabelProvider,
@@ -149,19 +149,20 @@ export class GLSPDebugSession extends DebugSession {
         this.fireDidChangeBreakpoints(uri);
     }
 
-    protected async openEventDialogWindow(lines: any): Promise<void> {
+    protected async openEventDialogWindow(glspEvents: DebugGLSPEvent[]): Promise<void> {
+
         const input = new SelectOptionsDialog({
             title: 'Select Trigger event',
-            values: lines
+            glspEvents: glspEvents,
         });
-        const event = await input.open();
-        this.sendCustomRequest('setEvent', { event });
+        const glspEvent = await input.open();
+        this.sendCustomRequest('setEvent', { glspEvent });
     }
 
 
-    protected readonly _glspDebugEvents = new Array<GLSPDebugEvent>();
+    protected readonly _glspDebugEvents = new Array<DebugGLSPEvent>();
 
-    getGLSPDebugEvents(): GLSPDebugEvent[] {
+    getGLSPDebugEvents(): DebugGLSPEvent[] {
         return this._glspDebugEvents;
     }
 
@@ -169,7 +170,7 @@ export class GLSPDebugSession extends DebugSession {
         this._glspDebugEvents.length = 0;
         const response = await this.sendCustomRequest('eventFlowRequest');
         response.body.eventFlow.map((entry: any) => {
-            this._glspDebugEvents.push(new GLSPDebugEvent(entry, this.asDebugEventOptions()));
+            this._glspDebugEvents.push(new DebugGLSPEvent(entry, this.asDebugEventOptions()));
         });
     }
 

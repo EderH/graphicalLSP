@@ -5,7 +5,7 @@
       "name": "Move",
       "duration": 20,
       "taskType": "manual",
-      "id": "move1",
+      "id": "task9",
       "children": [
         {
           "id": "move1_header",
@@ -268,7 +268,7 @@
       "duration": 20,
       "taskType": "automated",
       "reference": "WaterTank",
-      "id": "wait1",
+      "id": "task11",
       "children": [
         {
           "id": "wait1_header",
@@ -458,12 +458,6 @@
       }
     },
     {
-      "id": "edge1",
-      "type": "edge",
-      "sourceId": "move1",
-      "targetId": "rotate1"
-    },
-    {
       "id": "edge2",
       "type": "edge",
       "sourceId": "rotate1",
@@ -476,21 +470,9 @@
       "targetId": "light1"
     },
     {
-      "id": "edge4",
-      "type": "edge:weighted",
-      "sourceId": "activityNode9",
-      "targetId": "wait1"
-    },
-    {
       "id": "edge5",
       "type": "edge",
       "sourceId": "light1",
-      "targetId": "activityNode10"
-    },
-    {
-      "id": "edge6",
-      "type": "edge",
-      "sourceId": "wait1",
       "targetId": "activityNode10"
     },
     {
@@ -498,6 +480,24 @@
       "type": "edge",
       "sourceId": "activityNode10",
       "targetId": "repeat1"
+    },
+    {
+      "id": "cf2a5b36-775c-4c1e-8209-2944746c4b3d",
+      "type": "edge",
+      "sourceId": "task9",
+      "targetId": "rotate1"
+    },
+    {
+      "id": "a6079eda-1f6f-4961-a833-b4da54d59e54",
+      "type": "edge",
+      "sourceId": "task11",
+      "targetId": "activityNode10"
+    },
+    {
+      "id": "941644c3-de0f-43e4-a401-3da3290bbd5f",
+      "type": "edge:weighted",
+      "sourceId": "activityNode9",
+      "targetId": "task11"
     }
   ],
   "type": "graph"

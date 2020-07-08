@@ -14,52 +14,38 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
 import { inject, injectable } from "inversify";
-import { VNode } from "snabbdom/vnode";
 import {
     Action,
     CommandExecutionContext,
     CommandReturn,
-    IVNodePostprocessor,
-    setClass,
     SModelElement,
+    SModelRoot,
     SystemCommand,
     TYPES
 } from "sprotty/lib";
 
-import { hasBreakpoint } from "./model";
+import { SModelRootListener } from "../../base/model/update-model-command";
+import { hasBreakpointFeature } from "./model";
 
-/* export class AddBreakpointAction implements Action {
-    static readonly KIND = 'addBreakpoint';
-    kind = AddBreakpointAction.KIND;
-    constructor(readonly breakpointId: string, readonly parent: SParentElement) {
-    }
-} */
 
-export class AddBreakpointAction implements Action {
-    static readonly KIND = 'addBreakpoint';
-    kind = AddBreakpointAction.KIND;
+export class EnableBreakpointAction implements Action {
+    static readonly KIND = 'enableBreakpoint';
+    kind = EnableBreakpointAction.KIND;
     constructor(readonly selectedElements: SModelElement[]) { }
 }
 
-/* export class RemoveBreakpointAction implements Action {
-    static readonly KIND = 'removeBreakpoint';
-    kind = RemoveBreakpointAction.KIND;
-    constructor(readonly breakpointId: string, readonly parent: SParentElement) {
-    }
-} */
-
-export class RemoveBreakpointAction implements Action {
-    static readonly KIND = 'removeBreakpoint';
-    kind = RemoveBreakpointAction.KIND;
+export class DisableBreakpointAction implements Action {
+    static readonly KIND = 'disableBreakpoint';
+    kind = DisableBreakpointAction.KIND;
     constructor(readonly selectedElements: SModelElement[]) { }
 }
 
 @injectable()
-export class AddBreakpointCommand extends SystemCommand {
-    static readonly KIND = AddBreakpointAction.KIND;
+export class EnableBreakpointCommand extends SystemCommand {
+    static readonly KIND = EnableBreakpointAction.KIND;
 
     constructor(
-        @inject(TYPES.Action) public action: AddBreakpointAction,
+        @inject(TYPES.Action) public action: EnableBreakpointAction
     ) {
         super();
     }
@@ -67,7 +53,7 @@ export class AddBreakpointCommand extends SystemCommand {
         const index = context.root.index;
         for (const selectedElement of this.action.selectedElements) {
             const element = index.getById(selectedElement.id);
-            if (element && hasBreakpoint(element)) {
+            if (element && hasBreakpointFeature(element)) {
                 element.breakpoint = true;
             }
         }
@@ -78,7 +64,7 @@ export class AddBreakpointCommand extends SystemCommand {
         const index = context.root.index;
         for (const selectedElement of this.action.selectedElements) {
             const element = index.getById(selectedElement.id);
-            if (element && hasBreakpoint(element)) {
+            if (element && hasBreakpointFeature(element)) {
                 element.breakpoint = false;
             }
         }
@@ -92,11 +78,11 @@ export class AddBreakpointCommand extends SystemCommand {
 
 
 @injectable()
-export class RemoveBreakpointCommand extends SystemCommand {
-    static readonly KIND = RemoveBreakpointAction.KIND;
+export class DisableBreakpointCommand extends SystemCommand {
+    static readonly KIND = DisableBreakpointAction.KIND;
 
     constructor(
-        @inject(TYPES.Action) public action: RemoveBreakpointAction,
+        @inject(TYPES.Action) public action: DisableBreakpointAction,
     ) {
         super();
     }
@@ -104,7 +90,7 @@ export class RemoveBreakpointCommand extends SystemCommand {
         const index = context.root.index;
         for (const selectedElement of this.action.selectedElements) {
             const element = index.getById(selectedElement.id);
-            if (element && hasBreakpoint(element)) {
+            if (element && hasBreakpointFeature(element)) {
                 element.breakpoint = false;
             }
         }
@@ -115,7 +101,7 @@ export class RemoveBreakpointCommand extends SystemCommand {
         const index = context.root.index;
         for (const selectedElement of this.action.selectedElements) {
             const element = index.getById(selectedElement.id);
-            if (element && hasBreakpoint(element)) {
+            if (element && hasBreakpointFeature(element)) {
                 element.breakpoint = true;
             }
         }
@@ -129,41 +115,29 @@ export class RemoveBreakpointCommand extends SystemCommand {
 
 
 
-/*export class SetBreakpointMouseListener extends MouseListener {
-    doubleClick(target: SModelElement, event: MouseEvent): (Action | Promise<Action>)[] {
-        const breakpoint = isBreakpoint(target);
-        if (breakpoint) {
-            if (!breakpoint.checked) {
-                return [new AddBreakpointAction(breakpoint.id, breakpoint.parent)];
-            } else {
-                return [new RemoveBreakpointAction(breakpoint.id, breakpoint.parent)];
-            }
-        }
-        return [];
-    }
-}*/
-
 @injectable()
-export class ElementBreakpoint implements IVNodePostprocessor {
+export class RestoreBreakpoints implements SModelRootListener {
 
-    decorate(vnode: VNode, element: SModelElement): VNode {
-        if (hasBreakpoint(element) && element.breakpoint) {
-            setClass(vnode, 'breakpoint', true);
+    private elements: SModelElement[];
+
+    constructor(
+    ) { }
+
+    addElements(selectedElement: SModelElement) {
+        if (!this.elements.includes(selectedElement)) {
+            this.elements.push(selectedElement);
         }
-        return vnode;
     }
 
-    postUpdate(): void {
+    removeElements(selectedElement: SModelElement) {
+        const index = this.elements.indexOf(selectedElement);
+        if (index > -1) {
+            this.elements.splice(index);
+        }
     }
+
+    modelRootChanged(root: Readonly<SModelRoot>): void {
+
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-

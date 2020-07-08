@@ -16,13 +16,13 @@
 import {
     Bounds,
     boundsFeature,
+    breakpointFeature,
     CommandExecutor,
     connectableFeature,
     deletableFeature,
     editFeature,
     executeCommandFeature,
     fadeFeature,
-    highlightElementFeature,
     hoverFeedbackFeature,
     isEditableLabel,
     layoutableChildFeature,
@@ -35,8 +35,8 @@ import {
     RectangularNode,
     SEdge,
     selectFeature,
-    setBreakpointFeature,
     SShapeElement,
+    stackFrameFeature,
     WithEditableLabel,
     withEditLabelFeature
 } from "@glsp/sprotty-client/lib";
@@ -46,7 +46,7 @@ import { StateKindSchema } from "./model-schema";
 export class StateNode extends RectangularNode implements Nameable, WithEditableLabel {
     static readonly DEFAULT_FEATURES = [connectableFeature, deletableFeature, selectFeature, boundsFeature,
         moveFeature, layoutContainerFeature, fadeFeature, hoverFeedbackFeature, popupFeature, nameFeature, withEditLabelFeature,
-        highlightElementFeature, setBreakpointFeature];
+        stackFrameFeature, breakpointFeature];
     name: string = "";
     current: boolean = false;
     breakpoint: boolean = false;
@@ -66,7 +66,7 @@ export class StateNode extends RectangularNode implements Nameable, WithEditable
 
 export class Transition extends SEdge implements WithEditableLabel {
     static readonly DEFAULT_FEATURES = [editFeature, deletableFeature, selectFeature, fadeFeature,
-        hoverFeedbackFeature, highlightElementFeature, layoutContainerFeature, setBreakpointFeature, nameFeature, withEditLabelFeature];
+        hoverFeedbackFeature, stackFrameFeature, layoutContainerFeature, breakpointFeature, nameFeature, withEditLabelFeature];
     trigger: string = "";
     event: string = "";
     current: boolean = false;

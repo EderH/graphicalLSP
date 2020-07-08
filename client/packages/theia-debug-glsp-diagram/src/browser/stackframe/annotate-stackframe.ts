@@ -21,7 +21,7 @@ import { DebugSource } from "@theia/debug/lib/browser/model/debug-source";
 import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
 import { DiagramWidget } from "sprotty-theia";
 
-import { GLSPDebugEditorManager } from "../glsp-debug-editor-manager";
+import { DebugGLSPEditorManager } from "../debug-glsp-editor-manager";
 
 
 export class AnnotateStackFrame {
@@ -31,9 +31,9 @@ export class AnnotateStackFrame {
     private shell: ApplicationShell;
     private currentFrame: DebugStackFrame;
     private session: DebugSession;
-    private editorManager: GLSPDebugEditorManager;
+    private editorManager: DebugGLSPEditorManager;
 
-    constructor(session: DebugSession, shell: ApplicationShell, editorManager: GLSPDebugEditorManager) {
+    constructor(session: DebugSession, shell: ApplicationShell, editorManager: DebugGLSPEditorManager) {
         this.session = session;
         this.shell = shell;
         this.editorManager = editorManager;
