@@ -1,3 +1,13 @@
+# GLSP Debugger Framework
+This prototype provides debugging facilities for graphical modeling languages in a web-based modeling tool. The debugger framework is integrated into the GLSP client framework.
+Currently there exist two examples for the following modeling languages:
+ - Workflow Modeling Language
+ - Statemachine Modeling Language
+ 
+The debugger framework integrates the concrete debug adapter for the graphical modeling language. The debug adapter connects to a concrete [debugger server](https://github.com/EderH/gml-interpreter) that is available for the modeling language.
+ 
+To build the project please follow the instruction of the GLSP framework below.
+
 # Graphical Language Server Protocol Framework [![Build Status](https://travis-ci.org/eclipsesource/graphical-lsp.svg?branch=master)](https://travis-ci.org/eclipsesource/graphical-lsp)
 
 The Graphical Language Server Protocol Framework provides extensible components to enable the development of *diagram editors including edit functionality* in (distributed) web-applications via a client-server protocol.
